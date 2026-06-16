@@ -1,0 +1,324 @@
+# AI Generation & Test Automation Pipeline
+#
+# Stage 1 — Generate (manual queue only):
+#   Runs ADO_Full_Pipeline: BRD → User Stories → ADO work items →
+#   Test Cases → ADO Test Plan/Suite → Playwright scripts → commit + push
+#
+# Stage 2 — ExecuteAndFix (conditional):
+#   Runs Execute_And_Fix_Tests only when Stage 1 succeeded AND new tests
+#   were generated (non-empty DetectScope.GeneratedScope output variable).
+#   Skipped automatically if the generation produced no test files.
+#
+# Trigger matrix:
+#   Manual queue → Stage 1 → Stage 2 (if new tests generated)
+#
+# For on-demand test execution without generation, use:
+#   pipelines/execute-fix.yml
+#
+# Required variable group: "ai-generation-secrets"
+#   ANTHROPIC_API_KEY, AZURE_DEVOPS_ORG_URL, AZURE_PERSONAL_ACCESS_TOKEN,
+#   AZURE_PROJECT_NAME, BASE_URL
+#
+# See docs/pipelines/ai-generation.md for full setup and usage guide.
+
+trigger: none   # manual queue only — push triggers no longer run this pipeline
+
+parameters:
+  - name: brdFile
+    type: string
+    default: brd/*.doc
+    displayName: "BRD file path (relative to repo root) — supports .doc .pdf .md"
+
+  - name: promptOverride
+    type: string
+    default: "(use BRD file)"
+    displayName: "Prompt override — replace with your prompt to skip BRD, or leave as-is to use BRD file"
+
+  - name: testScope
+    type: string
+    default: "(skip)"
+    displayName: >
+      Test scope for Execute_And_Fix_Tests ((skip) to skip Stage 2).
+      • @regression or @smoke  — grep tag filter
+      • Projects               — module name → tests/generated/Projects/
+      • All tests              — run entire tests/generated/ suite
+      • (skip)                 — skip Stage 2 entirely
+
+variables:
+  - group: ai-generation-secrets
+  - name: NODE_VERSION
+    value: "18.x"
+  - name: CLAUDE_CLI
+    value: "@anthropic-ai/claude-code"
+
+# ---------------------------------------------------------------------------
+# Stage 1: AI Generation
+# Runs only on manual queue (push triggers skip directly to Stage 2)
+# ---------------------------------------------------------------------------
+stages:
+  - stage: Generation
+    displayName: "Stage 1: AI Generation (ADO_Full_Pipeline)"
+    condition: eq(variables['Build.Reason'], 'Manual')
+    jobs:
+      - job: GenerateArtifacts
+        displayName: "Run ADO_Full_Pipeline"
+        pool:
+          vmImage: ubuntu-latest
+        steps:
+          - checkout: self
+            persistCredentials: true
+            displayName: "Checkout with credentials (needed for git push)"
+
+          - task: NodeTool@0
+            displayName: "Install Node.js $(NODE_VERSION)"
+            inputs:
+              versionSpec: $(NODE_VERSION)
+
+          - script: npm ci
+            displayName: "Install project dependencies"
+
+          - script: npm install -g $(CLAUDE_CLI)
+            displayName: "Install Claude Code CLI"
+
+          # Configure git identity for the commit ADO_Full_Pipeline will create
+          - script: |
+              git config user.email "ci-ai-pipeline@pipeline.local"
+              git config user.name "AI Generation Pipeline"
+            displayName: "Configure git identity"
+
+          # Resolve what to pass to ADO_Full_Pipeline:
+          #   1. promptOverride if set (e.g. "from stories Add_Employee")
+          #   2. contents of brdFile otherwise  (supports .doc .pdf .md)
+          - script: |
+              set -euo pipefail
+              if [ -n "$PROMPT_OVERRIDE" ] && [ "$PROMPT_OVERRIDE" != "(use BRD file)" ]; then
+                echo "Using promptOverride parameter"
+                INPUT="$PROMPT_OVERRIDE"
+              else
+                # Resolve glob — fall back to auto-detecting any supported format in brd/
+                BRD_RESOLVED=$(ls $BRD_FILE 2>/dev/null | head -1 || true)
+                if [ -z "$BRD_RESOLVED" ]; then
+                  BRD_RESOLVED=$(find brd/ -maxdepth 1 \( -name "*.doc" -o -name "*.pdf" -o -name "*.md" \) \
+                    ! -name "README.md" 2>/dev/null | head -1 || true)
+                fi
+                if [ -n "$BRD_RESOLVED" ] && [ -f "$BRD_RESOLVED" ]; then
+                  echo "Reading BRD from: $BRD_RESOLVED"
+                  EXT="${BRD_RESOLVED##*.}"
+                  if [ "$EXT" = "pdf" ]; then
+                    echo "PDF detected — installing poppler-utils for text extraction"
+                    sudo apt-get install -y --no-install-recommends poppler-utils -q
+                    INPUT="$(pdftotext "$BRD_RESOLVED" -)"
+                  else
+                    INPUT="$(cat "$BRD_RESOLVED")"
+                  fi
+                else
+                  echo "##vso[task.logissue type=error]BRD file not found: $BRD_FILE"
+                  echo "##vso[task.logissue type=warning]Commit a .doc, .pdf, or .md file to 'brd/' or set the promptOverride parameter."
+                  exit 1
+                fi
+              fi
+              # Write to a temp file so we don't expose BRD content in the
+              # command line (it may contain quotes / special characters)
+              echo "$INPUT" > /tmp/brd_input.txt
+              echo "##vso[task.setvariable variable=BRD_INPUT_FILE]/tmp/brd_input.txt"
+            displayName: "Resolve BRD input"
+            env:
+              PROMPT_OVERRIDE: "${{ parameters.promptOverride }}"
+              BRD_FILE: "${{ parameters.brdFile }}"
+
+          - script: mkdir -p stories test_cases
+            displayName: "Ensure output directories exist"
+
+          - script: |
+              set -euo pipefail
+              printf '/ADO_Full_Pipeline\n%s' "$(cat "$BRD_INPUT_FILE")" \
+                | claude --dangerously-skip-permissions --output-format stream-json --verbose -p
+            displayName: "Run ADO_Full_Pipeline"
+            timeoutInMinutes: 30
+            env:
+              ANTHROPIC_API_KEY: $(ANTHROPIC_API_KEY)
+              AZURE_DEVOPS_ORG_URL: $(AZURE_DEVOPS_ORG_URL)
+              AZURE_PERSONAL_ACCESS_TOKEN: $(AZURE_PERSONAL_ACCESS_TOKEN)
+              AZURE_PROJECT_NAME: $(AZURE_PROJECT_NAME)
+              NO_COLOR: "1"
+              TERM: dumb
+
+          # Publish artifacts immediately after generation — before push,
+          # so they are captured even if the push step fails.
+          - task: PublishBuildArtifacts@1
+            displayName: "Publish generated stories"
+            condition: always()
+            continueOnError: true
+            inputs:
+              PathtoPublish: stories
+              ArtifactName: generated-stories
+
+          - task: PublishBuildArtifacts@1
+            displayName: "Publish generated test cases"
+            condition: always()
+            continueOnError: true
+            inputs:
+              PathtoPublish: test_cases
+              ArtifactName: generated-test-cases
+
+          # # Push last — artifacts are already published above.
+          # # ADO_Full_Pipeline creates the feature branch and commits locally.
+          # # Note: checkout: self leaves git in detached HEAD state, so
+          # # git rev-parse --abbrev-ref HEAD returns "HEAD" literally.
+          # # Use git branch --show-current (empty if detached) with a fallback
+          # # to the ADO-provided source branch name.
+          # - script: |
+          #     set -euo pipefail
+          #     BRANCH=$(git branch --show-current)
+          #     if [ -z "$BRANCH" ]; then
+          #       # Detached HEAD — fall back to the ADO source branch variable
+          #       BRANCH=$(echo "$(Build.SourceBranch)" | sed 's|refs/heads/||')
+          #     fi
+          #     echo "Pushing to branch: $BRANCH"
+          #     git push origin "HEAD:refs/heads/$BRANCH" --set-upstream
+          #   displayName: "Push generated branch to remote"
+          #   condition: succeeded()
+
+          - script: |
+              set -euo pipefail
+
+              # Derive feature slug from the BRD file parameter
+              BRD_PARAM="${{ parameters.brdFile }}"
+              BRD_RESOLVED=$(ls $BRD_PARAM 2>/dev/null | head -1 || true)
+              if [ -n "$BRD_RESOLVED" ]; then
+                FEATURE=$(basename "$BRD_RESOLVED" | sed 's/\.[^.]*$//' \
+                           | sed 's/_\(UserStories\|TestCases\|BRD\)$//')
+                SLUG=$(echo "$FEATURE" | tr '_A-Z' '-a-z' | sed 's/^-//')
+              elif [ -n "$PROMPT_OVERRIDE" ] && [ "$PROMPT_OVERRIDE" != "(use BRD file)" ]; then
+                # promptOverride path: sanitize first 30 chars as slug
+                SLUG=$(echo "$PROMPT_OVERRIDE" | tr '[:upper:]' '[:lower:]' \
+                         | tr -cs 'a-z0-9' '-' | cut -c1-30 | sed 's/-*$//')
+              else
+                SLUG="generated"
+              fi
+              TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+              BRANCH="claude/${SLUG}-$(Build.BuildId)_${TIMESTAMP}"
+              echo "Target branch: $BRANCH"
+
+              # Configure Git identity for any commits made in this step
+              git config user.email "azure-pipelines@microsoft.com"
+              git config user.name "Azure Pipelines"
+
+              # Create the named branch from wherever HEAD currently is
+              # (skill may have committed to a local feature branch or left HEAD detached)
+              git checkout -b "$BRANCH"
+
+              # Stage any files not yet committed by the skill (safety net)
+              git add -A
+              if ! git diff --cached --quiet; then
+                git commit -m "Add AI-generated Playwright scripts [Build $(Build.BuildId)]"
+              fi
+
+              echo "Pushing branch to remote: $BRANCH"
+              git push origin "$BRANCH" --set-upstream
+              echo "##vso[task.setvariable variable=GeneratedBranch isOutput=true]$BRANCH"
+            displayName: "Push generated branch to remote"
+            condition: succeeded()
+            env:
+              PROMPT_OVERRIDE: "${{ parameters.promptOverride }}"
+
+  # ---------------------------------------------------------------------------
+  # Stage 2: Execute & Fix Tests
+  # Runs only when Stage 1 succeeded AND new tests were generated.
+  # ---------------------------------------------------------------------------
+  - stage: ExecuteAndFix
+    displayName: "Stage 2: Execute & Fix Tests (Execute_And_Fix_Tests)"
+    dependsOn: Generation
+    # Only run when Stage 1 succeeded AND the user provided an explicit testScope.
+    # Leave testScope empty at queue time to skip this stage.
+    condition: and(succeeded('Generation'), ne('${{ parameters.testScope }}', '(skip)'))
+    jobs:
+      - job: TestAndFix
+        displayName: "Run Execute_And_Fix_Tests"
+        pool:
+          vmImage: ubuntu-latest
+        steps:
+          - checkout: self
+            persistCredentials: true
+            displayName: "Checkout source"
+
+          - task: NodeTool@0
+            displayName: "Install Node.js $(NODE_VERSION)"
+            inputs:
+              versionSpec: $(NODE_VERSION)
+
+          - script: npm ci
+            displayName: "Install project dependencies"
+
+          - script: npx playwright install --with-deps chromium
+            displayName: "Install Playwright browsers"
+
+          - script: npm install -g $(CLAUDE_CLI)
+            displayName: "Install Claude Code CLI"
+
+          # Resolve the final scope to pass to Execute_And_Fix_Tests.
+          # Scope formats accepted at queue time:
+          #   @regression / @smoke  → --grep filter (passed as-is to the skill)
+          #   Module name            → tests/generated/<Module>/
+          #   All tests              → tests/generated/
+          #   (empty)                → Stage 2 is skipped by condition above
+          - script: |
+              set -euo pipefail
+              SCOPE="$TEST_SCOPE_PARAM"
+              if [ "$SCOPE" = "All tests" ] || [ "$SCOPE" = "all tests" ]; then
+                SCOPE="tests/generated/"
+              elif [[ "$SCOPE" != @* ]] && [[ "$SCOPE" != tests/* ]]; then
+                # Module name shorthand → full path
+                SCOPE="tests/generated/$SCOPE/"
+              fi
+              echo "Resolved test scope: $SCOPE"
+              echo "##vso[task.setvariable variable=ResolvedScope]$SCOPE"
+            displayName: "Resolve test scope"
+            env:
+              TEST_SCOPE_PARAM: "${{ parameters.testScope }}"
+
+          - script: |
+              set -euo pipefail
+              printf '/Execute_And_Fix_Tests\n%s' "$RESOLVED_SCOPE" \
+                | claude --dangerously-skip-permissions --output-format stream-json --verbose -p
+            displayName: "Run Execute_And_Fix_Tests"
+            timeoutInMinutes: 60
+            env:
+              ANTHROPIC_API_KEY: $(ANTHROPIC_API_KEY)
+              AZURE_DEVOPS_ORG_URL: $(AZURE_DEVOPS_ORG_URL)
+              AZURE_PERSONAL_ACCESS_TOKEN: $(AZURE_PERSONAL_ACCESS_TOKEN)
+              AZURE_PROJECT_NAME: $(AZURE_PROJECT_NAME)
+              BASE_URL: $(BASE_URL)
+              RESOLVED_SCOPE: $(ResolvedScope)
+              NO_COLOR: "1"
+              TERM: dumb
+
+          - task: PublishTestResults@2
+            displayName: "Publish test results (JUnit)"
+            condition: always()
+            inputs:
+              testResultsFormat: JUnit
+              testResultsFiles: "**/playwright-report/results.xml"
+              failTaskOnFailedTests: false
+
+          - task: PublishBuildArtifacts@1
+            displayName: "Publish test reports"
+            condition: always()
+            inputs:
+              PathtoPublish: reports
+              ArtifactName: test-reports
+
+          - task: PublishBuildArtifacts@1
+            displayName: "Publish Playwright HTML report"
+            condition: always()
+            inputs:
+              PathtoPublish: playwright-report
+              ArtifactName: playwright-report
+
+          - script: |
+              if [ -f reports/latest-execution.json ]; then
+                echo "========== Test Execution Summary =========="
+                cat reports/latest-execution.json
+              fi
+            displayName: "Display test summary"
+            condition: always()

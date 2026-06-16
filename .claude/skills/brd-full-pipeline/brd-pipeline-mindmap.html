@@ -1,0 +1,1141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BRD_Full_Pipeline - Interactive Mindmap</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .mindmap {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .phase-block {
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .phase-block:hover {
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+
+        .phase-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+            font-size: 1.2em;
+        }
+
+        .phase-header:hover {
+            background: linear-gradient(135deg, #5568d3 0%, #6a3f8f 100%);
+        }
+
+        .phase-number {
+            background: rgba(255,255,255,0.2);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+        }
+
+        .phase-content {
+            padding: 25px;
+            background: #f9f9f9;
+            display: none;
+        }
+
+        .phase-content.active {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .skill-card {
+            background: white;
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 4px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .skill-card h3 {
+            color: #1e3c72;
+            margin-bottom: 10px;
+            font-size: 1.3em;
+        }
+
+        .skill-card.setup { border-left-color: #f39c12; }
+        .skill-card.product-owner { border-left-color: #3498db; }
+        .skill-card.qa-analyst { border-left-color: #2ecc71; }
+        .skill-card.automation { border-left-color: #e74c3c; }
+        .skill-card.polish { border-left-color: #9b59b6; }
+        .skill-card.git { border-left-color: #34495e; }
+
+        .detail-list {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+
+        .detail-list li {
+            margin: 5px 0;
+            color: #555;
+            line-height: 1.6;
+        }
+
+        .code-block {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 15px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            overflow-x: auto;
+            margin: 10px 0;
+        }
+
+        .flow-diagram {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border: 2px dashed #667eea;
+        }
+
+        .flow-step {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+            padding: 10px;
+            background: #f0f0f0;
+            border-radius: 4px;
+        }
+
+        .flow-arrow {
+            color: #667eea;
+            font-size: 1.5em;
+            margin: 5px 20px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.85em;
+            font-weight: 600;
+            margin: 2px 4px;
+        }
+
+        .badge.input { background: #e3f2fd; color: #1976d2; }
+        .badge.output { background: #f3e5f5; color: #7b1fa2; }
+        .badge.auto { background: #e8f5e9; color: #388e3c; }
+        .badge.optional { background: #fff3e0; color: #f57c00; }
+
+        .artifact-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            background: white;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .artifact-table th {
+            background: #667eea;
+            color: white;
+            padding: 12px;
+            text-align: left;
+        }
+
+        .artifact-table td {
+            padding: 12px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .artifact-table tr:hover {
+            background: #f5f5f5;
+        }
+
+        .highlight-box {
+            background: #fff9e6;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+
+        .toggle-icon {
+            transition: transform 0.3s ease;
+        }
+
+        .toggle-icon.rotated {
+            transform: rotate(180deg);
+        }
+
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+        }
+
+        .expand-all-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1em;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .expand-all-btn:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .key-features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            border-color: #667eea;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+        }
+
+        .feature-card h4 {
+            color: #667eea;
+            margin-bottom: 8px;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .key-features {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 BRD_Full_Pipeline</h1>
+            <p>End-to-End Test Automation Pipeline: From Business Requirements to Production-Ready Playwright Scripts</p>
+        </div>
+
+        <div class="content">
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #f39c12;"></div>
+                    <span>Setup & Configuration</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #3498db;"></div>
+                    <span>Product Owner (User Stories)</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #2ecc71;"></div>
+                    <span>QA Analyst (Test Cases)</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #e74c3c;"></div>
+                    <span>Automation Engineer (Playwright)</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #9b59b6;"></div>
+                    <span>Code Polish & Quality</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #34495e;"></div>
+                    <span>Git Operations</span>
+                </div>
+            </div>
+
+            <button class="expand-all-btn" onclick="toggleAll()">Expand All Sections</button>
+
+            <div class="mindmap">
+                <!-- Overview Section -->
+                <div class="phase-block">
+                    <div class="phase-header" onclick="togglePhase(this)">
+                        <span>📋 Overview & Purpose</span>
+                        <span class="toggle-icon">▼</span>
+                    </div>
+                    <div class="phase-content">
+                        <div class="highlight-box">
+                            <strong>What is BRD_Full_Pipeline?</strong>
+                            <p style="margin-top: 10px;">An <strong>orchestrator skill</strong> that executes a complete test automation workflow in a single invocation — no manual handoffs between phases. It transforms raw business requirements into committed, runnable Playwright test scripts.</p>
+                        </div>
+
+                        <div class="key-features">
+                            <div class="feature-card">
+                                <h4>🎯 Single Invocation</h4>
+                                <p>Run the entire pipeline with one command</p>
+                            </div>
+                            <div class="feature-card">
+                                <h4>🔄 Smart Resume</h4>
+                                <p>Start from any phase using entry-point detection</p>
+                            </div>
+                            <div class="feature-card">
+                                <h4>📂 Auto File Management</h4>
+                                <p>Creates directories, saves artifacts, commits to git</p>
+                            </div>
+                            <div class="feature-card">
+                                <h4>🧠 Three Expert Roles</h4>
+                                <p>Product Owner → QA Analyst → Automation Engineer</p>
+                            </div>
+                            <div class="feature-card">
+                                <h4>🔍 Self-Healing Architecture</h4>
+                                <p>Generates Playwright scripts with AI-powered locators</p>
+                            </div>
+                            <div class="feature-card">
+                                <h4>✨ Code Polishing</h4>
+                                <p>Automatic cleanup and optimization of generated code</p>
+                            </div>
+                        </div>
+
+                        <div class="code-block">
+# Input Options
+{{input_brd}}                    # Raw BRD text (auto-detects as Phase 1)
+from stories FeatureName         # Resume from Phase 2 (existing stories)
+from test-cases FeatureName      # Resume from Phase 3 (existing test cases)
+status FeatureName               # Check pipeline state without running</div>
+                    </div>
+                </div>
+
+                <!-- Phase 0: Setup -->
+                <div class="phase-block">
+                    <div class="phase-header" onclick="togglePhase(this)">
+                        <span>⚙️ Phase 0 — Setup & Workspace Configuration</span>
+                        <span class="phase-number">Setup</span>
+                        <span class="toggle-icon">▼</span>
+                    </div>
+                    <div class="phase-content">
+                        <div class="skill-card setup">
+                            <h3>Workspace Initialization</h3>
+                            <p><span class="badge auto">Auto-invoked</span> Ensures required directory structure exists</p>
+                            
+                            <h4 style="margin-top: 15px;">What it does:</h4>
+                            <ul class="detail-list">
+                                <li>Extracts feature name from BRD (e.g., "Add Employee" → "Add_Employee")</li>
+                                <li>Derives naming tokens:
+                                    <ul style="margin-left: 20px; margin-top: 5px;">
+                                        <li><code>FeatureName</code> — underscored (Add_Employee)</li>
+                                        <li><code>EntityName</code> — PascalCase entity only (Employee)</li>
+                                        <li><code>feature-slug</code> — lowercase-hyphenated (add-employee)</li>
+                                        <li><code>page-kebab</code> — entity in kebab-case (employee)</li>
+                                        <li><code>branch-name</code> — feature/Add_Employee</li>
+                                    </ul>
+                                </li>
+                                <li>Checks if required directories exist (stories/, test_cases/, src/pages/, tests/generated/)</li>
+                                <li>If any directory is missing, invokes <code>/Setup_Workspace</code> skill</li>
+                            </ul>
+
+                            <div class="code-block">
+# Directory Structure Created
+stories/                     # User Stories (.md files)
+test_cases/                  # Manual Test Cases (.md files)
+src/
+  ├── locators/             # Self-healing locator definitions
+  └── pages/                # Page Object Model classes
+tests/
+  └── generated/            # Playwright test specs
+      └── &lt;EntityName&gt;/    # Organized by entity</div>
+
+                            <div class="highlight-box" style="margin-top: 15px;">
+                                <strong>🔧 Setup_Workspace Skill:</strong> Non-destructive operation — never deletes or overwrites existing files. Only creates missing directories.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Phase 0.5: Entry Point Detection -->
+                <div class="phase-block">
+                    <div class="phase-header" onclick="togglePhase(this)">
+                        <span>🎯 Phase 0.5 — Smart Entry Point Detection</span>
+                        <span class="phase-number">Router</span>
+                        <span class="toggle-icon">▼</span>
+                    </div>
+                    <div class="phase-content">
+                        <div class="skill-card setup">
+                            <h3>Intelligent Pipeline Resume</h3>
+                            <p>Determines where to start based on 3-tier priority system</p>
+
+                            <h4 style="margin-top: 15px;">Priority Order:</h4>
+                            
+                            <div class="flow-diagram">
+                                <h4>Tier 1: Explicit Keywords (Highest Priority)</h4>
+                                <table class="artifact-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Input Keyword</th>
+                                            <th>Start Phase</th>
+                                            <th>Skips</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><code>from brd &lt;text&gt;</code></td>
+                                            <td>Phase 1 — BRD → User Stories</td>
+                                            <td>None</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>from stories &lt;FeatureName&gt;</code></td>
+                                            <td>Phase 2 — User Stories → Test Cases</td>
+                                            <td>Phase 1</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>from test-cases &lt;FeatureName&gt;</code></td>
+                                            <td>Phase 3 — Test Cases → Playwright</td>
+                                            <td>Phases 1 & 2</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+
+                                <h4 style="margin-top: 20px;">Tier 2: Filesystem State (No Keyword)</h4>
+                                <div class="code-block">
+# Checks for existing files
+test_cases/&lt;FeatureName&gt;_TestCases.md exists    → Start Phase 3
+stories/&lt;FeatureName&gt;_UserStories.md exists      → Start Phase 2
+Neither exists                                  → Start Phase 1</div>
+
+                                <h4 style="margin-top: 20px;">Tier 3: Content Auto-Detection (Pasted Text)</h4>
+                                <div class="code-block">
+# Scans first 20 lines for markers
+Lines matching "TC-" or "**Test Case ID:**"  → Phase 3 (Test Cases)
+Lines matching "US-" or "**As a**"           → Phase 2 (User Stories)
+Neither pattern found                         → Phase 1 (BRD)</div>
+                            </div>
+
+                            <div class="highlight-box">
+                                <strong>Status Command:</strong>
+                                <div class="code-block" style="margin-top: 10px;">
+status &lt;FeatureName&gt;
+
+# Output:
+BRD Pipeline State — Add_Employee
+──────────────────────────────────────────────────────────
+Phase 1  BRD → User Stories        ✅ Complete / ⬜ Needed
+Phase 2  User Stories → Test Cases ✅ Complete / ⬜ Needed
+Phase 3  Test Cases → Playwright   ✅ Complete / ⬜ Needed
+──────────────────────────────────────────────────────────</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Phase 1: BRD to User Stories -->
+                <div class="phase-block">
+                    <div class="phase-header" onclick="togglePhase(this)">
+                        <span>📝 Phase 1 — BRD → User Stories (Product Owner)</span>
+                        <span class="phase-number">Phase 1</span>
+                        <span class="toggle-icon">▼</span>
+                    </div>
+                    <div class="phase-content">
+                        <div class="skill-card product-owner">
+                            <h3>BRD_To_USs — ProductOwnerSkill</h3>
+                            <p><span class="badge input">Input: BRD Text</span> <span class="badge output">Output: User Stories</span></p>
+
+                            <h4 style="margin-top: 15px;">Expert Role: Agile Product Owner</h4>
+                            <ul class="detail-list">
+                                <li><strong>INVEST Principle:</strong> Every story is Independent, Negotiable, Valuable, Estimable, Small, Testable</li>
+                                <li><strong>Atomic Stories:</strong> One story per flow — complex features broken into separate stories</li>
+                                <li><strong>Coverage:</strong> At least one Happy Path and one Unhappy Path per feature area</li>
+                                <li><strong>No Code:</strong> Pure business logic and user flows only</li>
+                            </ul>
+
+                            <h4 style="margin-top: 15px;">Output Format:</h4>
+                            <div class="code-block">
+### [US_NN] US-&lt;FeatureName&gt;-&lt;TitleSlug&gt;: &lt;Full Title in Title Case&gt;
+
+**As a** [user persona],
+**I want to** [perform an action],
+**So that** [achieve a goal/value].
+
+**Acceptance Criteria:**
+* **AC1:** [Criteria 1 — happy path]
+* **AC2:** [Criteria 2 — validation]
+* **AC3:** [Criteria 3 — edge cases/error handling]
+
+# Example:
+### [US_01] US-Add_Employee-Add_New_Employee_Record: Add a New Employee Record
+
+**As a** HR Administrator,
+**I want to** add a new employee record to the system,
+**So that** I can maintain an up-to-date employee database.
+
+**Acceptance Criteria:**
+* **AC1:** System accepts valid employee data and creates record
+* **AC2:** System validates required fields before submission
+* **AC3:** System prevents duplicate employee IDs</div>
+
+                            <table class="artifact-table" style="margin-top: 15px;">
+                                <thead>
+                                    <tr>
+                                        <th>Artifact</th>
+                                        <th>Path</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>User Stories</td>
+                                        <td><code>stories/&lt;FeatureName&gt;_UserStories.md</code></td>
+                                        <td><span class="badge auto">Auto-saved</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Phase 2: User Stories to Test Cases -->
+                <div class="phase-block">
+                    <div class="phase-header" onclick="togglePhase(this)">
+                        <span>✅ Phase 2 — User Stories → Test Cases (QA Analyst)</span>
+                        <span class="phase-number">Phase 2</span>
+                        <span class="toggle-icon">▼</span>
+                    </div>
+                    <div class="phase-content">
+                        <div class="skill-card qa-analyst">
+                            <h3>USs_To_TCs — QAAnalystSkill</h3>
+                            <p><span class="badge input">Input: User Stories</span> <span class="badge output">Output: Test Cases</span></p>
+
+                            <h4 style="margin-top: 15px;">Expert Role: Senior QA Analyst</h4>
+                            <ul class="detail-list">
+                                <li><strong>Explicit Steps:</strong> Exact field names, exact data values, exact URLs</li>
+                                <li><strong>Single Verification:</strong> One test case verifies exactly one outcome</li>
+                                <li><strong>Full Traceability:</strong> Every test case traces back to specific AC (AC1, AC2, ...)</li>
+                                <li><strong>Multiple Test Types:</strong> Positive, Negative, Boundary, Security</li>
+                            </ul>
+
+                            <h4 style="margin-top: 15px;">Test Case ID Structure:</h4>
+                            <div class="code-block">
+Format: USnn-TCnn-&lt;TitleSlug&gt;: &lt;Full Title&gt;
+
+USnn = Parent User Story sequential ID (US01, US02...)
+TCnn = Test Case sequential ID across ALL TCs (TC01, TC10...)
+TitleSlug = 3-5 key words: qualifier + subject
+
+Qualifier matches test type:
+  - Valid (Positive tests)
+  - Invalid (Negative tests)
+  - Missing (Negative — required fields)
+  - Duplicate (Negative — uniqueness)
+  - Boundary (Edge values)
+  - Unauthorized (Security)
+
+Example:
+US01-TC01-Valid_Employee_Creation: Valid Employee Creation with All Required Fields
+US01-TC02-Missing_Required_First_Name: Employee Creation Fails with Missing First Name
+US01-TC03-Boundary_Max_Length_First_Name: First Name at Maximum 50 Character Limit</div>
+
+                            <h4 style="margin-top: 15px;">Output Format:</h4>
+                            <div class="code-block">
+### Story: US-Add_Employee-Add_New_Employee_Record
+
+**Test Case ID:** US01-TC01-Valid_Employee_Creation: Valid Employee Creation with All Required Fields
+**Type:** Positive
+**Preconditions:** User logged in as HR Admin; on Add Employee page
+**Steps:**
+1. Navigate to /employees/add
+2. Enter 'John' in the First Name field
+3. Enter 'Doe' in the Last Name field
+4. Enter '12345' in the Employee ID field
+5. Click the 'Save' button
+**Expected Result:** System displays success message "Employee created successfully" and redirects to employee list showing new record</div>
+
+                            <table class="artifact-table" style="margin-top: 15px;">
+                                <thead>
+                                    <tr>
+                                        <th>Artifact</th>
+                                        <th>Path</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Test Cases</td>
+                                        <td><code>test_cases/&lt;FeatureName&gt;_TestCases.md</code></td>
+                                        <td><span class="badge auto">Auto-saved</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Phase 3: Test Cases to Playwright -->
+                <div class="phase-block">
+                    <div class="phase-header" onclick="togglePhase(this)">
+                        <span>🤖 Phase 3 — Test Cases → Playwright Scripts (Automation Engineer)</span>
+                        <span class="phase-number">Phase 3</span>
+                        <span class="toggle-icon">▼</span>
+                    </div>
+                    <div class="phase-content">
+                        <div class="skill-card automation">
+                            <h3>TCs_To_PLScript — AutomationEngineerSkill</h3>
+                            <p><span class="badge input">Input: Test Cases</span> <span class="badge output">Output: Playwright Scripts</span></p>
+
+                            <h4 style="margin-top: 15px;">Expert Role: Lead QA Automation Engineer</h4>
+                            <ul class="detail-list">
+                                <li><strong>Self-Healing Architecture:</strong> 3-phase locator healing (Primary → Semantic → AI)</li>
+                                <li><strong>4-Layer Output:</strong> Locators, Page Objects, POM Registration, Test Specs</li>
+                                <li><strong>Best Practices:</strong> Page Object Model, fixture pattern, web-first assertions</li>
+                                <li><strong>Smart File Naming:</strong> ADO ID mapping, stale file detection with git mv</li>
+                            </ul>
+
+                            <div class="highlight-box">
+                                <strong>⚠️ Pipeline Behavior:</strong> When invoked from BRD_Full_Pipeline, the skill:
+                                <ul style="margin-top: 10px;">
+                                    <li>✅ Generates all 4 layers of code</li>
+                                    <li>✅ Saves files to disk</li>
+                                    <li>❌ Does NOT run tests (--execute-tests skipped)</li>
+                                    <li>❌ Does NOT create PR</li>
+                                    <li>➡️ Returns control to pipeline for Polish phase</li>
+                                </ul>
+                            </div>
+
+                            <h4 style="margin-top: 15px;">4-Layer Architecture:</h4>
+                            <table class="artifact-table">
+                                <thead>
+                                    <tr>
+                                        <th>Layer</th>
+                                        <th>File Path</th>
+                                        <th>Purpose</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>1. Locators</td>
+                                        <td><code>src/locators/&lt;page-kebab&gt;-page-locators.ts</code></td>
+                                        <td>Self-healing locator definitions (3-phase: primary → semantic → AI)</td>
+                                    </tr>
+                                    <tr>
+                                        <td>2. Page Class</td>
+                                        <td><code>src/pages/&lt;page-kebab&gt;-page-self-healing.ts</code></td>
+                                        <td>Page Object Model extending SelfHealingPageBase</td>
+                                    </tr>
+                                    <tr>
+                                        <td>3. POM Registry</td>
+                                        <td><code>src/pages/pom-lazy-self-healing.ts</code></td>
+                                        <td>Updated in-place with new page registration</td>
+                                    </tr>
+                                    <tr>
+                                        <td>4. Test Specs</td>
+                                        <td><code>tests/generated/&lt;EntityName&gt;/us&lt;nn&gt;-tc&lt;nn&gt;-&lt;title-slug&gt;.spec.ts</code></td>
+                                        <td>One spec per test case using test.fixme()</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <h4 style="margin-top: 15px;">Spec File Naming Logic:</h4>
+                            <div class="code-block">
+Format: tc-&lt;id&gt;-&lt;title-slug&gt;.spec.ts
+
+&lt;id&gt; resolution priority:
+1. ADO numeric ID from mapping file (TC-Boundary_Max_Length → 382)
+2. Numeric TC ID strip prefix (TC-3914 → 3914)
+3. Text fallback lowercase-hyphenated (TC-Valid_Admin_PIM → tc-valid-admin-pim)
+
+Examples:
+tc-3914-verify-reagents-page-not-accessible.spec.ts
+tc-382-boundary-max-length-enter-first-name-at-maximum.spec.ts
+tc-valid-admin-pim-navigation-valid-admin-navigation.spec.ts
+
+# Stale file handling (MANDATORY):
+Existing file with same title-slug → git mv to &lt;name&gt;_old.spec.ts
+Then write fresh spec</div>
+
+                            <h4 style="margin-top: 15px;">Key Architecture Rules:</h4>
+                            <ul class="detail-list">
+                                <li><code>SelfHealingLocator.from()</code> — Every element gets 3-phase healing</li>
+                                <li><code>SelfHealingPageBase</code> — All pages extend base class</li>
+                                <li><code>this.actions.*</code> / <code>this.assert.*</code> — No bare <code>page.*</code> calls</li>
+                                <li><code>selfHealingFixture</code> — Specs access pages via <code>pomSelfHealing.&lt;page&gt;</code></li>
+                                <li><code>test.fixme()</code> — All generated specs marked as pending by default</li>
+                                <li><strong>TC tags in title:</strong> <code>TC-&lt;id&gt;: &lt;Title&gt; @P&lt;priority&gt; @&lt;Module&gt;</code></li>
+                            </ul>
+
+                            <div class="code-block" style="margin-top: 15px;">
+# Example Generated Spec Structure
+
+import { test } from '../../fixtures/self-healing-fixture';
+
+test.describe('Employee Management - Add Employee', () => {
+    test.fixme('TC-3914: Valid Employee Creation @P1 @Employee', async ({ pomSelfHealing }) => {
+        // Access page via fixture
+        await pomSelfHealing.employeePage.navigateToAddEmployee();
+        
+        // All actions through page methods (no direct page.* calls)
+        await pomSelfHealing.employeePage.fillFirstName('John');
+        await pomSelfHealing.employeePage.fillLastName('Doe');
+        await pomSelfHealing.employeePage.clickSaveButton();
+        
+        // Web-first assertions through helpers
+        await pomSelfHealing.employeePage.verifySuccessMessage('Employee created successfully');
+    });
+});</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Phase 3.5: Polish Generated Code -->
+                <div class="phase-block">
+                    <div class="phase-header" onclick="togglePhase(this)">
+                        <span>✨ Phase 3.5 — Polish Generated Code (Quality Pass)</span>
+                        <span class="phase-number">Phase 3.5</span>
+                        <span class="toggle-icon">▼</span>
+                    </div>
+                    <div class="phase-content">
+                        <div class="skill-card polish">
+                            <h3>Polish_Generated_Code</h3>
+                            <p><span class="badge auto">Auto-invoked</span> <span class="badge output">In-place fixes</span></p>
+
+                            <div class="highlight-box">
+                                <strong>⚡ Auto-continues:</strong> Immediately invoked after Phase 3 completes, before git operations. Scoped to only the files created/modified in this pipeline run.
+                            </div>
+
+                            <h4 style="margin-top: 15px;">Four Quality Tasks (Execution Order):</h4>
+
+                            <div class="flow-diagram">
+                                <h4>Task 1 — Stray Backslash Removal (Test Specs)</h4>
+                                <p>Fixes extraneous backslash-escapes before opening quotes</p>
+                                <div class="code-block">
+# BEFORE (broken)
+test.describe(\'Title', () => {
+searchByKeyword(\'ID');
+
+# AFTER (fixed)
+test.describe('Title', () => {
+searchByKeyword('ID');</div>
+
+                                <h4 style="margin-top: 20px;">Task 4 — Missing Method Scaffolding</h4>
+                                <p>Detects methods called in tests but not implemented in page classes</p>
+                                <div class="code-block">
+# Test calls non-existent method:
+await pomSelfHealing.productsPage.verifySearchResultsDisplayed();
+
+# Stub auto-generated in ProductsPageSelfHealing:
+/**
+ * @generated-stub Polish_Generated_Code Task 4
+ */
+async verifySearchResultsDisplayed(): Promise&lt;void&gt; {
+    throw new Error('Not implemented: verifySearchResultsDisplayed');
+}
+
+# Near-duplicate methods create aliases instead:
+async verifyNoSearchResultsMessageDisplayed(): Promise&lt;void&gt; {
+    await this.verifyNoResultsFoundMessageDisplayed();
+}</div>
+
+                                <h4 style="margin-top: 20px;">Task 3 — Extract Inline Locators</h4>
+                                <p>Refactors inline locator expressions to self-healing architecture</p>
+                                <div class="code-block">
+# BEFORE (inline — no self-healing):
+const lotsTab = (await this.pageContainer.get())
+    .locator('[data-testid="lots-tab"]').first();
+await this.actions.click(lotsTab, 'Click Lots tab');
+
+# AFTER (repository — full 3-phase healing):
+await this.actions.click(await this.lotsTab.get(), 'Click Lots tab');
+
+# Added to locator repository + SelfHealingLocator field + constructor wiring</div>
+
+                                <h4 style="margin-top: 20px;">Task 2 — Re-arrange Page Methods</h4>
+                                <p>Sorts methods into canonical layout</p>
+                                <div class="code-block">
+# Canonical Order:
+1. Navigation methods  (navigateTo*, goto*)
+2. Action methods      (click*, fill*, select*, search*, get*Data)
+3. Assertion methods   (verify*, assert*)
+4. Combined methods    (methods using both actions + assertions)
+
+# Alphabetical within each section
+# Removes dead generation comments</div>
+                            </div>
+
+                            <div class="highlight-box" style="margin-top: 15px;">
+                                <strong>🔍 Find All Stubs:</strong>
+                                <div class="code-block" style="margin-top: 10px;">
+grep -rn "@generated-stub" src/pages/
+
+# Engineers implement these stubs before removing test.fixme()</div>
+                            </div>
+
+                            <h4 style="margin-top: 15px;">Summary Output Example:</h4>
+                            <div class="code-block">
+┌────────────────────────────────────────────────────────────┐
+│ Polish_Generated_Code — Summary                            │
+├────────────────────────────────────────────────────────────┤
+│ Task 1 — Stray Backslash Removal                           │
+│   Files scanned: 6   Fixed: 6   Replacements: 18           │
+│                                                            │
+│ Task 4 — Missing Method Scaffolding                        │
+│   Pages scanned: 11   Stubs added: 4   Aliases: 1          │
+│                                                            │
+│ Task 3 — Inline Locator Extraction                         │
+│   Files scanned: 11   Extracted: 3   Already clean: 8      │
+│                                                            │
+│ Task 2 — Page Method Re-arrangement                        │
+│   Files scanned: 11   Reordered: 3   Already ordered: 8    │
+└────────────────────────────────────────────────────────────┘</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Phase 4: Git Operations -->
+                <div class="phase-block">
+                    <div class="phase-header" onclick="togglePhase(this)">
+                        <span>🔀 Phase 4 — Git Branch & Commit</span>
+                        <span class="phase-number">Phase 4</span>
+                        <span class="toggle-icon">▼</span>
+                    </div>
+                    <div class="phase-content">
+                        <div class="skill-card git">
+                            <h3>Automated Git Operations</h3>
+                            <p><span class="badge auto">Auto-executed</span> Creates feature branch and commits artifacts</p>
+
+                            <h4 style="margin-top: 15px;">Git Workflow:</h4>
+                            <div class="code-block">
+# Step 1: Ensure git initialized
+git init
+
+# Step 2: Create/checkout feature branch
+git checkout -b feature/&lt;FeatureName&gt;
+# If exists: git checkout feature/&lt;FeatureName&gt;
+
+# Step 3: Stage ONLY Playwright artifacts
+git add src/locators/&lt;page-kebab&gt;-page-locators.ts
+git add src/pages/&lt;page-kebab&gt;-page-self-healing.ts
+git add src/pages/pom-lazy-self-healing.ts
+git add tests/generated/&lt;EntityName&gt;/
+
+# Step 4: Commit with descriptive message
+git commit -m "feat(&lt;feature-slug&gt;): add playwright scripts for &lt;FeatureName&gt;
+
+Generated by BRD_Full_Pipeline skill.
+Artifacts:
+  - src/locators/&lt;page-kebab&gt;-page-locators.ts
+  - src/pages/&lt;page-kebab&gt;-page-self-healing.ts
+  - src/pages/pom-lazy-self-healing.ts
+  - tests/generated/&lt;EntityName&gt;/"</div>
+
+                            <div class="highlight-box">
+                                <strong>📁 What Gets Committed vs. Saved Locally:</strong>
+                                <table class="artifact-table" style="margin-top: 10px;">
+                                    <thead>
+                                        <tr>
+                                            <th>Artifact</th>
+                                            <th>Git Status</th>
+                                            <th>Reason</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Playwright scripts (4 layers)</td>
+                                            <td>✅ Committed to branch</td>
+                                            <td>Production code for CI/CD</td>
+                                        </tr>
+                                        <tr>
+                                            <td>User Stories (.md)</td>
+                                            <td>💾 Local only</td>
+                                            <td>Intermediate artifact</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Test Cases (.md)</td>
+                                            <td>💾 Local only</td>
+                                            <td>Intermediate artifact</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <h4 style="margin-top: 15px;">Final Confirmation Output:</h4>
+                            <div class="code-block">
+✅ Pipeline complete for feature: Add_Employee
+
+Branch  : feature/Add_Employee
+
+Committed to branch:
+  📄 src/locators/employee-page-locators.ts
+  📄 src/pages/employee-page-self-healing.ts
+  📄 src/pages/pom-lazy-self-healing.ts
+  📁 tests/generated/Employee/  (one spec per TC)
+
+Saved locally (not committed):
+  📄 stories/Add_Employee_UserStories.md
+  📄 test_cases/Add_Employee_TestCases.md
+
+All Playwright artifacts committed to branch: feature/Add_Employee</div>
+
+                            <div class="highlight-box" style="margin-top: 15px; background: #ffe6e6; border-left-color: #e74c3c;">
+                                <strong>⚠️ Error Handling:</strong>
+                                <p style="margin-top: 10px;">If git operations fail (no git installed, permission denied):</p>
+                                <ul style="margin-top: 5px;">
+                                    <li>All files are still saved locally</li>
+                                    <li>User is warned to commit manually</li>
+                                    <li>Pipeline never aborts mid-phase</li>
+                                    <li>Content generation always completes before git attempts</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Complete Flow Diagram -->
+                <div class="phase-block">
+                    <div class="phase-header" onclick="togglePhase(this)">
+                        <span>🔄 Complete Pipeline Flow</span>
+                        <span class="toggle-icon">▼</span>
+                    </div>
+                    <div class="phase-content">
+                        <div class="code-block">
+INPUT: {{input_brd}} / from &lt;keyword&gt; &lt;FeatureName&gt; / status &lt;FeatureName&gt;
+      │
+      ▼ PHASE 0 — Extract names, create directories
+      │
+      ▼ PHASE 0.5 — Entry-point detection
+  ┌──────────────────────────────────────────────────────────┐
+  │ from brd / BRD detected           → Phase 1              │
+  │ from stories / stories/*.md       → Phase 2 (read file)  │
+  │ from test-cases / test_cases/*.md → Phase 3 (read file)  │
+  │ status &lt;FeatureName&gt;              → state table only    │
+  └──────────────────────────────────────────────────────────┘
+      │
+      ▼ PHASE 1 — BRD_To_USs (ProductOwnerSkill)
+      │    └──► stories/&lt;FeatureName&gt;_UserStories.md
+      │
+      ▼ PHASE 2 — USs_To_TCs (QAAnalystSkill)
+      │    └──► test_cases/&lt;FeatureName&gt;_TestCases.md
+      │
+      ▼ PHASE 3 — TCs_To_PLScript (AutomationEngineerSkill)
+      │    ├──► src/locators/&lt;page-kebab&gt;-page-locators.ts
+      │    ├──► src/pages/&lt;page-kebab&gt;-page-self-healing.ts
+      │    ├──► src/pages/pom-lazy-self-healing.ts (updated)
+      │    └──► tests/generated/&lt;EntityName&gt;/*.spec.ts (one per TC)
+      │
+      ▼ PHASE 3.5 — Polish_Generated_Code (auto-invoked)
+      │    ├──► Task 1: Fix backslashes
+      │    ├──► Task 4: Scaffold missing methods
+      │    ├──► Task 3: Extract inline locators
+      │    └──► Task 2: Reorder page methods
+      │
+      ▼ PHASE 4 — Git operations
+      │    ├──► git init
+      │    ├──► git checkout -b feature/&lt;FeatureName&gt;
+      │    ├──► git add src/locators/* src/pages/* tests/generated/*
+      │    └──► git commit -m "feat(&lt;feature-slug&gt;): add playwright scripts"
+      │
+      ▼ COMPLETE — All artifacts saved and committed
+</div>
+                    </div>
+                </div>
+
+                <!-- When to Use -->
+                <div class="phase-block">
+                    <div class="phase-header" onclick="togglePhase(this)">
+                        <span>💡 When to Use: BRD_Full_Pipeline vs. Individual Skills</span>
+                        <span class="toggle-icon">▼</span>
+                    </div>
+                    <div class="phase-content">
+                        <table class="artifact-table">
+                            <thead>
+                                <tr>
+                                    <th>Scenario</th>
+                                    <th>Use This</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>New feature, full automation needed in one shot</td>
+                                    <td><code>/BRD_Full_Pipeline</code></td>
+                                </tr>
+                                <tr>
+                                    <td>Resume from existing User Stories</td>
+                                    <td><code>/BRD_Full_Pipeline from stories &lt;FeatureName&gt;</code></td>
+                                </tr>
+                                <tr>
+                                    <td>Resume from existing Test Cases</td>
+                                    <td><code>/BRD_Full_Pipeline from test-cases &lt;FeatureName&gt;</code></td>
+                                </tr>
+                                <tr>
+                                    <td>Check which phases are complete for a feature</td>
+                                    <td><code>/BRD_Full_Pipeline status &lt;FeatureName&gt;</code></td>
+                                </tr>
+                                <tr>
+                                    <td>Regenerate only User Stories for existing feature</td>
+                                    <td><code>/BRD_To_USs</code> (individual skill)</td>
+                                </tr>
+                                <tr>
+                                    <td>Regenerate only test cases from updated stories</td>
+                                    <td><code>/USs_To_TCs</code> (individual skill)</td>
+                                </tr>
+                                <tr>
+                                    <td>Regenerate only Playwright scripts from test cases</td>
+                                    <td><code>/TCs_To_PLScript</code> (individual skill)</td>
+                                </tr>
+                                <tr>
+                                    <td>Set up fresh workspace before using individual skills</td>
+                                    <td><code>/Setup_Workspace</code></td>
+                                </tr>
+                                <tr>
+                                    <td>Full pipeline with Azure DevOps push</td>
+                                    <td><code>/ADO_Full_Pipeline</code> (with ADO integration)</td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <div class="highlight-box" style="margin-top: 20px;">
+                            <strong>💡 Pro Tip:</strong> Use the full pipeline for green-field features. Use individual skills when you need to regenerate specific artifacts after manual edits to earlier phases.
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function togglePhase(header) {
+            const content = header.nextElementSibling;
+            const icon = header.querySelector('.toggle-icon');
+            
+            content.classList.toggle('active');
+            icon.classList.toggle('rotated');
+        }
+
+        let allExpanded = false;
+        function toggleAll() {
+            const allContent = document.querySelectorAll('.phase-content');
+            const allIcons = document.querySelectorAll('.toggle-icon');
+            const button = document.querySelector('.expand-all-btn');
+            
+            allExpanded = !allExpanded;
+            
+            allContent.forEach(content => {
+                if (allExpanded) {
+                    content.classList.add('active');
+                } else {
+                    content.classList.remove('active');
+                }
+            });
+            
+            allIcons.forEach(icon => {
+                if (allExpanded) {
+                    icon.classList.add('rotated');
+                } else {
+                    icon.classList.remove('rotated');
+                }
+            });
+            
+            button.textContent = allExpanded ? 'Collapse All Sections' : 'Expand All Sections';
+        }
+
+        // Auto-expand first section on load
+        document.addEventListener('DOMContentLoaded', () => {
+            const firstPhase = document.querySelector('.phase-header');
+            if (firstPhase) {
+                togglePhase(firstPhase);
+            }
+        });
+    </script>
+</body>
+</html>
