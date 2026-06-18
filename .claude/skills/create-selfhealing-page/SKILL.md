@@ -36,9 +36,10 @@ Every page class:
 ### Key Conventions
 - `await this.<locatorProp>.get()` resolves the `SelfHealingLocator` to a Playwright `Locator`
 - Every interaction goes through `this.actions` or `this.assert` — never bare `page.*`
-- The `StepRunner.step()` calls inside `AdvancedActionsHelper` and `AdvancedAssertionsHelper`
-  automatically wrap every action/assertion as a named step in test reports — page object
-  methods MUST NOT call `test.step()` directly
+- Every public async method must wrap its **entire body** in a single method-level
+  `test.step('Label', async () => { ... })` call so that the Playwright HTML report shows
+  a labelled entry for every page-object call. Use `await test.step(...)` for `void` methods
+  and `return test.step(...)` for methods that return a value.
 - Sensitive data (passwords) use `this.actions.fill(loc, val, desc, true)` (mask=true)
 - Complex interactions that aren't in `AdvancedActionsHelper` may use `this.page` directly,
   but add a logger call: `this.logger.debug('...')`
@@ -185,7 +186,7 @@ Pages processed: <N>  |  New files: <X>  |  Updated files: <Y>
 ## OUTPUT TEMPLATE
 
 ```typescript
-import { type Page } from '@playwright/test';
+import { test, type Page } from '@playwright/test';
 import { SelfHealingPageBase } from './self-healing-page-base';
 import { SelfHealingLocator, type AIHealingProvider } from '../utils/self-healing-locator';
 import { <camelCasePage>Locators } from '../locators/<kebab-page>-page-locators';
@@ -204,9 +205,10 @@ import { AdvancedAssertionsHelper } from '../utils/advanced-assertions-helper';
  *   Phase 2 → semantic Playwright strategies (role, label, placeholder …)
  *   Phase 3 → AI healing via Playwright MCP (opt-in, requires aiProvider)
  *
- * NOTE: All actions and assertions are automatically wrapped as named Playwright steps
- * inside AdvancedActionsHelper / AdvancedAssertionsHelper via StepRunner.step().
- * Test files must NOT add test.step() wrappers — steps appear in reports automatically.
+ * NOTE: Every public async method wraps its entire body in a single method-level
+ * test.step() call so that the Playwright HTML report shows a labelled entry per
+ * page-object call. Use `await test.step(...)` for void methods and
+ * `return test.step(...)` for methods that return a value.
  */
 export class <PageName>SelfHealing extends SelfHealingPageBase {
 
@@ -235,29 +237,39 @@ export class <PageName>SelfHealing extends SelfHealingPageBase {
     // ── Navigation ──────────────────────────────────────────────────────────
 
     async navigateTo(): Promise<void> {
-        await this.actions.goto('/<app-path>', 'Navigate to <PageName> page');
+        await test.step('Navigate to <PageName> page', async () => {
+            await this.actions.goto('/<app-path>', 'Navigate to <PageName> page');
+        });
     }
 
-    // ── Action Methods (NO assertions, NO test.step calls) ──────────────────
+    // ── Action Methods ───────────────────────────────────────────────────────
 
     async click<Element>(): Promise<void> {
-        await this.actions.click(await this.<locatorName>.get(), 'Click <element description>');
+        await test.step('Click <element description>', async () => {
+            await this.actions.click(await this.<locatorName>.get(), 'Click <element description>');
+        });
     }
 
     async fill<Field>(value: string): Promise<void> {
-        await this.actions.fill(await this.<locatorName>.get(), value, 'Fill <field description>');
+        await test.step(`Fill <field description>: ${value}`, async () => {
+            await this.actions.fill(await this.<locatorName>.get(), value, 'Fill <field description>');
+        });
     }
 
-    // ── Assertion Methods (NO test.step calls — StepRunner handles wrapping) ─
+    // ── Assertion Methods ────────────────────────────────────────────────────
 
     async verify<Element>Visible(): Promise<void> {
-        const locator = await this.<locatorName>.get();
-        await this.assert.toBeVisible(locator, '<Element> is visible');
+        await test.step('<Element> is visible', async () => {
+            const locator = await this.<locatorName>.get();
+            await this.assert.toBeVisible(locator, '<Element> is visible');
+        });
     }
 
     async verify<Table>HasRows(): Promise<void> {
-        const locator = await this.<locatorName>.get();
-        await this.assert.toHaveCount(locator, { minimum: 1 }, '<Table> has at least one row');
+        await test.step('<Table> has at least one row', async () => {
+            const locator = await this.<locatorName>.get();
+            await this.assert.toHaveCount(locator, { minimum: 1 }, '<Table> has at least one row');
+        });
     }
 }
 ```
@@ -279,27 +291,32 @@ export class <PageName>SelfHealing extends SelfHealingPageBase {
    whose intent is already covered by an existing method in the class.
 10. **One run covers all pages** — process every locators file in `src/locators/` before
     printing the final summary.
-11. **NEVER call `test.step()` inside page object methods** — step wrapping is handled
-    automatically by `StepRunner.step()` inside `AdvancedActionsHelper` and
-    `AdvancedAssertionsHelper`.
+11. **Every public async method must wrap its entire body in a single method-level
+    `test.step()` call** — use `await test.step(...)` for `void` methods and
+    `return test.step(...)` for methods that return a value. Never add individual
+    `test.step` calls around statements inside a method; one wrapper per method is the rule.
 
 ---
 
 ## AUTOMATIC PIPELINE CONTINUATION
 
-After printing the batch summary above, **immediately continue** with the next skill.
-Do NOT wait for the user to type the next command. Execute:
+After printing the batch summary above, **immediately continue** with the next two skills in
+order. Do NOT wait for the user to type the next command.
 
-> **`/register-page-in-pom`**
+**Step A** — Run `/add-teststep-hooks` with no arguments as a safety net to ensure every
+method in every newly created or updated page file is wrapped with a method-level
+`test.step()` call (idempotent — already-wrapped methods are skipped).
 
-Pass no arguments — it will auto-discover and register ALL pages in a single run.
+**Step B** — Then run `/register-page-in-pom` with no arguments so all pages are registered.
 
 ```text
 scaffold-taf-infrastructure   ✅ (completed)
 create-page-locators          ✅ (completed)
 create-selfhealing-page       ✅ (just completed)
         ↓  auto-continues
-register-page-in-pom          ← executing now
+add-teststep-hooks            ← executing now (safety net pass)
+        ↓  auto-continues
+register-page-in-pom          ← then this
         ↓  auto-continues
 migrate-test-to-selfhealing
 ```

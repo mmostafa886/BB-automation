@@ -1,70 +1,73 @@
 import type { LocatorDefinition } from '../utils/self-healing-locator';
 
 /**
- * Locator repository for LoginPageSelfHealing.
+ * Locator repository for LoginPageSelfHealing — BznsBuilder auth page.
  *
- * Contains only pure data (selector strings + semantic metadata).
- * No Playwright Page dependency — safe to import anywhere without side effects.
+ * The auth flow has two distinct phases:
+ *   1. Main auth page (/auth) — shows Sign in / Sign Up triggers
+ *   2. Sign-in modal (dialog) — opened by the trigger, contains the email/password form
  *
- * The `LoginPageSelfHealing` constructor reads from this object and creates
- * `SelfHealingLocator` instances via `SelfHealingLocator.from()`.
- * Update selectors or metadata here without touching page-object behaviour.
+ * All selectors are verified against https://stgapp.bznsbuilder.com/auth.
+ * Phase-2 semantic metadata provides automatic fallback if the primary CSS drifts.
  */
 export const loginLocators = {
 
-    usernameInput: {
-        selector: 'input[name="usernametvycv"]', // Intentionally broken to demonstrate self-healing
+    signInTriggerButton: {
+        // Main-page "Sign in" button (no type attr, empty class) — opens the modal
+        selector: 'button:not([type="submit"]):not(.mb-5)',
+        metadata: {
+            role:        'button',
+            name:        'Sign in',
+            text:        'Sign in',
+            description: 'Sign in trigger button on the BznsBuilder auth page that opens the sign-in modal',
+        },
+    },
+
+    emailInput: {
+        selector: 'input[placeholder="Email"]',
         metadata: {
             role:        'textbox',
-            label:       'Username65',
-            placeholder: 'Username465',
-            description: 'Username text input on the OrangeHRM login form',
+            placeholder: 'Email',
+            description: 'Email text input inside the BznsBuilder sign-in modal',
         },
     },
 
     passwordInput: {
-        selector: 'input[name="password"]',
+        selector: 'input[type="password"]',
         metadata: {
             role:        'textbox',
             label:       'Password',
             placeholder: 'Password',
-            description: 'Password text input on the OrangeHRM login form',
+            description: 'Password input inside the BznsBuilder sign-in modal',
         },
     },
 
-    loginButton: {
-        selector: 'button[type="submit"]',
+    signInSubmitButton: {
+        // Submit button inside the modal — type="submit", class="btn btn-block btn-primary"
+        selector: 'button[type="submit"].btn-primary',
         metadata: {
             role:        'button',
-            name:        'Login',
-            text:        'Login',
-            description: 'Login submit button on the OrangeHRM login form',
+            name:        'Sign in',
+            text:        'Sign in',
+            description: 'Sign in submit button inside the BznsBuilder sign-in modal',
         },
     },
 
-    errorMessage: {
-        selector: '.oxd-alert-content-text',
+    signInModal: {
+        // Angular Material renders the modal as <mat-dialog-container role="dialog">
+        selector: 'mat-dialog-container',
+        metadata: {
+            role:        'dialog',
+            description: 'Sign-in modal dialog opened after clicking the Sign in trigger button',
+        },
+    },
+
+    errorToast: {
+        // Angular Material snackbar shown on sign-in failure
+        selector: 'snack-bar-container.custom-snackbar-panel',
         metadata: {
             role:        'alert',
-            description: 'Error alert message shown when login credentials are invalid',
-        },
-    },
-
-    dashboardHeader: {
-        selector: 'h6.oxd-topbar-header-breadcrumb-module',
-        metadata: {
-            role:        'heading',
-            name:        'Dashboard',
-            text:        'Dashboard',
-            description: 'Dashboard heading in the OrangeHRM top navigation bar',
-        },
-    },
-
-    invalidLoginMessage: {
-        selector: "//p[@class='oxd-text oxd-text--p oxd-alert-content-text']",
-        metadata: {
-            text:        'Invalid credentials',
-            description: 'Invalid credentials error paragraph on the OrangeHRM login form',
+            description: 'Material snackbar notification shown when sign-in fails',
         },
     },
 

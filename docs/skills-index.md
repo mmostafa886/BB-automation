@@ -17,9 +17,7 @@ End-to-end path from a Business Requirements Document to runnable Playwright tes
 ```
 /brd-full-pipeline  ─────────────────────────── single-command entry point
         │
-        ▼ auto-invokes /setup-workspace if workspace not configured
-[setup-workspace]
-        ↓
+        ▼
 Phase 0.5 — Entry Point Detection
   ┌──────────────────────────────────────────────────────┐
   │ from brd / BRD content detected                      │ → Phase 1
@@ -40,7 +38,6 @@ Create feature branch & commit (Phase 4)
 
 | # | Skill | Invoke | Target / When to Use | Output | Chains Into |
 |---|-------|--------|----------------------|--------|-------------|
-| 0 | **setup-workspace** | `/setup-workspace` | Run once on a fresh clone (or invoked automatically by `brd-full-pipeline`). Creates the folder skeleton (`stories/`, `test_cases/`, `src/pages/`, `tests/generated/`) required by the rest of the pipeline. | Empty directory structure | — |
 | 1 | **brd-to-uss** | `/brd-to-uss` | You have raw BRD text and need structured User Stories. Paste or point to the BRD. | `stories/<feature>.md` — User Stories with Acceptance Criteria | — |
 | 2 | **uss-to-tcs** | `/uss-to-tcs` | You have User Stories and need detailed Manual Test Cases. | `test_cases/<feature>.md` — structured Manual TCs | — |
 | 3 | **tcs-to-plscript** | `/tcs-to-plscript` | You have Manual Test Cases and need production-ready Playwright TypeScript specs using the project's TAF (self-healing locators, page objects, POMLazySelfHealing fixture, AdvancedActionsHelper, AdvancedAssertionsHelper, Logger). Generates all 4 TAF layers, then polishes the output. | `tests/generated/<Module>/tc-<key>-<name>.spec.ts` | `polish-generated-code` |
@@ -56,8 +53,6 @@ Converts existing raw Playwright tests into the self-healing POM architecture. E
 /taf-full-pipeline  ──────────────────────────────────── single entry point
         │
         ▼ (auto-detects starting step)
-scaffold-taf-infrastructure
-        ↓ (auto-chains)
 create-page-locators
         ↓ (auto-chains)
 create-selfhealing-page
@@ -74,8 +69,7 @@ Create taf/<module> branch & commit
 | # | Skill | Invoke | Target / When to Use | Output | Chains Into |
 |---|-------|--------|----------------------|--------|-------------|
 | — | **taf-full-pipeline** | `/taf-full-pipeline` | **Single-command entry point.** Detects which steps are already complete and starts from the first incomplete step — the auto-chaining handles the rest. Ends by creating a `taf/<module>` branch and committing all artifacts. Use `status` to inspect state without running; use `from <step>` to force-start at a specific step. | Full self-healing TAF, committed to `taf/<module>` branch | Starts chain from detected step |
-| 1 | **scaffold-taf-infrastructure** | `/scaffold-taf-infrastructure` | The branch has raw JS/TS Playwright tests but none of the self-healing TAF layers exist. Detects the gap and creates all base infrastructure in-place without touching existing test files. | `tsconfig.json`, `playwright.config.ts`, `self-healing-locator.ts`, `Logger.ts`, `AdvancedActionsHelper.ts`, `AdvancedAssertionsHelper.ts`, `AdvancedAPIHelper.ts`, `DownloadHelper.ts`, `StepRunner.ts`, `urls.ts`, `HelperFactory.ts`, `SelfHealingPageBase.ts`, `POMLazySelfHealing` stub, `self-healing-fixture.ts`, `api-test-fixture.ts`, `playwright-mcp-provider.ts`, `global-setup.ts` | `create-page-locators` |
-| 2 | **create-page-locators** | `/create-page-locators [page]` | Run after infrastructure exists. Scans all test files to extract every `page.locator()`, `getByRole()`, `getByLabel()`, etc. call, groups them by page, and writes `src/locators/<page>-page-locators.ts` for each. Pass a page name to restrict to one module. | `src/locators/<page>-page-locators.ts` — `satisfies Record<string, LocatorDefinition>` files | `create-selfhealing-page` |
+| 1 | **create-page-locators** | `/create-page-locators [page]` | Scans all test files to extract every `page.locator()`, `getByRole()`, `getByLabel()`, etc. call, groups them by page, and writes `src/locators/<page>-page-locators.ts` for each. Pass a page name to restrict to one module. | `src/locators/<page>-page-locators.ts` — `satisfies Record<string, LocatorDefinition>` files | `create-selfhealing-page` |
 | 3 | **create-selfhealing-page** | `/create-selfhealing-page [page]` | Run after locator files exist. Creates `src/pages/<page>-self-healing.ts` (or appends missing methods to existing files). Performs semantic dedup before adding methods. | `src/pages/<page>-self-healing.ts` — typed action and assertion methods, `SelfHealingLocator` wiring | `register-page-in-pom` |
 | 4 | **register-page-in-pom** | `/register-page-in-pom` | Run after page classes exist. Discovers all `*PageSelfHealing` classes in `src/pages/`, checks which are already registered, and adds missing ones to `pom-lazy-self-healing.ts`. | Updated `pom-lazy-self-healing.ts` | `migrate-test-to-selfhealing` |
 | 5 | **migrate-test-to-selfhealing** | `/migrate-test-to-selfhealing [pattern]` | Run after POM is registered. Migrates all (or a subset of) test specs to the self-healing fixture pattern. | Migrated specs in `tests/generated/<Module>/tc-<key>-<name>.spec.ts` | `polish-generated-code` |
@@ -229,8 +223,6 @@ Jira User Stories
 | **analyze-trace** | `/analyze-trace [trace path or TC-ID]` | A test is failing and you have a `trace.zip` in `test-results/`. Parses the binary `.trace` event stream, reconstructs the step timeline, classifies the root cause into one of 9 failure categories, and applies the minimal fix. | Failure report + targeted fix applied to `src/locators/` or `src/pages/` file |
 | **execute-and-fix-tests** | `/execute-and-fix-tests [path or pattern]` | A test (or set of tests) is failing and you want to run, inspect, fix, and re-run in one command. | Fixed `src/locators/`, `src/pages/`, and/or `tests/generated/` files + final pass/fail report |
 | **merge-tc-sets** | `/merge-tc-sets <FeatureName> [FileA] [FileB] [--keep-both]` | Two TC markdown files exist for the same feature (e.g. one from Claude, one from OpenAI). Deduplicates by TC ID and title similarity (≥ 0.80 Levenshtein). | Merged `test_cases/<FeatureName>_TestCases.md` + updated `test_cases/<FeatureName>_Jira_TCs.json` |
-| **move-specs-to-module** | `/move-specs-to-module` | Move spec files from one generated module folder to another, porting all associated page methods, locators, and POM wiring. | Relocated specs in `tests/generated/<TargetModule>/`, updated `src/locators/` + `src/pages/`, cleaned source module |
-| **rename-and-merge-module** | `/rename-and-merge-module` | Rename a generated test module's tag, describe prefix, and folder across all spec files in one run. | Renamed/merged specs, updated POM registration, deleted obsolete files |
 
 ---
 
@@ -255,34 +247,30 @@ Jira User Stories
 
 | I want to… | Use |
 |---|---|
-| Bootstrap a brand-new project | `/setup-workspace` |
 | Turn a BRD into User Stories | `/brd-to-uss` |
 | Turn User Stories into Manual Test Cases | `/uss-to-tcs` |
 | Turn Manual Test Cases into Playwright specs | `/tcs-to-plscript` |
 | Do all of BRD → Playwright in one command | `/brd-full-pipeline` |
 | Run the full TAF migration in one command (ends with branch & commit) | `/taf-full-pipeline` |
 | Check TAF pipeline state without running | `/taf-full-pipeline status` |
-| Add the self-healing TAF base infrastructure | `/scaffold-taf-infrastructure` |
 | Extract locators from existing tests | `/create-page-locators` |
 | Generate self-healing page objects | `/create-selfhealing-page` |
 | Register new page objects in the POM | `/register-page-in-pom` |
 | Migrate existing tests to the self-healing pattern | `/migrate-test-to-selfhealing` |
+| Add test.step() to all page object methods | `/add-teststep-hooks` |
+| Add a new method to an existing page object | `/add-method-to-page` |
 | Clean up / fix issues in generated code | `/polish-generated-code` |
 | Run failing tests, live-fix them, and re-run until green | `/execute-and-fix-tests` |
 | Debug a failing test from its trace file | `/analyze-trace` |
 | Push User Stories to Jira | `/jira-uss-to-tcs <FeatureName>` |
 | Push User Stories to Jira and save TCs locally | `/jira-uss-to-tcs <FeatureName> --save-local` |
-| Fetch Jira Stories → generate TCs → save all three files locally (no Jira write) | `/jira-uss-to-tcs <FeatureName> --local-only` |
+| Fetch Jira Stories → generate TCs → save locally (no Jira write) | `/jira-uss-to-tcs <FeatureName> --local-only` |
 | Merge two TC sets (Claude + OpenAI) into one deduplicated file | `/merge-tc-sets <FeatureName> <FileA> <FileB>` |
 | Push Test Cases to Jira (Epic + Task issues) | `/tcs-to-jira <FeatureName>` |
 | Generate Playwright scripts from Jira TCs (single module) | `/jira-tcs-to-plscript <ModuleName>` |
 | Generate Playwright scripts from Jira TCs (all active modules) | `/jira-tcs-to-plscript` |
-| Jira Stories → Playwright scripts | `/jira-uss-to-tcs` then `/jira-tcs-to-plscript` (filter auto-updated by Step 5.5) |
+| Jira Stories → Playwright scripts | `/jira-uss-to-tcs` then `/jira-tcs-to-plscript` |
 | BRD → Jira + Playwright in one command | `/jira-full-pipeline` |
 | Jira pipeline from existing stories | `/jira-full-pipeline from stories <FeatureName>` |
 | Jira pipeline from existing test cases | `/jira-full-pipeline from test-cases <FeatureName>` |
-| Re-push stories to Jira (no re-generation) | `/jira-full-pipeline from jira-stories <FeatureName>` |
-| Re-push test cases to Jira (no re-generation) | `/jira-full-pipeline from jira-test-cases <FeatureName>` |
 | Check Jira pipeline state | `/jira-full-pipeline status <FeatureName>` |
-| Move spec files between module folders | `/move-specs-to-module` |
-| Rename a module or merge it into another | `/rename-and-merge-module` |

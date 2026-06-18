@@ -43,16 +43,13 @@ npm install
 npx playwright install --with-deps
 
 # Copy and fill in environment variables
-cp db.env.example .env   # edit .env with your credentials
+cp db.env.example .env   # edit .env with your credentials and BASE_URL
 
-# Authenticate (runs once — saves auth state to playwright-auth.json)
-npm test   # global-setup.ts handles login before the suite begins
-
-# Run all tests
+# Run all tests (no pre-auth required)
 npm test
 
 # Run a specific module
-npm run test:module MODULE=Instruments
+npm run test:module MODULE=Login
 
 # Open the last HTML report
 npm run report
@@ -62,13 +59,9 @@ npm run report
 
 ## Authentication
 
-The app uses **Microsoft Azure AD MFA**. Auth is handled automatically:
+Tests handle login directly through the UI — there is no global pre-auth step or stored session state.
 
-1. `src/scripts/global-setup.ts` launches a browser on first run, prompts for MFA, and saves cookies to `playwright-auth.json`
-2. Every subsequent test reuses that saved state — no repeated logins
-3. If auth expires: `npm run auth:reset` then `npm test` to re-authenticate
-
-> `playwright-auth.json` is gitignored — each developer maintains their own local auth state.
+Each spec navigates to `https://stgapp.bznsbuilder.com/`, opens the sign-in modal, and submits credentials from `test-data/login.json`. Update `validUser.email` and `validUser.password` in that file for the target environment.
 
 ---
 
@@ -76,11 +69,10 @@ The app uses **Microsoft Azure AD MFA**. Auth is handled automatically:
 
 ```bash
 npm test                              # Run all tests
-npm run test:module MODULE=<Name>     # Run a single module (e.g. MODULE=Instruments)
+npm run test:module MODULE=<Name>     # Run a single module (e.g. MODULE=Login)
 npm run test:area                     # Run tests mapped to a source code area
 npm run modules:list                  # List all registered test modules
 npm run sync                          # Sync issues from Jira
-npm run auth:reset                    # Clear saved auth state
 npm run report                        # Open last HTML report in browser
 npm run locators:extract              # Extract locators from existing spec files
 npm run lint                          # TypeScript type-check (no emit)
@@ -94,12 +86,10 @@ npm run lint                          # TypeScript type-check (no emit)
 BB-Automation/
 ├── src/
 │   ├── locators/                        # Pure selector data — no logic
-│   │   ├── instruments-page-locators.ts
 │   │   └── login-page-locators.ts
 │   ├── pages/                           # Self-healing page objects
 │   │   ├── self-healing-page-base.ts    # Abstract base all pages extend
 │   │   ├── pom-lazy-self-healing.ts     # Lazy-initialised page manager
-│   │   ├── instruments-page-self-healing.ts
 │   │   └── login-page-self-healing.ts
 │   ├── utils/                           # Shared helpers
 │   │   ├── self-healing-locator.ts      # Core 3-phase healing locator
@@ -125,7 +115,7 @@ BB-Automation/
 │   ├── reporters/
 │   │   └── reportGenerator.ts
 │   └── scripts/
-│       ├── global-setup.ts              # Auth setup — runs before test suite
+│       ├── global-setup.ts              # Legacy auth setup (not active)
 │       ├── list-modules.ts
 │       ├── manual-sync.ts               # CLI: sync Jira issues
 │       └── run-tests-for-area.ts
@@ -134,7 +124,6 @@ BB-Automation/
 │   │   ├── self-healing-fixture.ts      # Main fixture — all specs use this
 │   │   └── api-test-fixture.ts
 │   └── generated/                       # Spec files organised by module
-│       ├── Instruments/
 │       └── Login/
 ├── config/
 │   ├── testCaseFilter.ts                # Jira TC keys per module
@@ -168,9 +157,9 @@ All specs import from the shared fixture:
 ```typescript
 import { test, expect } from '../../fixtures/self-healing-fixture';
 
-test('example', async ({ pomSelfHealing }) => {
-  await pomSelfHealing.loginPage.login();
-  await pomSelfHealing.homePage.assertPageLoaded();
+test('example', async ({ selfHealingFixture: { pomSelfHealing } }) => {
+  await pomSelfHealing.loginPage.navigateToLogin();
+  await pomSelfHealing.loginPage.assertAuthPageVisible();
 });
 ```
 
@@ -211,7 +200,7 @@ The pipeline runs on push/PR, installs dependencies, runs the full Playwright su
 
 ## AI generation pipeline (Claude Code)
 
-The framework uses 22 Claude Code skills to automate the full QA lifecycle. Key entry points:
+The framework uses 20 Claude Code skills to automate the full QA lifecycle. Key entry points:
 
 ```
 /brd-full-pipeline       # BRD → User Stories → Test Cases → Playwright scripts → commit

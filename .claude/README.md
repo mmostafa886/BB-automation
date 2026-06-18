@@ -3,40 +3,29 @@
 ## settings.json
 
 Committed to git. Contains the `permissions.allow` list that pre-approves all tools
-used by the CI skills so that Claude Code does not pause to prompt for approval
+used by the skills so that Claude Code does not pause to prompt for approval
 during automated pipeline runs.
-
-**Covered skills:** `Execute_And_Fix_Tests`, `ADO_Full_Pipeline`, `ADO_USs_To_TCs`,
-`TCs_To_ADO`, `ADO_TCs_To_PLScript`, `Setup_Workspace`, `Polish_Generated_Code`.
 
 **What is pre-approved:**
 
 | Category | Patterns |
-|----------|---------|
+|---|---|
 | Playwright test execution | `Bash(npx playwright*)`, `Bash(CI=true*)` |
 | File inspection | `Bash(grep*)`, `Bash(cat*)`, `Bash(ls*)`, `Bash(cd*)`, `Bash(tee*)` |
 | Git operations | `Bash(git*)` |
 | Node.js scripts | `Bash(node *)` |
-| Workspace setup | `Bash(mkdir *)` |
 | Cleanup | `Bash(rm -f *)` |
 | Env var checks | `Bash(echo *)` |
 | File creation | `Write` |
 | File modification | `Edit` |
 | Playwright MCP browser | `mcp__playwright__browser_*` (16 tools) |
 
-## CI/CD Usage
+## skills/
 
-Run Claude Code normally — the pre-approved allow-list handles all permission
-checks without any prompts:
+20 Claude Code skills live here, each as a directory containing `SKILL.md` (and `README.md`).
+Invoke any skill with `/<skill-name>` in the Claude chat.
 
-```sh
-claude -p "/Execute_And_Fix_Tests Projects"
-claude -p "/ADO_Full_Pipeline from stories Add_Employee"
-```
-
-> If you add a new skill that requires tools not yet in `settings.json`, add the
-> specific permission patterns to the allow-list rather than using
-> `--dangerously-skip-permissions`.
+See `docs/skills-index.md` for the full reference with pipeline diagrams and usage examples.
 
 ## settings.local.json
 

@@ -1,6 +1,6 @@
 ---
 name: add-teststep-hooks
-description: Wraps every public async method in one or more *-page-self-healing.ts files with a test.step() call so that each page-object action and assertion appears as a labelled step in the Playwright HTML report.
+description: Wraps every public async method in *-page-self-healing.ts files with a single method-level test.step() call so that each page-object action and assertion appears as a labelled step in the Playwright HTML report.
 ---
 
 # ROLE & PERSONA
@@ -53,7 +53,9 @@ Collect every method that satisfies **all** of the following:
 - Is `async`
 - Is NOT `private` or `protected`
 - Is NOT the constructor
-- Does NOT already have `test.step(` as the first statement inside its body
+- Its entire body is NOT already a single `test.step(` call wrapping all statements.
+  Multiple inline `test.step(` calls scattered through the method body do **not** count
+  as wrapped — such methods must be consolidated (see Step 4 and Rule 4).
 
 ## Step 3 — Derive the step label
 
@@ -103,7 +105,9 @@ Do NOT touch:
 
 - `constructor()`
 - `private` or `protected` methods
-- Methods already wrapped with `test.step(`
+- Methods whose **entire body** is already a single `test.step(` wrapper. Methods that
+  contain `test.step(` calls at the statement level but are not themselves wrapped at the
+  method level must be **consolidated** into one method-level wrapper, not skipped.
 - Non-async methods (getters, sync helpers)
 
 ## Step 6 — Per-file summary
@@ -139,8 +143,10 @@ After all files, print a consolidated table:
    to `test.step()`.
 3. **Template literals for dynamic labels** — if the method has parameters, the label
    must include them via `${}` interpolation so the report shows the actual runtime value.
-4. **One test.step per method** — never split a method into multiple `test.step` calls;
-   a single wrapper per method is the target pattern.
+4. **One test.step per method** — the entire method body must be wrapped in a single
+   `test.step` call at the method level. Never add individual `test.step` calls around
+   statements inside the method. If a method already contains multiple inline `test.step`
+   calls, remove them and replace the whole body with one method-level wrapper.
 5. **Preserve existing log strings** — do not change the text passed to
    `this.actions.*` / `this.assert.*` inside the wrapped body.
 6. **Import safety** — never remove existing named imports; only add `test` if missing.

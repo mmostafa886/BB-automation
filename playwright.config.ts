@@ -1,11 +1,6 @@
 import { defineConfig } from '@playwright/test';
-import * as fs from 'fs';
-
-const AUTH_FILE = 'playwright-auth.json';
-const AUTH_FILE_EXISTS = fs.existsSync(AUTH_FILE);
 
 export default defineConfig({
-  globalSetup: './src/scripts/global-setup',
   testDir: './tests',
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
@@ -19,11 +14,11 @@ export default defineConfig({
     ['list']
   ],
 
-  timeout: 150000,
+  timeout: 15000,
 
   use: {
     viewport: null,
-    baseURL: process.env.BASE_URL || 'https://az-chem-synth.vercel.app/',
+    baseURL: process.env.BASE_URL || 'https://stgapp.bznsbuilder.com/',
     trace: 'retain-on-failure',
     screenshot: 'only-on-failure',
     // video: 'retain-on-failure',
@@ -35,10 +30,6 @@ export default defineConfig({
       // downloadsPath: './test-results/downloads',
     },
 
-    // Load saved authentication state (for Microsoft MFA).
-    // Only set when the file exists — otherwise the runner throws ENOENT
-    // before globalSetup gets a chance to create it on first login.
-    ...(AUTH_FILE_EXISTS ? { storageState: AUTH_FILE } : {}),
   },
 
   projects: [

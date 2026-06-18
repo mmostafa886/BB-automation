@@ -1,299 +1,146 @@
 # BB-Automation — Claude Context Guide
 
-## Project Overview
+## What this project is
 
-AI-powered **Playwright TypeScript QA automation framework** for a chemistry synthesis web application. The framework automates the full QA lifecycle:
-
-- **BRD → User Stories → Test Cases → Playwright scripts** (via Claude Code skills)
-- **Jira integration** — reads/writes issues (Stories, Tasks/Test Cases, Epics)
-- **Self-healing locators** — 3-phase fallback (primary CSS/XPath → semantic Playwright strategies → AI via MCP)
-- **22 Claude Code skills** orchestrating every stage of the automation lifecycle
-
-App under test: configured via `BASE_URL` env var (see `playwright.config.ts` for default).  
-Auth: Microsoft Azure AD (MFA) — auth state persisted in `playwright-auth.json`.
+AI-powered Playwright TypeScript QA framework for the BznsBuilder chemistry synthesis web app.  
+Pipeline: **BRD → User Stories → Test Cases → Playwright specs**, backed by 20 Claude Code skills.  
+App under test: `https://stgapp.bznsbuilder.com/` (override with `BASE_URL`).
 
 ---
 
-## Key Commands
+## Commands
 
 ```bash
 npm test                              # Run all tests
-npm run test:area                     # Run tests by app area
-npm run test:module MODULE=<Name>     # Run a specific module (e.g. MODULE=Instruments)
-npm run modules:list                  # List all registered test modules
-npm run sync                          # Sync issues from Jira
-npm run auth:reset                    # Clear auth state (re-authenticate on next test run)
+npm run test:module MODULE=<Name>     # Run one module (e.g. MODULE=Login)
+npm run test:area                     # Run tests by changed source area
 npm run report                        # Open last HTML report
+npm run lint                          # TypeScript type-check (no emit)
+npm run auth:reset                    # Clear stored auth artefacts
+npm run sync                          # Sync issues from Jira
 npm run locators:extract              # Extract locators from existing specs
-```
-
----
-
-## Folder Structure
-
-```
-BB-Automation/
-├── .claude/
-│   └── skills/                  # 22 Claude Code skills (see Skills section)
-├── .github/
-│   └── workflows/
-│       └── qa-automation.yml    # GitHub Actions CI/CD pipeline
-├── brd/                         # Raw BRD input documents
-├── config/
-│   ├── testCaseFilter.ts        # Modules + TC keys registered for PLScript generation
-│   ├── jira-us-keys.json        # Jira User Story issue keys per feature
-│   └── testMapping.js           # Code area → test tag mapping
-├── docs/                        # Project documentation
-├── pipelines/                   # Legacy CI/CD definitions (azure-pipelines.yml kept for reference)
-├── src/
-│   ├── factories/
-│   │   └── helper-factory.ts    # Factory for creating helper instances
-│   ├── generators/              # AI-driven test generators (JS)
-│   ├── listeners/
-│   │   └── testPlanListener.ts  # Jira listener — polls for issue changes
-│   ├── locators/                # Locator repositories (pure data, no logic)
-│   │   └── <page>-page-locators.ts
-│   ├── pages/                   # Page object classes (self-healing pattern)
-│   │   ├── <page>-page-self-healing.ts
-│   │   ├── self-healing-page-base.ts   # Abstract base all pages extend
-│   │   └── pom-lazy-self-healing.ts    # Page Object Manager (lazy init)
-│   ├── scripts/
-│   │   ├── global-setup.ts      # Auth setup — runs before test suite
-│   │   ├── list-modules.ts      # CLI: list modules
-│   │   ├── manual-sync.ts       # CLI: sync Jira issues
-│   │   └── run-tests-for-area.ts
-│   └── utils/
-│       ├── advanced-actions-helper.ts      # Wraps page actions (goto, click, fill…)
-│       ├── advanced-assertions-helper.ts   # Wraps expect assertions
-│       ├── advanced-api-helper.ts          # Wraps APIRequestContext methods
-│       ├── download-helper.ts              # File download handling
-│       ├── Logger.ts                       # Winston logger factory
-│       ├── self-healing-locator.ts         # Core 3-phase healing locator
-│       ├── step-runner.ts                  # Wraps code in test.step()
-│       └── urls.ts                         # Centralised APP_URLS constants
-├── stories/                     # Generated User Stories (markdown)
-├── stories_Archieved/           # Archived User Stories
-├── test_cases/                  # Generated Test Cases (markdown)
-├── test_cases_Archieved/        # Archived Test Cases
-├── tests/
-│   ├── fixtures/
-│   │   ├── self-healing-fixture.ts   # Main fixture — all specs use this
-│   │   └── api-test-fixture.ts       # Fixture for pure API tests
-│   └── generated/               # Generated spec files (organised by module)
-│       ├── Audit-Trail/
-│       ├── Instruments/
-│       ├── Library-Management/
-│       ├── Plate-Layouts/
-│       ├── Products/
-│       ├── Projects/
-│       ├── Reagents/
-│       ├── Reaction-Templates/
-│       └── ...
-├── playwright.config.ts
-├── tsconfig.json
-├── package.json
-└── .env                         # Secrets (gitignored — see .env.example)
+npm run codegen                       # Launch Playwright codegen
+npm run install:browsers              # Install Playwright browsers + deps
 ```
 
 ---
 
 ## Architecture: 4-Layer Pattern
 
-Every feature follows this strict layering:
+Every feature follows this strict layering — never skip or collapse layers:
 
-| Layer | Location | Responsibility |
-|---|---|---|
-| **Locators** | `src/locators/<page>-page-locators.ts` | Pure selector data, no logic |
+| Layer | Path | Rule |
+| --- | --- | --- |
+| **Locators** | `src/locators/<page>-page-locators.ts` | Pure selector data — no logic, no imports |
 | **Page Object** | `src/pages/<page>-page-self-healing.ts` | Actions + assertions, extends `SelfHealingPageBase` |
-| **POM** | `src/pages/pom-lazy-self-healing.ts` | Lazy-initialised manager — all pages registered here |
-| **Specs** | `tests/generated/<Module>/tc-*.spec.ts` | Test cases, use `self-healing-fixture` |
+| **POM** | `src/pages/pom-lazy-self-healing.ts` | Lazy-init manager — register every new page here |
+| **Specs** | `tests/generated/<Module>/tc-*.spec.ts` | Tests only — no selectors, no raw Playwright calls |
 
-### Self-Healing Locator (3-Phase)
+### Self-Healing Locator (3 phases, automatic)
 
-1. **Primary** — CSS/XPath selector from locator file
+1. **Primary** — CSS/XPath from the locator file
 2. **Semantic** — Playwright role/label/placeholder strategies
-3. **AI** — Playwright MCP browser inspection (Anthropic or Gemini)
+3. **AI** — Playwright MCP browser inspection (Claude or Gemini) — requires an API key in `.env`
 
-### Test Fixture Import
+---
 
-All specs must import from the self-healing fixture:
+## Fixture Pattern (mandatory for all specs)
 
 ```typescript
 import { test, expect } from '../../fixtures/self-healing-fixture';
+import loginData from '../../../test-data/login.json';
+
+test('TC-BB-001: Sign in with valid credentials @login @P1 @smoke',
+    async ({ selfHealingFixture: { pomSelfHealing } }) => {
+        await pomSelfHealing.loginPage.navigateToLogin();
+        await pomSelfHealing.loginPage.fillAndSubmitSignInForm(
+            loginData.validUser.email,
+            loginData.validUser.password,
+        );
+        await pomSelfHealing.homePage.assertPageLoaded();
+    },
+);
 ```
 
-Access pages via `pomSelfHealing`:
-
-```typescript
-test('example', async ({ pomSelfHealing }) => {
-  await pomSelfHealing.loginPage.login();
-  await pomSelfHealing.homePage.assertPageLoaded();
-});
-```
+- Always import from `tests/fixtures/self-healing-fixture`, never from `@playwright/test` directly.
+- Always read credentials from `test-data/login.json` — never hardcode them in specs.
+- `test.step()` belongs inside page-object methods, not in specs.
 
 ---
 
-## Registered Modules (config/testCaseFilter.ts)
+## Skills
 
-These 17 modules have TC keys registered for PLScript generation:
+Invoke with `/<skill-name>`. Full pipeline diagrams: `docs/skills-index.md`.
 
-| Module | Folder in tests/generated/ |
-|---|---|
-| Login | `Login/` |
-| Navigation-Menu | `Navigation-Menu/` |
-| Library-Management | `Library-Management/` |
-| Reaction-Templates | `Reaction-Templates/` |
-| Plate-Layouts | `Plate-Layouts/` |
-| Products | `Products/` |
-| Reagents | `Reagents/` |
-| Projects | `Projects/` |
-| Users | `Users/` |
-| Audit-Trail | `Audit-Trail/` |
-| Instruments | `Instruments/` |
-| Sign-Out | `Sign-Out/` |
-| Instrument-Metadata-Update | `Instrument-Metadata-Update/` |
-| Upload-Reaction-CSV | `Upload-Reaction-CSV/` |
-| Reaction-Setup-Viewer | `Reaction-Setup-Viewer/` |
-| Scale-Substrate-Config | `Scale-Substrate-Config/` |
-| Continue-Campaign-Wizard | `Continue-Campaign-Wizard/` |
+### End-to-end pipelines
 
-To add a new module: add it to `config/testCaseFilter.ts` with its Jira issue keys (e.g. `["BB-1234", "BB-1235"]`).
+| Skill | Use when |
+| --- | --- |
+| `/brd-full-pipeline` | BRD → US → TC → Playwright → commit |
+| `/jira-full-pipeline` | Same + push US + TC to Jira |
+| `/taf-full-pipeline` | Migrate raw specs to self-healing POM |
 
----
+### Generation
 
-## Claude Code Skills
+| Skill | Use when |
+| --- | --- |
+| `/brd-to-uss` | BRD text → User Stories |
+| `/uss-to-tcs` | User Stories → manual Test Cases |
+| `/tcs-to-plscript` | Local TC markdown → Playwright specs |
+| `/jira-uss-to-tcs` | Fetch US from Jira → generate TCs → push back |
+| `/jira-tcs-to-plscript` | Fetch TCs from Jira → generate specs |
 
-Invoke any skill with `/skill-name` in the Claude chat. Skills are located in `.claude/skills/`.
+### Page object / locators
 
-### Pipeline Skills (end-to-end)
+| Skill | Use when |
+| --- | --- |
+| `/create-page-locators` | Extract selectors from tests → build locator files |
+| `/create-selfhealing-page` | Locator files → page object classes |
+| `/add-method-to-page` | Add one action/assertion to an existing page object |
+| `/register-page-in-pom` | Wire a new page object into `pom-lazy-self-healing.ts` |
+| `/migrate-test-to-selfhealing` | Convert raw specs to self-healing fixture pattern |
 
-| Skill | When to use |
-|---|---|
-| `/brd-full-pipeline` | Full BRD → US → TC → Playwright → commit in one command |
-| `/jira-full-pipeline` | Same as above but US + TC are pushed to Jira (Epic + Story/Task issues) |
-| `/taf-full-pipeline` | Full TAF migration: scaffold → create → migrate → polish |
+### Maintenance & debugging
 
-### Artifact Generation Skills
-
-| Skill | When to use |
-|---|---|
-| `/brd-to-uss` | Convert BRD text to User Stories (local save + optional Jira push) |
-| `/uss-to-tcs` | Transform User Stories to structured manual Test Cases |
-| `/tcs-to-plscript` | Convert local TC markdown files to Playwright scripts |
-| `/jira-uss-to-tcs` | Fetch User Stories from Jira, generate TCs, push back to Jira |
-| `/jira-tcs-to-plscript` | Fetch TCs from Jira, generate Playwright scripts (uses testCaseFilter.ts) |
-
-### Page Object / Locator Skills
-
-| Skill | When to use |
-|---|---|
-| `/create-page-locators` | Extract selectors from tests, build `src/locators/<page>-page-locators.ts` |
-| `/create-selfhealing-page` | Generate `src/pages/<page>-page-self-healing.ts` from locator files |
-| `/register-page-in-pom` | Auto-register new page objects into `pom-lazy-self-healing.ts` |
-| `/migrate-test-to-selfhealing` | Convert raw Playwright specs to self-healing fixture pattern |
-
-### Maintenance & Refactoring Skills
-
-| Skill | When to use |
-|---|---|
-| `/polish-generated-code` | Post-pipeline cleanup (escape fixes, method grouping) |
-| `/move-specs-to-module` | Move spec files between modules, port methods/locators |
-| `/rename-and-merge-module` | Rename a module across all 40+ spec files |
-| `/merge-tc-sets` | Merge two TC sets, deduplicate, run gap analysis |
-| `/subtract-archived-tcs` | Remove redundant TCs already covered in archived set |
-
-### Debugging Skills
-
-| Skill | When to use |
-|---|---|
-| `/execute-and-fix-tests` | Run tests, live-inspect failures via MCP browser, apply fixes, re-run |
-| `/analyze-trace` | Parse Playwright `trace.zip`, classify failure, apply targeted fix |
-
-### Setup Skills
-
-| Skill | When to use |
-|---|---|
-| `/scaffold-taf-infrastructure` | Create TAF structure from scratch on a new branch |
-| `/setup-workspace` | Initialize folder structure (stories/, test_cases/, src/pages/, tests/) |
-| `/tcs-to-jira` | Push locally-saved TCs to Jira as Epic + Task issues with links |
+| Skill | Use when |
+| --- | --- |
+| `/add-teststep-hooks` | Wrap all page-object methods with `test.step()` labels |
+| `/polish-generated-code` | Post-pipeline cleanup (escapes, grouping, imports) |
+| `/merge-tc-sets` | Merge + deduplicate two TC sets |
+| `/execute-and-fix-tests` | Run → inspect failures via MCP browser → fix → re-run |
+| `/analyze-trace` | Parse `trace.zip`, classify failure, apply fix |
+| `/tcs-to-jira` | Push local TCs to Jira as Epic + Task issues |
+| `/patch-jira-tc-labels` | Update TC issue labels in Jira |
 
 ---
 
-## Environment Variables (.env)
+## Conventions
 
-Copy `.env.example` to `.env` and fill in values.
+- **Spec file name**: `tc-<Key>-<kebab-description>.spec.ts` — key is a Jira ID (`BB-3871`) or sequential BB ID (`BB-001`).
+- **Test title**: `TC-<Key>: <Title> @tags` — matches the file key exactly.
+- **Module folders**: PascalCase-with-hyphens (`Library-Management/`, `Audit-Trail/`).
+- **After creating a page object**: run `/register-page-in-pom` before writing any specs.
+- **Never commit**: `.env`, `playwright-auth.json`, `session-storage.json`, `.playwright-profile/`.
+- **Modules registry**: `config/testCaseFilter.ts` — add new modules and their Jira TC keys here.
 
-| Variable | Purpose |
-|---|---|
-| `ENV` | Environment selector: `test` or `staging` |
-| `BASE_URL` | Override app URL (defaults set in `playwright.config.ts`) |
-| `LOG_LEVEL` | Winston verbosity: `silly/debug/verbose/info/warn/error` |
-| `OPENAI_API_KEY` | OpenAI key for AI generation/healing |
-| `ANTHROPIC_API_KEY` | Anthropic key (alternative AI provider) |
-| `GEMINI_API_KEY` | Gemini key (alternative AI provider) |
-| `JIRA_BASE_URL` | Jira Cloud base URL (e.g. `https://yourcompany.atlassian.net`) |
-| `JIRA_EMAIL` | Jira account email (used for Basic auth) |
-| `JIRA_API_TOKEN` | Jira API token — generate at id.atlassian.com |
-| `JIRA_PROJECT_KEY` | Jira project key (e.g. `BB`) |
-| `JIRA_TC_ISSUE_TYPE` | Issue type for Test Cases (default: `Task`) |
-| `JIRA_US_ISSUE_TYPE` | Issue type for User Stories (default: `Story`) |
+---
+
+## Environment Variables
+
+Key non-obvious vars (see `.env.example` for the full list):
+
+| Variable | Note |
+| --- | --- |
+| `ANTHROPIC_API_KEY` | Enables Phase 3 AI healing via Claude (takes priority over Gemini) |
+| `ANTHROPIC_MODEL` | Override model (default: `claude-sonnet-4-6`) |
+| `GEMINI_API_KEY` | Enables Phase 3 AI healing via Gemini (used if no Anthropic key) |
+| `GEMINI_MODEL` | Override model (default: `gemini-2.0-flash`) |
 | `APP_IN_OPERATION` | `true` = enable live MCP browser snapshots during generation |
-
----
-
-## Key Configuration Files
-
-### playwright.config.ts
-
-- `testDir`: `./tests` (all spec files)
-- `globalSetup`: `./src/scripts/global-setup` (handles MFA auth)
-- `storageState`: `playwright-auth.json` (injected into every test)
-- `retries`: 2 (both CI and local)
-- `workers`: 1 (CI), 2 (local)
-- `timeout`: 120 000 ms per test
-- Active project: `chromium` only (Firefox/WebKit commented out)
-
-### config/testCaseFilter.ts
-
-Defines which Jira issue keys belong to each module. Used by `/jira-tcs-to-plscript` to know what to fetch and generate. Edit here to add/remove TCs from automation scope. Keys are strings in the format `"BB-XXXX"`.
-
-### config/testMapping.js
-
-Maps source code areas to test tags. Used by `npm run test:area` to select relevant tests when source files change.
-
----
-
-## Conventions & Rules
-
-- **Spec naming**: `tc-<Jira-Key>-<kebab-case-description>.spec.ts` (e.g. `tc-BB-3871-login-valid-credentials.spec.ts`)
-- **Module folders**: PascalCase (e.g. `Library-Management/`, `Audit-Trail/`)
-- **Locator files**: pure selector data — no conditional logic, no page actions
-- **Page object files**: extend `SelfHealingPageBase`, import locators from `src/locators/`
-- **After creating a page object**: always run `/register-page-in-pom` or manually add it to `pom-lazy-self-healing.ts`
-- **Generated specs** (`tests/generated/`): created by skills, but can be manually edited to fix spec logic
-- **Never commit**: `.env`, `playwright-auth.json`, `session-storage.json`, `.playwright-profile/`
-- **AI provider selection**: set exactly one of `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, or `GEMINI_API_KEY` in `.env`
 
 ---
 
 ## Authentication
 
-The app uses **Microsoft Azure AD MFA**. Auth is handled once before the suite runs:
+No global pre-auth step. Every test navigates to the app and signs in via the Login page using credentials from `test-data/login.json`. The fixture starts a fresh browser context — it does not inject stored session state.
 
-1. `global-setup.ts` launches a browser, logs in, saves cookies to `playwright-auth.json`
-2. `self-healing-fixture.ts` injects `playwright-auth.json` + MSAL session storage into every test
-3. If auth expires or breaks: run `npm run auth:reset` then `npm test` to re-authenticate
-
-`playwright-auth.json` is gitignored — each developer maintains their own local auth state.
-
----
-
-## Known Issues in Generated Tests
-
-These are pre-existing issues in `tests/generated/` — do not flag as new bugs:
-
-- **`csv-parser`** — missing package causes test listing failure in `tc-BB-5097` tests
-- **Non-existent matchers** — some specs use `toHaveCountGreaterThan`, `toHaveCountLessThan`, `toHaveDownloaded` which do not exist in Playwright
-- **Invalid locator filter** — some specs use `.filter({name: ...})` which is not a valid Locator option
-
-These can be fixed manually in the spec files or by running `/execute-and-fix-tests`.
+Run `npm run auth:reset` to clear any leftover auth artefacts between runs.

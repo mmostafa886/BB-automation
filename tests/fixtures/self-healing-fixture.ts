@@ -4,8 +4,6 @@ import { GeminiMCPHealingProvider, PlaywrightMCPHealingProvider } from '../../sr
 import { type AIHealingProvider } from '../../src/utils/self-healing-locator';
 import winston from 'winston';
 import { Logger } from '../../src/utils/Logger';
-import * as fs from 'fs';
-import * as path from 'path';
 import * as dotenv from 'dotenv';
 
 // Ensure .env vars are available inside the worker process.
@@ -60,22 +58,6 @@ export const test = base.extend<{ selfHealingFixture: SelfHealingFixture }>({
         const logger = Logger.getLogger(
             `Fixture-SelfHealing-${testInfo.title.replace(/\s+/g, '_')}`
         );
-
-        // ── Inject sessionStorage (MSAL tokens not captured by storageState) ─
-        // globalSetup saves session-storage.json alongside playwright-auth.json.
-        // page.addInitScript runs before the app's own scripts on every navigation,
-        // so MSAL finds its tokens already populated in sessionStorage.
-        const sessionStoragePath = path.resolve('session-storage.json');
-        if (fs.existsSync(sessionStoragePath)) {
-            const sessionData = JSON.parse(
-                fs.readFileSync(sessionStoragePath, 'utf-8')
-            ) as Record<string, string>;
-            await page.addInitScript((data: Record<string, string>) => {
-                for (const [key, value] of Object.entries(data)) {
-                    try { sessionStorage.setItem(key, value); } catch { /* ignore */ }
-                }
-            }, sessionData);
-        }
 
         // ── Resolve AI provider from env vars ────────────────────────────────
         const aiProvider = resolveAIProvider(logger, page);

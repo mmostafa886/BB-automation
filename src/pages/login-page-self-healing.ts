@@ -1,4 +1,4 @@
-import { type Page } from '@playwright/test';
+import { test, expect, type Page } from '@playwright/test';
 import { SelfHealingPageBase } from './self-healing-page-base';
 import { SelfHealingLocator, type AIHealingProvider } from '../utils/self-healing-locator';
 import { loginLocators } from '../locators/login-page-locators';
@@ -7,10 +7,11 @@ import { AdvancedActionsHelper } from '../utils/advanced-actions-helper';
 import { AdvancedAssertionsHelper } from '../utils/advanced-assertions-helper';
 
 /**
- * LoginPageSelfHealing — Page Object for the OrangeHRM login page.
+ * LoginPageSelfHealing — Page Object for the BznsBuilder auth page.
  *
- * Extends `SelfHealingPageBase` and wires every locator from the
- * `loginLocators` repository through `SelfHealingLocator.from()`.
+ * The sign-in flow is two-step:
+ *   1. Click the trigger button on /auth to open the sign-in modal
+ *   2. Fill email + password inside the modal and submit
  *
  * All locators support three-phase self-healing:
  *   Phase 1 → primary CSS/XPath selector
@@ -18,16 +19,16 @@ import { AdvancedAssertionsHelper } from '../utils/advanced-assertions-helper';
  *   Phase 3 → AI healing via Playwright MCP (opt-in, requires aiProvider)
  */
 export class LoginPageSelfHealing extends SelfHealingPageBase {
-    readonly usernameInput:       SelfHealingLocator;
+    readonly signInTriggerButton: SelfHealingLocator;
+    readonly emailInput:          SelfHealingLocator;
     readonly passwordInput:       SelfHealingLocator;
-    readonly loginButton:         SelfHealingLocator;
-    readonly errorMessage:        SelfHealingLocator;
-    readonly dashboardHeader:     SelfHealingLocator;
-    readonly invalidLoginMessage: SelfHealingLocator;
+    readonly signInSubmitButton:  SelfHealingLocator;
+    readonly signInModal:         SelfHealingLocator;
+    readonly errorToast:          SelfHealingLocator;
 
-    private readonly page: Page;
+    private readonly page:    Page;
     private readonly actions: AdvancedActionsHelper;
-    private readonly assert: AdvancedAssertionsHelper;
+    private readonly assert:  AdvancedAssertionsHelper;
 
     constructor(page: Page, testName: string, aiProvider?: AIHealingProvider) {
         super();
@@ -37,96 +38,82 @@ export class LoginPageSelfHealing extends SelfHealingPageBase {
 
         const logger = Logger.getLogger(`LoginPageSelfHealing-${testName}`);
 
-        this.usernameInput       = SelfHealingLocator.from(page, loginLocators.usernameInput,       logger, aiProvider);
+        this.signInTriggerButton = SelfHealingLocator.from(page, loginLocators.signInTriggerButton, logger, aiProvider);
+        this.emailInput          = SelfHealingLocator.from(page, loginLocators.emailInput,          logger, aiProvider);
         this.passwordInput       = SelfHealingLocator.from(page, loginLocators.passwordInput,       logger, aiProvider);
-        this.loginButton         = SelfHealingLocator.from(page, loginLocators.loginButton,         logger, aiProvider);
-        this.errorMessage        = SelfHealingLocator.from(page, loginLocators.errorMessage,        logger, aiProvider);
-        this.dashboardHeader     = SelfHealingLocator.from(page, loginLocators.dashboardHeader,     logger, aiProvider);
-        this.invalidLoginMessage = SelfHealingLocator.from(page, loginLocators.invalidLoginMessage, logger, aiProvider);
+        this.signInSubmitButton  = SelfHealingLocator.from(page, loginLocators.signInSubmitButton,  logger, aiProvider);
+        this.signInModal         = SelfHealingLocator.from(page, loginLocators.signInModal,         logger, aiProvider);
+        this.errorToast          = SelfHealingLocator.from(page, loginLocators.errorToast,          logger, aiProvider);
     }
 
     // ── Navigation ──────────────────────────────────────────────────────────
 
-    /** Navigate to the OrangeHRM login page */
-    async navigateToLogin(baseURL = '/'): Promise<void> {
-        await this.actions.goto(baseURL, 'Navigate to login page');
+    /** Navigate to the BznsBuilder root — the app auto-redirects to /auth */
+    async navigateToLogin(): Promise<void> {
+        await test.step('Navigate to BznsBuilder auth page', async () => {
+            await this.actions.goto('/', 'Navigate to BznsBuilder — auto-redirects to /auth');
+        });
     }
 
-    // ── Action Methods (NO assertions, NO test.step calls) ──────────────────
+    // ── Action Methods ───────────────────────────────────────────────────────
 
-    /**
-     * Perform a login with the given credentials.
-     * Resolves each locator through self-healing before interacting.
-     */
-    async login(username: string, password: string): Promise<void> {
-        await this.actions.fill(await this.usernameInput.get(), username, 'Fill username field');
-        await this.actions.fill(await this.passwordInput.get(), password, 'Fill password field', true);
-        await this.actions.click(await this.loginButton.get(), 'Click login button');
-    }
-
-    // ── Assertion Methods (NO test.step calls — StepRunner handles wrapping) ─
-
-    /**
-     * Assert that the Dashboard header is visible (i.e. login succeeded).
-     */
-    async assertDashboardVisible(): Promise<void> {
-        await this.assert.toBeVisible(await this.dashboardHeader.get(), 'Dashboard header is visible');
+    /** Click the main-page trigger to open the sign-in modal */
+    async openSignInModal(): Promise<void> {
+        await test.step('Open sign-in modal', async () => {
+            await this.actions.click(await this.signInTriggerButton.get(), 'Click Sign in trigger to open modal');
+        });
     }
 
     /**
-     * Assert that the invalid-credentials error is visible.
+     * Fill email + password inside an already-open modal and click submit.
+     * Call openSignInModal() first if the modal is not yet open.
      */
-    async assertInvalidCredentialsError(): Promise<void> {
-        await this.assert.toBeVisible(await this.invalidLoginMessage.get(), 'Invalid credentials error message is visible');
-    }
-
-    /** Asserts that the login page is displayed correctly with all expected elements visible */
-    async assertLoginPageVisible(): Promise<void> {
-        await this.assert.toBeVisible(await this.usernameInput.get(), 'Verify username input is visible');
-        await this.assert.toBeVisible(await this.passwordInput.get(), 'Verify password input is visible');
-        await this.assert.toBeVisible(await this.loginButton.get(), 'Verify login button is visible');
+    async fillAndSubmitSignInForm(email: string, password: string): Promise<void> {
+        await test.step(`Fill and submit sign-in form: ${email}`, async () => {
+            await this.actions.fill(await this.emailInput.get(), email, 'Fill email field');
+            await this.actions.fill(await this.passwordInput.get(), password, 'Fill password field', true);
+            await this.actions.click(await this.signInSubmitButton.get(), 'Click Sign in submit button');
+        });
     }
 
     /**
-     * Verifies the login page is displayed with all expected elements visible.
-     * @generated-impl Polish_Generated_Code Task 4
+     * Convenience method: open modal + fill + submit in one call.
+     * Use fillAndSubmitSignInForm() instead when asserting the modal state mid-flow.
      */
-    async verifyLoginPageIsDisplayed(): Promise<void> {
-        await this.assert.toBeVisible(await this.usernameInput.get(), 'Username input is visible on login page');
-        await this.assert.toBeVisible(await this.passwordInput.get(), 'Password input is visible on login page');
-        await this.assert.toBeVisible(await this.loginButton.get(), 'Login button is visible on login page');
+    async login(email = '', password = ''): Promise<void> {
+        await test.step(`Login: ${email}`, async () => {
+            await this.openSignInModal();
+            await this.fillAndSubmitSignInForm(email, password);
+        });
     }
 
-    /**
-     * Verifies the login page content (title, inputs, button) — used after a logout redirect.
-     * @generated-impl Polish_Generated_Code Task 4
-     */
-    async verifyPageContent(): Promise<void> {
-        await this.assert.toBeVisible(await this.loginButton.get(), 'Login button is visible — login page is displayed');
-        await this.assert.toBeVisible(await this.usernameInput.get(), 'Username input is visible');
-        await this.assert.toBeVisible(await this.passwordInput.get(), 'Password input is visible');
+    // ── Assertion Methods ────────────────────────────────────────────────────
+
+    /** Assert the main auth page is loaded with the Sign in trigger visible */
+    async assertAuthPageVisible(): Promise<void> {
+        await test.step('Assert auth page is visible', async () => {
+            await this.assert.toHaveURL(/\/auth/, 'Auth page URL contains /auth');
+            await this.assert.toBeVisible(await this.signInTriggerButton.get(), 'Sign in trigger button is visible');
+        });
     }
 
-    /**
-     * Logs in as a Medicinal Chemist using the credentials from the environment.
-     * Falls back to a default test Medicinal Chemist account when env vars are absent.
-     * @generated-impl Polish_Generated_Code Task 4
-     */
-    async loginAsMedicinalChemist(): Promise<void> {
-        const username = process.env.MEDICINAL_CHEMIST_USERNAME ?? process.env.MC_USERNAME ?? 'medicinal_chemist';
-        const password = process.env.MEDICINAL_CHEMIST_PASSWORD ?? process.env.MC_PASSWORD ?? 'password';
-        await this.actions.fill(await this.usernameInput.get(), username, 'Fill Medicinal Chemist username');
-        await this.actions.fill(await this.passwordInput.get(), password, 'Fill Medicinal Chemist password', true);
-        await this.actions.click(await this.loginButton.get(), 'Click login button as Medicinal Chemist');
+    /** Assert the sign-in modal is open with all form elements present */
+    async assertSignInModalVisible(): Promise<void> {
+        await test.step('Assert sign-in modal is visible', async () => {
+            await this.assert.toBeVisible(await this.signInModal.get(),         'Sign-in modal is visible');
+            await this.assert.toBeVisible(await this.emailInput.get(),          'Email input is visible');
+            await this.assert.toBeVisible(await this.passwordInput.get(),       'Password input is visible');
+            await this.assert.toBeVisible(await this.signInSubmitButton.get(),  'Sign in submit button is visible');
+            await this.assertAuthPageVisible();
+        });
     }
 
-    // ── Combined Methods (navigation + assertion) ────────────────────────────
-
-    /** Navigate directly to a protected URL and assert redirection to the login page */
-    async navigateToProtectedRoute(protectedUrl: string): Promise<void> {
-        await this.actions.goto(protectedUrl, 'Navigate directly to protected route');
-        await this.assert.toHaveURL(/login/, 'Assert redirected to login page URL');
-        await this.assert.toBeVisible(await this.loginButton.get(), 'Assert login button is visible on redirected login page');
+    /** Assert the error snackbar is displayed after a failed sign-in attempt */
+    async assertErrorToastVisible(): Promise<void> {
+        await test.step('Assert error toast is visible', async () => {
+            await this.assert.toBeVisible(await this.errorToast.get(), 'Error toast notification is visible');
+        });
     }
 
+    
 }

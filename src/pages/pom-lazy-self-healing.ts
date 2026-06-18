@@ -1,6 +1,6 @@
 import { type Page } from '@playwright/test';
 import { LoginPageSelfHealing } from './login-page-self-healing';
-import { InstrumentsPageSelfHealing } from './instruments-page-self-healing';
+import { HomePageSelfHealing } from './home-page-self-healing';
 import { type AIHealingProvider } from '../utils/self-healing-locator';
 
 /**
@@ -17,14 +17,9 @@ import { type AIHealingProvider } from '../utils/self-healing-locator';
  * ```typescript
  * import { test, expect } from '../../fixtures/self-healing-fixture';
  *
- * test('login flow', async ({ page, selfHealingFixture: { pomSelfHealing } }) => {
+ * test('login flow', async ({ selfHealingFixture: { pomSelfHealing } }) => {
  *     await pomSelfHealing.loginPage.navigateToLogin();
  *     await pomSelfHealing.loginPage.login('admin', 'admin123');
- * });
- *
- * test('instruments', async ({ page, selfHealingFixture: { pomSelfHealing } }) => {
- *     await pomSelfHealing.instrumentsPage.clickInstrumentsTabFromSideMenu();
- *     await pomSelfHealing.instrumentsPage.verifyInstrumentsPageContent();
  * });
  * ```
  */
@@ -34,7 +29,7 @@ export class POMLazySelfHealing {
     private readonly _aiProvider?: AIHealingProvider;
 
     private _loginPage?: LoginPageSelfHealing;
-    private _instrumentsPage?: InstrumentsPageSelfHealing;
+    private _homePage?:  HomePageSelfHealing;
 
     constructor(page: Page, testName?: string, aiProvider?: AIHealingProvider) {
         this.page = page;
@@ -56,16 +51,16 @@ export class POMLazySelfHealing {
         return this._loginPage;
     }
 
-    /** Returns the InstrumentsPageSelfHealing instance, creating it on first access */
-    get instrumentsPage(): InstrumentsPageSelfHealing {
-        if (!this._instrumentsPage) {
-            this._instrumentsPage = new InstrumentsPageSelfHealing(
+    /** Returns the HomePageSelfHealing instance, creating it on first access */
+    get homePage(): HomePageSelfHealing {
+        if (!this._homePage) {
+            this._homePage = new HomePageSelfHealing(
                 this.page,
                 this._testName ?? '',
                 this._aiProvider,
             );
         }
-        return this._instrumentsPage;
+        return this._homePage;
     }
 
     // ===================== Healing Report =====================
@@ -77,7 +72,7 @@ export class POMLazySelfHealing {
     getHealingReport(): string {
         const pages = [
             this._loginPage,
-            this._instrumentsPage,
+            this._homePage,
         ];
 
         const sections = pages
