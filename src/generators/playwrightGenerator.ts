@@ -15,7 +15,7 @@ export interface LocatorEntry {
 }
 
 export interface TestCase {
-  id: number;
+  id: string;
   title: string;
   module?: string;
   area?: string;

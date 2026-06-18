@@ -4,7 +4,7 @@
 
 Transforms raw Business Requirements Document (BRD) text into a structured, Agile-ready list of **User Stories** with full **Acceptance Criteria**. It acts as an expert Product Owner / Business Analyst, applying the INVEST principle to produce atomic, testable stories that cover both happy paths and error/validation flows.
 
-After generating the stories it automatically saves the output to a local markdown file named after the feature. Optionally, passing `--local-only=false` pushes the generated User Stories to Azure DevOps as User Story work items and saves a `_ADO_IDs.json` mapping file.
+After generating the stories it automatically saves the output to a local markdown file named after the feature. Optionally, passing `--local-only=false` pushes the generated User Stories to Jira as User Story issues and saves a `_Jira_IDs.json` mapping file.
 
 ---
 
@@ -13,7 +13,7 @@ After generating the stories it automatically saves the output to a local markdo
 | Variable | Description |
 | --- | --- |
 | `{{input_brd}}` | Raw BRD text **or** a file path to a BRD document (see supported formats below). |
-| `--local-only=false` | Optional flag. When present, pushes generated User Stories to ADO as work items after saving locally. |
+| `--local-only=false` | Optional flag. When present, pushes generated User Stories to Jira as issues after saving locally. |
 | `--local-only=true` | Optional flag. Save locally only. This is also the **default** when the flag is omitted. |
 
 ### Supported file formats
@@ -34,9 +34,11 @@ When `{{input_brd}}` is a file path, the skill detects the extension and parses 
 
 | Variable | Description |
 | --- | --- |
-| `AZURE_DEVOPS_ORG_URL` | e.g. `https://dev.azure.com/your-org` |
-| `AZURE_PROJECT_NAME` | Your ADO project name |
-| `AZURE_PERSONAL_ACCESS_TOKEN` | PAT with Work Items read/write scope |
+| `JIRA_BASE_URL` | e.g. `https://your-org.atlassian.net` |
+| `JIRA_EMAIL` | Jira account email address |
+| `JIRA_API_TOKEN` | Jira API token with Issues read/write scope |
+| `JIRA_PROJECT_KEY` | Your Jira project key (e.g. `PROJ`) |
+| `JIRA_US_ISSUE_TYPE` | Issue type for User Stories (default: `Story`) |
 
 ---
 
@@ -60,7 +62,7 @@ A markdown document containing one or more User Stories, each following this tem
 
 ```text
 stories/<FeatureName>_UserStories.md          (always)
-stories/<FeatureName>_ADO_IDs.json            (only when --local-only=false)
+stories/<FeatureName>_Jira_IDs.json           (only when --local-only=false)
 ```
 
 The `FeatureName` is extracted from the BRD title or primary subject and sanitized (e.g., `"Add Employee"` → `Add_Employee`).
@@ -82,8 +84,8 @@ The `FeatureName` is extracted from the BRD title or primary subject and sanitiz
 
 ```text
 [brd-to-uss] --local-only (default)──► uss-to-tcs → tcs-to-plscript
-             --local-only=false    ──► ADO (User Story WIs created)
-                                        └──► ado-uss-to-tcs / tcs-to-ado
+             --local-only=false    ──► Jira (User Story issues created)
+                                        └──► jira-uss-to-tcs / tcs-to-jira
 ```
 
 This is **Step 1** of the pipeline. Its output (`stories/<FeatureName>_UserStories.md`) feeds directly into `uss-to-tcs`.
@@ -99,4 +101,4 @@ Provide a BRD file path or raw text as the input. The skill will:
 3. Generate all User Stories
 4. Save them to `stories/<FeatureName>_UserStories.md`
 5. Confirm the saved path
-6. If `--local-only=false`: push each US to ADO and save `stories/<FeatureName>_ADO_IDs.json`
+6. If `--local-only=false`: push each US to Jira and save `stories/<FeatureName>_Jira_IDs.json`

@@ -18,7 +18,7 @@ cases you produce:
 
 ⚠️ **IMPORTANT:** Step B-5 (UI Wireframe Discovery) is **MANDATORY** and must be executed **AFTER Step B-4** (TC deduplication) and **BEFORE OUTPUT FORMAT** (script generation). Wireframe context must be available so locator selectors can be derived from real DOM elements rather than inferred from TC step text.
 
-**Exception:** Skip Step B-5 only when invoked from a pipeline orchestrator (e.g., `brd-full-pipeline`, `ado-full-pipeline`), as documented in the Step B-5 skip condition.
+**Exception:** Skip Step B-5 only when invoked from a pipeline orchestrator (e.g., `brd-full-pipeline`, `jira-full-pipeline`), as documented in the Step B-5 skip condition.
 
 **Enforcement:** If Step B-5 is skipped without a pipeline orchestrator context, the skill execution is considered incomplete.
 
@@ -348,7 +348,7 @@ Full spec file. Repeat for every TC in the input. All tests are generated with `
    mkdir -p tests/generated/<Module>
    ```
 5b. **Test-data file** (`test-data/<target-file>.json`):
-   - Derive `<target-file>` by TC title heuristic (same as ado-tcs-to-plscript):
+   - Derive `<target-file>` by TC title heuristic (same as jira-tcs-to-plscript):
      title contains "creat"/"add"/"new" → `new-<module-kebab>.json`;
      "list"/"filter"/"search"/"view" → `<module-kebab>-listing.json`;
      "edit"/"update"/"modif" → `edit-<module-kebab>.json`;
@@ -460,7 +460,7 @@ Use `AskUserQuestion` with exactly two options:
 
 > **Skip conditions — do NOT run tests if ANY of the following is true:**
 > - `EXECUTE_TESTS = false` (flag absent or explicitly `--execute-tests=false`)
-> - This skill was invoked from within `brd-full-pipeline` or `ado-full-pipeline`
+> - This skill was invoked from within `brd-full-pipeline` or `jira-full-pipeline`
 >
 > In all skip cases: print `"Test execution skipped."` and jump directly to **POLISH BEFORE PR**.
 
@@ -744,7 +744,7 @@ Then proceed with the pipeline.
 ### Step B-5 — UI Wireframe Discovery [MANDATORY]
 
 > **Skip condition**: If invoked from within a pipeline orchestrator (e.g. `brd-full-pipeline`,
-> `ado-full-pipeline`), set `wireframeContext = null` and skip this step.
+> `jira-full-pipeline`), set `wireframeContext = null` and skip this step.
 >
 > **Otherwise: THIS STEP IS MANDATORY.** Do not skip for direct `/tcs-to-plscript` invocations.
 

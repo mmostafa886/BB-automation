@@ -93,7 +93,7 @@
           <li>Expert instructions (multi-step workflow)</li>
           <li>Tool permissions (Bash, Edit, Write, Grep, APIs)</li>
           <li>Auto-chaining logic (one skill triggers the next)</li>
-          <li>External integrations (Azure DevOps, Playwright MCP)</li>
+          <li>External integrations (Jira, Playwright MCP)</li>
         </ul>
         <p><em>Think of them as <strong>plugins or macros for intelligent test automation</strong></em></p>
         <aside class="notes">SKILLS bridge the gap between prompts (one-shot) and scripts (fixed steps). They're designed for complex, multi-step workflows that need to adapt to the environment.</aside>
@@ -177,14 +177,14 @@ Create src/pages/&lt;page&gt;-page-self-healing.ts
         <table class="small-text">
           <tr>
             <td><strong>Requirements</strong><br>/brd-to-uss</td>
-            <td><strong>Test Design</strong><br>/uss-to-tcs<br>/ado-uss-to-tcs<br>/merge-tc-sets</td>
-            <td><strong>Test Automation</strong><br>/tcs-to-plscript<br>/ado-tcs-to-plscript<br>/taf-full-pipeline</td>
+            <td><strong>Test Design</strong><br>/uss-to-tcs<br>/jira-uss-to-tcs<br>/merge-tc-sets</td>
+            <td><strong>Test Automation</strong><br>/tcs-to-plscript<br>/jira-tcs-to-plscript<br>/taf-full-pipeline</td>
           </tr>
           <tr>
             <td colspan="3"><strong>Execution & Debug</strong><br>/execute-and-fix-tests | /analyze-trace</td>
           </tr>
           <tr>
-            <td colspan="3"><strong>Reporting</strong><br>/tcs-to-ado | /ado-full-pipeline</td>
+            <td colspan="3"><strong>Reporting</strong><br>/tcs-to-jira | /jira-full-pipeline</td>
           </tr>
           <tr>
             <td colspan="3"><strong>Maintenance</strong><br>/rename-and-merge-module | /move-specs-to-module</td>
@@ -239,8 +239,8 @@ Create src/pages/&lt;page&gt;-page-self-healing.ts
             <td>3</td>
           </tr>
           <tr>
-            <td>ADO Integration</td>
-            <td>Push to Azure DevOps</td>
+            <td>Jira Integration</td>
+            <td>Push to Jira</td>
             <td>2</td>
           </tr>
         </table>
@@ -278,7 +278,7 @@ Layer 4: TEST SPECS
         <p style="margin-top: 1em;"><strong>Content Generation:</strong></p>
         <p style="font-size: 0.9em;">brd-to-uss → uss-to-tcs → tcs-to-plscript → polish-generated-code</p>
         <p style="margin-top: 1em;"><strong>ADO-Native:</strong></p>
-        <p style="font-size: 0.9em;">brd-to-uss → ado-uss-to-tcs → tcs-to-ado (+Test Plan)<br/>ado-tcs-to-plscript → polish-generated-code</p>
+        <p style="font-size: 0.9em;">brd-to-uss → jira-uss-to-tcs → tcs-to-jira (+Test Plan)<br/>jira-tcs-to-plscript → polish-generated-code</p>
         <p style="margin-top: 1.5em; color: #ffeb3b;"><em>Each arrow = automatic chaining (no human input)</em></p>
         <aside class="notes">The beauty of auto-chaining is that you invoke one skill and the entire pipeline runs. For example, /brd-full-pipeline will parse the BRD, generate User Stories, generate Test Cases, generate Playwright specs, and polish them — all without you doing anything.</aside>
       </section>
@@ -289,7 +289,7 @@ Layer 4: TEST SPECS
         <ul>
           <li><strong>BRD in, green tests out</strong> — no manual TC writing, no manual spec coding</li>
           <li><strong>Self-healing locators</strong> — 3-phase fallback: primary selector → semantic AI → full browser re-inspection</li>
-          <li><strong>Bidirectional Azure DevOps</strong> — generate FROM ADO work items OR push TO ADO with full traceability</li>
+          <li><strong>Bidirectional Jira</strong> — generate FROM ADO work items OR push TO ADO with full traceability</li>
           <li><strong>Zero manual locator hunting</strong> — extracted from specs, organized in repositories</li>
           <li><strong>Autonomous test repair</strong> — /execute-and-fix-tests inspects failures, fixes code, re-runs</li>
         </ul>
@@ -323,9 +323,9 @@ Layer 4: TEST SPECS
         <ol style="font-size: 0.9em;">
           <li><strong>taf-full-pipeline</strong> — Detects progress, chains 6 skills sequentially</li>
           <li><strong>brd-full-pipeline</strong> — PDF parsing → codegen → commit</li>
-          <li><strong>ado-full-pipeline</strong> — BRD → ADO work items + local artifacts</li>
+          <li><strong>jira-full-pipeline</strong> — BRD → ADO work items + local artifacts</li>
           <li><strong>execute-and-fix-tests</strong> — Autonomous run→inspect→fix→re-run loop with Playwright MCP</li>
-          <li><strong>ado-tcs-to-plscript</strong> — Fetches ADO data → generates TAF code</li>
+          <li><strong>jira-tcs-to-plscript</strong> — Fetches ADO data → generates TAF code</li>
           <li><strong>analyze-trace</strong> — Parse trace.zip → classify failure → apply patch</li>
           <li><strong>polish-generated-code</strong> — 5 code-quality passes</li>
         </ol>
@@ -361,7 +361,7 @@ Layer 4: TEST SPECS
                      BashTool(), FileEditTool()]),
   llm=ChatOpenAI(model="gpt-4"),
 )</code></pre>
-        <p style="margin-top: 1em;"><strong>Example 2: /ado-full-pipeline in CrewAI</strong></p>
+        <p style="margin-top: 1em;"><strong>Example 2: /jira-full-pipeline in CrewAI</strong></p>
         <pre style="font-size: 0.7em;"><code class="language-python">crew = Crew(agents=[
   BRDAnalystAgent(), UserStoryWriterAgent(),
   TestCaseGeneratorAgent(), PlaywrightCoderAgent()
@@ -392,7 +392,7 @@ Layer 4: TEST SPECS
           </tr>
           <tr>
             <td>ai-generation.yml</td>
-            <td>Manual: Stage1=/ado-full-pipeline, Stage2=/execute-and-fix-tests</td>
+            <td>Manual: Stage1=/jira-full-pipeline, Stage2=/execute-and-fix-tests</td>
             <td>✅ YES</td>
           </tr>
           <tr>
@@ -404,14 +404,14 @@ Layer 4: TEST SPECS
         <p style="margin-top: 1.5em;"><strong>Invocation:</strong></p>
         <pre style="font-size: 0.75em;"><code>printf '/ADO_Full_Pipeline\n%s' "$(cat $BRD_FILE)" \
   | claude --dangerously-skip-permissions -p</code></pre>
-        <aside class="notes">These are real, production pipelines running in Azure DevOps right now. They invoke SKILLS via the Claude CLI.</aside>
+        <aside class="notes">These are real, production pipelines running in Jira right now. They invoke SKILLS via the Claude CLI.</aside>
       </section>
 
       <!-- Slide 22: CI/CD Patterns -->
       <section>
         <h2>CI/CD Integration Patterns</h2>
         <p><strong>Pattern 1: AI Generation Gate</strong> (ai-generation.yml Stage 1)</p>
-        <p style="font-size: 0.85em;">New BRD → /ado-full-pipeline → generates US, TCs, scripts → pushes branch</p>
+        <p style="font-size: 0.85em;">New BRD → /jira-full-pipeline → generates US, TCs, scripts → pushes branch</p>
         <p style="margin-top: 1em;"><strong>Pattern 2: On-Demand Test Fix</strong> (execute-fix.yml)</p>
         <p style="font-size: 0.85em;">Developer queues pipeline → Claude fixes failing tests autonomously</p>
         <p style="margin-top: 1em;"><strong>Pattern 3: Classic Playwright</strong> (azure-pipelines.yml)</p>

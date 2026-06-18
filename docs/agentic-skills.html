@@ -287,7 +287,7 @@
   </div>
   <div class="trait-chip">
     <span class="trait-icon">🌐</span>
-    <div class="trait-text"><strong>External API Calls</strong>Reads/writes Azure DevOps, REST endpoints, or MCP browser</div>
+    <div class="trait-text"><strong>External API Calls</strong>Reads/writes Jira, REST endpoints, or MCP browser</div>
   </div>
   <div class="trait-chip">
     <span class="trait-icon">🔍</span>
@@ -357,30 +357,30 @@
     </ul>
   </div>
 
-  <!-- ado-full-pipeline -->
+  <!-- jira-full-pipeline -->
   <div class="card">
     <div class="card-accent" style="background:#4f8ef7"></div>
     <div class="card-head">
       <div class="card-title">
         <span class="skill-icon">☁️</span>
-        <span class="skill-name">ado-full-pipeline</span>
+        <span class="skill-name">jira-full-pipeline</span>
       </div>
-      <span class="skill-command">/ado-full-pipeline</span>
+      <span class="skill-command">/jira-full-pipeline</span>
     </div>
     <p class="card-desc">
-      Extends <em>brd-full-pipeline</em> with Azure DevOps integration. After generating User Stories
-      and Test Cases locally, it pushes them to ADO as work items inside a Test Plan and Test Suite,
-      then continues to generate and polish Playwright scripts. Gracefully skips ADO phases when
+      Extends <em>brd-full-pipeline</em> with Jira integration. After generating User Stories
+      and Test Cases locally, it pushes them to Jira as issues inside a Epic and label grouping,
+      then continues to generate and polish Playwright scripts. Gracefully skips Jira phases when
       environment variables are absent.
     </p>
     <div class="card-traits">
       <span class="trait-tag" style="color:#4f8ef7;border-color:#1e3a6e;background:#111e36">🔗 Skill Chaining</span>
-      <span class="trait-tag" style="color:#22c55e;border-color:#163a22;background:#0d2418">🌐 ADO API</span>
+      <span class="trait-tag" style="color:#22c55e;border-color:#163a22;background:#0d2418">🌐 Jira API</span>
       <span class="trait-tag" style="color:#a855f7;border-color:#3a1a5e;background:#1e0f36">🧠 Auto-decisions</span>
       <span class="trait-tag" style="color:#f59e0b;border-color:#3a2d0a;background:#1f1800">🔍 State Detection</span>
     </div>
     <div class="pipeline">
-      <span class="pipeline-step">Phase 0 — Setup + ADO env check</span>
+      <span class="pipeline-step">Phase 0 — Setup + Jira env check</span>
       <span class="pipeline-arrow">→</span>
       <span class="pipeline-step">Phase 1 — BRD → User Stories</span>
       <span class="pipeline-arrow">→</span>
@@ -388,7 +388,7 @@
       <span class="pipeline-arrow">→</span>
       <span class="pipeline-step">Phase 2 — User Stories → Test Cases</span>
       <span class="pipeline-arrow">→</span>
-      <span class="pipeline-step">Phase 2.5 — Push TCs to ADO (Test Plan + Suite)</span>
+      <span class="pipeline-step">Phase 2.5 — Push TCs to Jira (Epic + Suite)</span>
       <span class="pipeline-arrow">→</span>
       <span class="pipeline-step">Phase 3 — TC → Playwright</span>
       <span class="pipeline-arrow">→</span>
@@ -397,8 +397,8 @@
       <span class="pipeline-step">Phase 4 — Git commit</span>
     </div>
     <ul class="behaviors">
-      <li>Checks ADO env vars at startup; sets <code>ADO_ENABLED=false</code> flag and skips ADO phases gracefully</li>
-      <li>Creates ADO Test Plan + Test Suite per feature; links TC work items to parent User Stories</li>
+      <li>Checks Jira env vars at startup; sets <code>ADO_ENABLED=false</code> flag and skips Jira phases gracefully</li>
+      <li>Creates Jira Epic + label grouping per feature; links TC issues to parent User Stories</li>
       <li>Supports re-push entry points: <code>from ado-stories</code> / <code>from ado-test-cases</code></li>
     </ul>
   </div>
@@ -427,13 +427,13 @@
       The most agentic skill in the project. Runs Playwright tests, parses failures, live-inspects
       the running application via the Playwright MCP browser to confirm actual DOM state, applies
       targeted code fixes, and re-runs. Repeats up to 3 total executions (1 initial + 2 fix iterations).
-      With <code>--ado-check</code>, it also fetches ADO Test Case steps and detects contradictions between
+      With <code>--ado-check</code>, it also fetches Jira Test Case steps and detects contradictions between
       documented behavior and live app reality — pausing to ask the user only when a genuine conflict is found.
     </p>
     <div class="card-traits">
       <span class="trait-tag" style="color:#a855f7;border-color:#3a1a5e;background:#1e0f36">🔁 Iterative Loop (3x)</span>
       <span class="trait-tag" style="color:#ef4444;border-color:#3a0f0f;background:#200808">📡 MCP Live Browser</span>
-      <span class="trait-tag" style="color:#22c55e;border-color:#163a22;background:#0d2418">🌐 ADO REST API</span>
+      <span class="trait-tag" style="color:#22c55e;border-color:#163a22;background:#0d2418">🌐 Jira REST API</span>
       <span class="trait-tag" style="color:#4f8ef7;border-color:#1e3a6e;background:#111e36">🧠 Contradiction Detection</span>
       <span class="trait-tag" style="color:#f59e0b;border-color:#3a2d0a;background:#1f1800">⚙️ Auto-fix</span>
     </div>
@@ -446,7 +446,7 @@
       <span class="pipeline-arrow">→</span>
       <span class="pipeline-step">Step 3 — Parse failures</span>
       <span class="pipeline-arrow">→</span>
-      <span class="pipeline-step">Step 3.5 — Fetch ADO steps (--ado-check)</span>
+      <span class="pipeline-step">Step 3.5 — Fetch Jira steps (--ado-check)</span>
       <span class="pipeline-arrow">→</span>
       <span class="pipeline-step">Step 4 — Live MCP inspection</span>
       <span class="pipeline-arrow">→</span>
@@ -465,7 +465,7 @@
     <ul class="behaviors">
       <li>Never guesses selectors — always navigates the live app and takes a DOM snapshot before writing any fix</li>
       <li>Classifies failures into 10 categories (LOCATOR, TEXT, ASSERTION, METHOD-MISSING, NAVIGATION, TIMING, AUTH, COMPILE…)</li>
-      <li>ADO contradiction check: cross-references ADO TC expected result vs. live app — the only mandatory pause point</li>
+      <li>ADO contradiction check: cross-references Jira TC expected result vs. live app — the only mandatory pause point</li>
       <li>After 3 executions, marks unresolved tests with <code>test.fixme</code> + FIXME comment instead of guessing further</li>
       <li>Uses MCP tools: <code>browser_snapshot</code>, <code>browser_click</code>, <code>browser_console_messages</code>, <code>browser_network_requests</code></li>
     </ul>
@@ -512,24 +512,24 @@
     </ul>
   </div>
 
-  <!-- ado-uss-to-tcs -->
+  <!-- jira-uss-to-tcs -->
   <div class="card">
     <div class="card-accent" style="background:#22c55e"></div>
     <div class="card-head">
       <div class="card-title">
         <span class="skill-icon">📋</span>
-        <span class="skill-name">ado-uss-to-tcs</span>
+        <span class="skill-name">jira-uss-to-tcs</span>
       </div>
-      <span class="skill-command">/ado-uss-to-tcs</span>
+      <span class="skill-command">/jira-uss-to-tcs</span>
     </div>
     <p class="card-desc">
-      Fetches User Story work items from Azure DevOps via REST API, generates comprehensive Test Cases
-      (positive, negative, boundary, security, performance, DB, API), then writes TC work items
-      back to ADO linked to their parent User Stories. Includes a mandatory wireframe discovery phase
+      Fetches User Story issues from Jira via REST API, generates comprehensive Test Cases
+      (positive, negative, boundary, security, performance, DB, API), then writes TC issues
+      back to Jira linked to their parent User Stories. Includes a mandatory wireframe discovery phase
       and Definition-of-Done detection.
     </p>
     <div class="card-traits">
-      <span class="trait-tag" style="color:#22c55e;border-color:#163a22;background:#0d2418">🌐 ADO Read + Write</span>
+      <span class="trait-tag" style="color:#22c55e;border-color:#163a22;background:#0d2418">🌐 Jira Read + Write</span>
       <span class="trait-tag" style="color:#4f8ef7;border-color:#1e3a6e;background:#111e36">🔍 Wireframe MCP</span>
       <span class="trait-tag" style="color:#a855f7;border-color:#3a1a5e;background:#1e0f36">🧠 DoD Detection</span>
       <span class="trait-tag" style="color:#f59e0b;border-color:#3a2d0a;background:#1f1800">📡 Auto-config IDs</span>
@@ -538,67 +538,67 @@
       <li>Auto-reads <code>config/ado-us-ids.json</code> if present; supports tag/area-path/WIQL queries</li>
       <li>Detects Definition-of-Done criteria in US fields and maps them to AC items</li>
       <li>Step 1e (wireframe discovery) is mandatory before TC generation</li>
-      <li>Writes TC work items to ADO with full step XML, severity, and parent link</li>
-      <li>Supports <code>--save-local</code> and <code>--local-only</code> flags to control ADO writes</li>
+      <li>Writes TC issues to Jira with full step XML, severity, and parent link</li>
+      <li>Supports <code>--save-local</code> and <code>--local-only</code> flags to control Jira writes</li>
     </ul>
   </div>
 
-  <!-- ado-tcs-to-plscript -->
+  <!-- jira-tcs-to-plscript -->
   <div class="card">
     <div class="card-accent" style="background:#22c55e"></div>
     <div class="card-head">
       <div class="card-title">
         <span class="skill-icon">🔌</span>
-        <span class="skill-name">ado-tcs-to-plscript</span>
+        <span class="skill-name">jira-tcs-to-plscript</span>
       </div>
-      <span class="skill-command">/ado-tcs-to-plscript</span>
+      <span class="skill-command">/jira-tcs-to-plscript</span>
     </div>
     <p class="card-desc">
-      Fetches Test Case work items from Azure DevOps using the IDs registered in
+      Fetches Test Case issues from Jira using the IDs registered in
       <code>config/testCaseFilter.js</code>, generates Playwright scripts following the self-healing
       4-layer architecture, and runs a post-generation cleanup. Handles TC step XML parsing from ADO's
       VSTS format.
     </p>
     <div class="card-traits">
-      <span class="trait-tag" style="color:#22c55e;border-color:#163a22;background:#0d2418">🌐 ADO REST API</span>
+      <span class="trait-tag" style="color:#22c55e;border-color:#163a22;background:#0d2418">🌐 Jira REST API</span>
       <span class="trait-tag" style="color:#4f8ef7;border-color:#1e3a6e;background:#111e36">🔗 Chains polish</span>
       <span class="trait-tag" style="color:#a855f7;border-color:#3a1a5e;background:#1e0f36">📡 Wireframe Context</span>
       <span class="trait-tag" style="color:#f59e0b;border-color:#3a2d0a;background:#1f1800">⚙️ XML Step Parsing</span>
     </div>
     <ul class="behaviors">
       <li>Reads module → TC ID mapping from <code>config/testCaseFilter.js</code></li>
-      <li>Fetches each TC work item and parses <code>Microsoft.VSTS.TCM.Steps</code> XML to extract steps</li>
-      <li>Discovers wireframe URLs from attachments on ADO work items</li>
+      <li>Fetches each TC issue and parses <code>Microsoft.VSTS.TCM.Steps</code> XML to extract steps</li>
+      <li>Discovers wireframe URLs from attachments on Jira issues</li>
       <li>Generates all 4 TAF layers and runs polish-generated-code after saving</li>
     </ul>
   </div>
 
-  <!-- tcs-to-ado -->
+  <!-- tcs-to-jira -->
   <div class="card">
     <div class="card-accent" style="background:#22c55e"></div>
     <div class="card-head">
       <div class="card-title">
         <span class="skill-icon">📤</span>
-        <span class="skill-name">tcs-to-ado</span>
+        <span class="skill-name">tcs-to-jira</span>
       </div>
-      <span class="skill-command">/tcs-to-ado</span>
+      <span class="skill-command">/tcs-to-jira</span>
     </div>
     <p class="card-desc">
-      Reads locally-saved Test Case markdown files and pushes each TC to Azure DevOps as a Test Case
-      work item with correctly-formatted step XML. Reuses or creates an ADO Test Plan and creates one
-      Static Test Suite per User Story, then adds each TC to the appropriate suite.
+      Reads locally-saved Test Case markdown files and pushes each TC to Jira as a Test Case
+      issue with correctly-formatted step XML. Reuses or creates an Jira Epic and creates one
+      Static label grouping per User Story, then adds each TC to the appropriate suite.
     </p>
     <div class="card-traits">
-      <span class="trait-tag" style="color:#22c55e;border-color:#163a22;background:#0d2418">🌐 ADO REST API</span>
+      <span class="trait-tag" style="color:#22c55e;border-color:#163a22;background:#0d2418">🌐 Jira REST API</span>
       <span class="trait-tag" style="color:#4f8ef7;border-color:#1e3a6e;background:#111e36">🔁 Per-feature Loop</span>
       <span class="trait-tag" style="color:#a855f7;border-color:#3a1a5e;background:#1e0f36">⚙️ VSTS XML Format</span>
       <span class="trait-tag" style="color:#f59e0b;border-color:#3a2d0a;background:#1f1800">🔗 Suite Linking</span>
     </div>
     <ul class="behaviors">
-      <li>Creates or reuses a named Test Plan when <code>--plan-name</code> is provided</li>
-      <li>Creates one Static Test Suite per User Story and adds child TCs into the correct suite</li>
+      <li>Creates or reuses a named Epic when <code>--plan-name</code> is provided</li>
+      <li>Creates one Static label grouping per User Story and adds child TCs into the correct suite</li>
       <li>Formats step bodies as VSTS TCM step XML compatible with ADO's schema</li>
-      <li>Loops across all feature TC files, tracking created work item IDs</li>
+      <li>Loops across all feature TC files, tracking created issue IDs</li>
     </ul>
   </div>
 
@@ -661,16 +661,16 @@
     </p>
     <div class="card-traits">
       <span class="trait-tag" style="color:#f59e0b;border-color:#3a2d0a;background:#1f1800">🧠 Gap Analysis AI</span>
-      <span class="trait-tag" style="color:#22c55e;border-color:#163a22;background:#0d2418">🌐 ADO TC Fetch</span>
+      <span class="trait-tag" style="color:#22c55e;border-color:#163a22;background:#0d2418">🌐 Jira TC Fetch</span>
       <span class="trait-tag" style="color:#4f8ef7;border-color:#1e3a6e;background:#111e36">🏷️ Auto-tagging</span>
       <span class="trait-tag" style="color:#a855f7;border-color:#3a1a5e;background:#1e0f36">🔍 Wireframe MCP</span>
     </div>
     <ul class="behaviors">
       <li>Auto-detects FileA and FileB from <code>test_cases/</code> — no arguments required</li>
-      <li>Fetches existing ADO TC IDs to avoid duplicating already-pushed test cases</li>
+      <li>Fetches existing Jira TC IDs to avoid duplicating already-pushed test cases</li>
       <li>Gap analysis evaluates 7 coverage dimensions: Positive, Negative, Boundary, Security, Performance, DB, API</li>
       <li>Auto-assigns <code>@Smoke</code> or <code>@Regression</code> and marks automation-suitable TCs with <code>@automation</code></li>
-      <li>Output is ready to pipe directly into <code>/tcs-to-ado</code> and <code>/tcs-to-plscript</code></li>
+      <li>Output is ready to pipe directly into <code>/tcs-to-jira</code> and <code>/tcs-to-plscript</code></li>
     </ul>
   </div>
 
@@ -711,7 +711,7 @@
     <code>/create-selfhealing-page</code>, <code>/register-page-in-pom</code>,
     <code>/move-specs-to-module</code>, <code>/rename-and-merge-module</code>,
     <code>/add-teststep-hooks</code>, <code>/add-method-to-page</code>,
-    <code>/setup-workspace</code>, <code>/patch-ado-tc-tags</code>,
+    <code>/setup-workspace</code>, <code>/patch-jira-tc-labels</code>,
     <code>/taf-full-pipeline</code>, <code>/scaffold-taf-infrastructure</code>,
     <code>/migrate-test-to-selfhealing</code> — excluded (TAF migration skills).
   </p>

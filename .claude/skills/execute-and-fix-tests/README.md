@@ -13,8 +13,8 @@ browser, applies targeted fixes, and re-runs until the selected scope is green.
 /execute-and-fix-tests TC-4778                             ← by TC ID (--grep)
 /execute-and-fix-tests Products                            ← module name shorthand
 /execute-and-fix-tests --grep "TC-477"                     ← raw grep pattern
-/execute-and-fix-tests TC-4778 --ado-check                 ← with ADO contradiction check
-/execute-and-fix-tests Products --ado-check                ← module run + ADO check
+/execute-and-fix-tests TC-4778 --jira-check                ← with Jira contradiction check
+/execute-and-fix-tests Products --jira-check               ← module run + Jira check
 ```
 
 ## What it does
@@ -25,9 +25,9 @@ browser, applies targeted fixes, and re-runs until the selected scope is green.
 | 1 | Runs `npx playwright test <scope>` with list+JSON reporter |
 | 2 | Parses failures — TC ID, failing method, error message, category |
 | 3 | Live-inspects the real app via Playwright MCP (snapshot, screenshot, click, evaluate) |
-| 3.5 | *(--ado-check only)* Fetches ADO TC steps via REST API; classifies each failure as `LOCATOR-ONLY`, `SPEC-WRONG`, or `CONTRADICTION` |
+| 3.5 | *(--jira-check only)* Fetches Jira TC steps via REST API; classifies each failure as `LOCATOR-ONLY`, `SPEC-WRONG`, or `CONTRADICTION` |
 | 4 | Plans the minimal fix per failure |
-| 4.5 | *(--ado-check only)* For each `CONTRADICTION`, pauses and asks the user to choose: fix spec / skip / mark fixme |
+| 4.5 | *(--jira-check only)* For each `CONTRADICTION`, pauses and asks the user to choose: fix spec / skip / mark fixme |
 | 5 | Applies approved fixes (locator file → page class → spec, in that order) |
 | 6 | Re-runs the same scope and loops until green or BLOCKED |
 | 7 | Caps at 2 fix iterations; reports BLOCKED failures with next-steps |
@@ -52,7 +52,7 @@ browser, applies targeted fixes, and re-runs until the selected scope is green.
 > Inspect before fixing — the Playwright MCP browser is used to see the **real** DOM
 > before any selector or text change is written. No guessing.
 >
-> When `--ado-check` is used, the ADO test case is the source of truth. If the ADO
+> When `--jira-check` is used, the Jira test case is the source of truth. If the Jira
 > documented expected result contradicts what the live app shows, execution pauses and
 > the user must confirm the intended fix direction before any change is written.
 

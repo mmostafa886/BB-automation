@@ -9,13 +9,13 @@ where **Claude** and **OpenAI** independently generate Test Cases from the same 
 — this skill combines both sets, removes duplicates, fills identified coverage gaps (with
 your approval), and produces a clean output ready for:
 
-- `/tcs-to-ado <FeatureName>` — push merged TCs to ADO (Test Plan + Suite + work items)
+- `/tcs-to-jira <FeatureName>` — push merged TCs to Jira (Test Plan + Suite + issues)
 - `/tcs-to-plscript <FeatureName>` — generate Playwright automation scripts locally
 
-If `stories/<FeatureName>_ADO_IDs.json` is present, the skill also fetches Test Case work
-items already linked to the User Stories in ADO, **excludes** them from the merged output
-(preventing `/tcs-to-ado` from creating duplicate work items), and counts them as covered
-in the gap analysis so no gaps are flagged for criteria already tested in ADO.
+If `stories/<FeatureName>_Jira_IDs.json` is present, the skill also fetches Test Case issues
+already linked to the User Stories in Jira, **excludes** them from the merged output
+(preventing `/tcs-to-jira` from creating duplicate issues), and counts them as covered
+in the gap analysis so no gaps are flagged for criteria already tested in Jira.
 
 After the merged and deduplicated set is finalised (including accepted gap-analysis
 suggestions), Claude **automatically assigns test tags** to every TC — no user input required:
@@ -31,8 +31,8 @@ suggestions), Claude **automatically assigns test tags** to every TC — no user
   Manual-only TCs (visual checks, physical interaction, one-time ops) do not receive this tag.
 
 Tags are stored in the markdown (`**Tags:** @Smoke; @automation`) and in the JSON mapping
-(`"tags": ["@Smoke", "@automation"]`), so `/tcs-to-ado` writes them to `System.Tags` in
-ADO and downstream skills can filter on them.
+(`"tags": ["@Smoke", "@automation"]`), so `/tcs-to-jira` writes them to `labels` in
+Jira and downstream skills can filter on them.
 
 ---
 
@@ -70,27 +70,26 @@ Resolves input paths, checks both markdown files exist, reports any missing JSON
 
 ---
 
-### Step 1.5 — Fetch Existing ADO Test Cases
+### Step 1.5 — Fetch Existing Jira Test Cases
 
-Runs automatically after Step 1. Attempts to fetch all Test Case work items already linked
-to the User Stories in ADO so duplicates are excluded from the merged output and gap analysis
+Runs automatically after Step 1. Attempts to fetch all Test Case issues already linked
+to the User Stories in Jira so duplicates are excluded from the merged output and gap analysis
 treats those TCs as already covered.
 
-1. Reads US ADO IDs from `stories/<FeatureName>_ADO_IDs.json`
-2. Writes and runs `<FeatureName>_fetch_existing_tcs.js` — expands **all** relations per US
-   (regardless of type), batch-fetches linked work items, keeps only those of type `Test Case`,
-   and deduplicates by ID
-3. Stores results in `existingAdoTcs[]` (flat list across all USs)
+1. Reads US Jira keys from `stories/<FeatureName>_Jira_IDs.json`
+2. Writes and runs `<FeatureName>_fetch_existing_tcs.js` — queries Jira for TC issues linked
+   to each User Story, keeps only those of type `Test Case`, and deduplicates by key
+3. Stores results in `existingJiraTcs[]` (flat list across all USs)
 4. Deletes the temp file immediately after reading
 
 ```text
-Step 1.5 — Existing ADO Test Cases:
-  US #5692: 7 existing TC(s) found
-  US #5693: 3 existing TC(s) found
-Total existing ADO TCs: 10 — will be excluded from merged set and gap analysis.
+Step 1.5 — Existing Jira Test Cases:
+  US PROJ-5692: 7 existing TC(s) found
+  US PROJ-5693: 3 existing TC(s) found
+Total existing Jira TCs: 10 — will be excluded from merged set and gap analysis.
 ```
 
-`existingAdoTcs[]` is used in Step 3 (deduplication Rule 4) and Step 6 (gap analysis).
+`existingJiraTcs[]` is used in Step 3 (deduplication Rule 4) and Step 6 (gap analysis).
 
 Behaviour depends on what is found:
 
@@ -98,9 +97,9 @@ Behaviour depends on what is found:
 | --- | --- |
 | Mapping file present, fetch runs, TCs found | Normal deduplication (Rule 4 in Step 3) |
 | Mapping file present, fetch runs, 0 TCs found | Informational message — continue normally |
-| Mapping file present, credentials missing | ⚠ WARNING — continue without ADO comparison |
-| Mapping file present, fetch script error | ⚠ WARNING — continue without ADO comparison |
-| Mapping file missing, `test_cases/<FeatureName>_ADO_TCs*.json` found | Auto-generates `stories/<FeatureName>_ADO_IDs.json` from `parentAdoId` values → proceeds to fetch |
+| Mapping file present, credentials missing | ⚠ WARNING — continue without Jira comparison |
+| Mapping file present, fetch script error | ⚠ WARNING — continue without Jira comparison |
+| Mapping file missing, `test_cases/<FeatureName>_Jira_TCs*.json` found | Auto-generates `stories/<FeatureName>_Jira_IDs.json` from `parentJiraKey` values → proceeds to fetch |
 | Mapping file missing, no TC mapping file either | Info message — skip (normal first-run state, no warning) |
 
 ---
@@ -121,7 +120,7 @@ Deduplication is applied in priority order:
 | 1 | Exact TC ID match (`TC-<TitleSlug>`) | Keep File A version; log and discard File B duplicate |
 | 2 | Title similarity ≥ 0.80 (normalised Levenshtein) | Keep File A version; log near-duplicate |
 | 3 | Unique TC from File B | Append under its `### Story:` group in the merged file |
-| 4 | TC (from File A or B) whose title matches an existing ADO TC (similarity ≥ 0.80) | Exclude from merged set; log "already covered in ADO (#ID)" — only applied when `existingAdoTcs[]` is non-empty from Step 1.5 |
+| 4 | TC (from File A or B) whose title matches an existing Jira TC (similarity ≥ 0.80) | Exclude from merged set; log "already covered in Jira (KEY)" — only applied when `existingJiraTcs[]` is non-empty from Step 1.5 |
 
 If a File B TC is content-unique but its `tcId` collides with a File A ID, the File B TC
 is renamed with a `-B` suffix (e.g. `TC-Valid_Employee_Creation-B`).
@@ -140,10 +139,10 @@ natively.
 
 ### Step 5 — Merge JSON Mappings (if both exist)
 
-If both TC mapping JSON files are available (`test_cases/<FeatureName>_ADO_TCs.json`),
+If both TC mapping JSON files are available (`test_cases/<FeatureName>_Jira_TCs.json`),
 merges them:
 
-- Prefers real ADO IDs over `null` (e.g. if File B has real IDs from an ADO run)
+- Prefers real Jira keys over `null` (e.g. if File B has real keys from a Jira run)
 - Appends unique File B entries (with `-B` suffix if renamed)
 - Preserves `testPlanId`, `testSuiteId`, `localOnly` metadata
 
@@ -155,10 +154,9 @@ Before gap analysis runs, the skill optionally loads User Stories context from t
 (checked in priority order):
 
 1. **Local markdown** — `stories/<FeatureName>_UserStories.md` (read for acceptance criteria text)
-2. **ADO fetch** — when `stories/<FeatureName>_ADO_IDs.json` exists, the skill fetches
-   `System.Description`, `Microsoft.VSTS.Common.AcceptanceCriteria`, and work item comments
-   for each User Story directly from Azure DevOps. This allows Definition of Done detection
-   even when no local User Stories markdown is present.
+2. **Jira fetch** — when `stories/<FeatureName>_Jira_IDs.json` exists, the skill fetches
+   `description`, `acceptanceCriteria`, and issue comments for each User Story directly from
+   Jira. This allows Definition of Done detection even when no local User Stories markdown is present.
 
 If neither source is available, gap analysis proceeds based solely on the merged TC set
 (Lenses 1, 3, and 4 still apply; Lenses 2 and 5 are skipped).
@@ -171,19 +169,19 @@ of Done section using the following patterns:
 | Source | Heading pattern | Inline bold pattern |
 | --- | --- | --- |
 | Local markdown | `# Definition of Done` … `###### Definition of Done` (any heading level) | `**Definition of Done**` |
-| ADO description / AC | `<h1>`–`<h6>` tags titled "Definition of Done" (case-insensitive) | `<b>Definition of Done</b>` or `<strong>Definition of Done</strong>` |
-| ADO comments | Same HTML patterns as above | Same as above |
+| Jira description / AC | `<h1>`–`<h6>` tags titled "Definition of Done" (case-insensitive) | `<b>Definition of Done</b>` or `<strong>Definition of Done</strong>` |
+| Jira comments | Same HTML patterns as above | Same as above |
 
-Detection priority per story: local markdown → ADO description → ADO acceptance criteria → ADO comment (first match wins).
+Detection priority per story: local markdown → Jira description → Jira acceptance criteria → Jira comment (first match wins).
 
 The source that provided the DoD is tracked as `dodSource`:
 `"userStoriesMd"` | `"description"` | `"acceptanceCriteria"` | `"comment"` | `null`
 
 ---
 
-When `existingAdoTcs[]` is non-empty (from Step 1.5), those TCs are treated as additional
+When `existingJiraTcs[]` is non-empty (from Step 1.5), those TCs are treated as additional
 coverage alongside the merged set for all five lenses — gaps are only flagged for criteria
-not covered by either the merged set OR the ADO-existing TCs.
+not covered by either the merged set OR the Jira-existing TCs.
 
 Analyses the merged set for coverage gaps using five lenses:
 
@@ -207,7 +205,7 @@ For each gap, generates a **fully formed suggested TC** (complete `tcId`, `title
 `preconditions`, `steps[]`, `expectedResult`) — never a stub. Suggestions are shown with
 their gap reason and the user selects which to include (`1,3`, `all`, or `none`). Accepted
 suggestions are appended to the output file and added to the JSON mapping with
-`adoId: null, suggested: true`.
+`jiraKey: null, suggested: true`.
 
 ---
 
@@ -254,7 +252,7 @@ and shows the recommended next commands.
 | Artifact | Location | Notes |
 | --- | --- | --- |
 | Merged TC markdown | `test_cases/<FeatureName>_TestCases.md` (or `--out` path) | Always produced; every TC block includes `**Tags:** @Smoke; @automation` or `**Tags:** @Regression` etc. |
-| Merged TC mapping JSON | `test_cases/<FeatureName>_ADO_TCs.json` | Only when both JSON mappings are present; every entry's `"tags"` array contains tier tag(s) and optionally `"@automation"` |
+| Merged TC mapping JSON | `test_cases/<FeatureName>_Jira_TCs.json` | Only when both JSON mappings are present; every entry's `"tags"` array contains tier tag(s) and optionally `"@automation"` |
 
 ---
 
@@ -280,16 +278,16 @@ When a wireframe URL is provided:
 - Example: wireframe shows "Project Status" dropdown → suggests TCs for each status value, invalid selection, empty state
 - Suggests TCs for all form fields (positive and negative validation), buttons, modals, and navigation links not covered by existing TCs
 
-### 3. Merge with ADO coverage exclusion + wireframe
+### 3. Merge with Jira coverage exclusion + wireframe
 
 ```bash
 /merge-tc-sets Reagents --wireframe-url=https://staging.example.com/reagents
 ```
 
-If `stories/Reagents_ADO_IDs.json` exists from a prior `/ado-uss-to-tcs --local-only` run:
-- Step 1.5 fetches existing TCs already linked to User Stories in ADO
-- Merged output excludes those TCs (no duplicates when pushed to ADO later)
-- Gap analysis treats ADO-existing TCs as covered — suggests only TCs for actual gaps
+If `stories/Reagents_Jira_IDs.json` exists from a prior `/jira-uss-to-tcs --local-only` run:
+- Step 1.5 fetches existing TCs already linked to User Stories in Jira
+- Merged output excludes those TCs (no duplicates when pushed to Jira later)
+- Gap analysis treats Jira-existing TCs as covered — suggests only TCs for actual gaps
 - Wireframe enhances gap detection by identifying missing UI-specific scenarios
 
 ### 4. Auto-detect input files + wireframe + compare coverage
@@ -302,19 +300,19 @@ With no file arguments, the skill auto-detects files in `test_cases/`:
 - 2 files found → auto-merges them
 - Multiple files → lists them and asks which two to merge
 - Wireframe context enriches gap analysis
-- Merged TCs are tagged and ready for `/tcs-to-ado` or `/tcs-to-plscript`
+- Merged TCs are tagged and ready for `/tcs-to-jira` or `/tcs-to-plscript`
 
-### 5. Full workflow: Merge + push to ADO + generate scripts with wireframe
+### 5. Full workflow: Merge + push to Jira + generate scripts with wireframe
 
 ```bash
-# Step 1: Generate Claude TCs from ADO USs (local)
-/ado-uss-to-tcs projects-create --local-only --wireframe-url=https://figma.com/design/projects
+# Step 1: Generate Claude TCs from Jira USs (local)
+/jira-uss-to-tcs projects-create --local-only --wireframe-url=https://figma.com/design/projects
 
 # Step 2: Merge with OpenAI TCs (from external tool)
 /merge-tc-sets Projects --wireframe-url=https://figma.com/design/projects
 
-# Step 3: Push merged TCs to ADO
-/tcs-to-ado Projects
+# Step 3: Push merged TCs to Jira
+/tcs-to-jira Projects
 
 # Step 4: Generate Playwright scripts from merged TCs
 /tcs-to-plscript test_cases/Projects_TestCases.md --wireframe-url=https://figma.com/design/projects --execute-tests=true
@@ -327,36 +325,36 @@ With no file arguments, the skill auto-detects files in `test_cases/`:
 This skill fits into the multi-AI TC generation workflow:
 
 ```text
-Step 1.  /ado-uss-to-tcs <FeatureName> --local-only
-           └─ Fetches USs from ADO
+Step 1.  /jira-uss-to-tcs <FeatureName> --local-only
+           └─ Fetches USs from Jira
            └─ Generates TCs with Claude (in memory)
            └─ Saves: test_cases/<FeatureName>_TestCases.md          ← Claude TCs
-           └─ Saves: test_cases/<FeatureName>_ADO_TCs.json          (adoId: null)
-           └─ Saves: stories/<FeatureName>_ADO_IDs.json             (real US ADO IDs)
+           └─ Saves: test_cases/<FeatureName>_Jira_TCs.json         (jiraKey: null)
+           └─ Saves: stories/<FeatureName>_Jira_IDs.json            (real US Jira keys)
 
 Step 2.  [Manual or external script]
            └─ Generate TCs with OpenAI from the same USs
            └─ Save to: test_cases/<FeatureName>_TestCases_OpenAI.md
 
 Step 3.  /merge-tc-sets
-           └─ Step 1.5: fetches TCs already linked to USs in ADO (uses stories/<F>_ADO_IDs.json)
-           └─ Deduplicates both sets + excludes TCs already in ADO (Rule 4)
-           └─ Gap analysis treats ADO-existing TCs as covered — no redundant suggestions
+           └─ Step 1.5: fetches TCs already linked to USs in Jira (uses stories/<F>_Jira_IDs.json)
+           └─ Deduplicates both sets + excludes TCs already in Jira (Rule 4)
+           └─ Gap analysis treats Jira-existing TCs as covered — no redundant suggestions
            └─ Saves merged: test_cases/<FeatureName>_TestCases.md   ← new TCs only
-           └─ Updates: test_cases/<FeatureName>_ADO_TCs.json        (if JSON present)
+           └─ Updates: test_cases/<FeatureName>_Jira_TCs.json       (if JSON present)
 
-Step 4.  /tcs-to-ado <FeatureName>
+Step 4.  /tcs-to-jira <FeatureName>
            └─ Reads merged test_cases/<FeatureName>_TestCases.md
-           └─ Reads stories/<FeatureName>_ADO_IDs.json  (from Step 1)
-           └─ Creates ADO Test Plan + Suite + TC work items with TestedBy links
-           └─ Writes @Smoke / @Regression / @automation to System.Tags on each TC
+           └─ Reads stories/<FeatureName>_Jira_IDs.json  (from Step 1)
+           └─ Creates Jira issues with TestedBy links
+           └─ Writes @Smoke / @Regression / @automation to labels on each TC
 
 Step 5a. /tcs-to-plscript <FeatureName>
            └─ Reads merged markdown, generates scripts for @automation TCs
            └─ Auto-chains to polish-generated-code
 
-Step 5b. /ado-tcs-to-plscript --tag @automation   (after Step 4)
-           └─ Fetches TCs tagged @automation from ADO
+Step 5b. /jira-tcs-to-plscript --tag @automation   (after Step 4)
+           └─ Fetches TCs labelled @automation from Jira
            └─ Use --tag @Smoke to generate the smoke suite only
 ```
 
@@ -381,7 +379,7 @@ File A is always the **primary source** — its TCs are never removed or modifie
 - Never writes output without user confirmation (shows merge preview first).
 - If `--keep-both` is passed, never overwrites either input file.
 - JSON merge is skipped gracefully if only one (or neither) JSON mapping file exists.
-- **Step 1.5 (ADO fetch) is non-fatal but never silent** — if `stories/<FeatureName>_ADO_IDs.json` is absent, ADO credentials are missing, or the fetch script fails, the skill prints a `⚠ WARNING` block explaining the reason, the impact (merged output was not compared against ADO; `/tcs-to-ado` may create duplicates), and the fix. The merge then continues with `existingAdoTcs[]` empty — no TCs are excluded and gap analysis treats the merged set as the sole source of coverage.
+- **Step 1.5 (Jira fetch) is non-fatal but never silent** — if `stories/<FeatureName>_Jira_IDs.json` is absent, Jira credentials are missing, or the fetch script fails, the skill prints a `⚠ WARNING` block explaining the reason, the impact (merged output was not compared against Jira; `/tcs-to-jira` may create duplicates), and the fix. The merge then continues with `existingJiraTcs[]` empty — no TCs are excluded and gap analysis treats the merged set as the sole source of coverage.
 - No auto-chaining — next steps are printed as recommendations.
 
 ---
@@ -391,7 +389,7 @@ File A is always the **primary source** — its TCs are never removed or modifie
 | Scenario | Use |
 | --- | --- |
 | Combine Claude TCs + OpenAI TCs for the same feature | `merge-tc-sets` |
-| After merge, push TCs to ADO (Test Plan + Suite) | `tcs-to-ado` |
+| After merge, push TCs to Jira (issues with links) | `tcs-to-jira` |
 | After merge, generate Playwright scripts | `tcs-to-plscript` |
-| Generate TCs from ADO User Stories (Claude) | `ado-uss-to-tcs --local-only` |
+| Generate TCs from Jira User Stories (Claude) | `jira-uss-to-tcs --local-only` |
 | Generate TCs from a local User Stories markdown | `uss-to-tcs` |

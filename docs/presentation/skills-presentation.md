@@ -43,7 +43,7 @@ Each skill encodes:
 - Expert instructions (multi-step workflow)
 - Tool permissions (Bash, Edit, Write, Grep, APIs)
 - Auto-chaining logic (one skill triggers the next)
-- External integrations (Azure DevOps, Playwright MCP)
+- External integrations (Jira, Playwright MCP)
 
 Think of them as **plugins or macros for intelligent test automation**
 
@@ -99,12 +99,12 @@ action and assertion methods...
 ```
 Requirements         Test Design           Test Automation
 /brd-to-uss         /uss-to-tcs           /tcs-to-plscript
-                    /ado-uss-to-tcs       /ado-tcs-to-plscript
+                    /jira-uss-to-tcs       /jira-tcs-to-plscript
                     /merge-tc-sets        /taf-full-pipeline
 
                     Execution             Reporting
-                    /execute-and-fix-tests /tcs-to-ado
-                    /analyze-trace        /ado-full-pipeline
+                    /execute-and-fix-tests /tcs-to-jira
+                    /analyze-trace        /jira-full-pipeline
 
                     Maintenance
                     /rename-and-merge-module
@@ -125,13 +125,13 @@ Requirements         Test Design           Test Automation
 
 | Tier | Purpose | Example Skills | Count |
 |---|---|---|---|
-| **Orchestration** | Full pipelines | taf-full-pipeline, brd-full-pipeline, ado-full-pipeline | 3 |
-| **Content Generation** | BRD→US→TC→Code | brd-to-uss, uss-to-tcs, tcs-to-plscript, ado-uss-to-tcs, ado-tcs-to-plscript | 5 |
+| **Orchestration** | Full pipelines | taf-full-pipeline, brd-full-pipeline, jira-full-pipeline | 3 |
+| **Content Generation** | BRD→US→TC→Code | brd-to-uss, uss-to-tcs, tcs-to-plscript, jira-uss-to-tcs, jira-tcs-to-plscript | 5 |
 | **TAF Builders** | Page objects, locators | scaffold-taf-infrastructure, create-page-locators, create-selfhealing-page | 4 |
 | **Polish & Quality** | Code cleanup | polish-generated-code, add-teststep-hooks | 2 |
 | **Debugging** | Fix failing tests | execute-and-fix-tests, analyze-trace | 2 |
 | **Management** | Test organization | move-specs-to-module, rename-and-merge-module, merge-tc-sets | 3 |
-| **ADO Integration** | Push to Azure DevOps | tcs-to-ado, register-page-in-pom | 2 |
+| **Jira Integration** | Push to Jira | tcs-to-jira, register-page-in-pom | 2 |
 
 ---
 
@@ -174,8 +174,8 @@ Content Generation Pipeline:
 brd-to-uss → uss-to-tcs → tcs-to-plscript → polish-generated-code
 
 ADO-Native Pipeline:
-brd-to-uss → ado-uss-to-tcs → tcs-to-ado (+ Test Plan)
-             ado-tcs-to-plscript → polish-generated-code
+brd-to-uss → jira-uss-to-tcs → tcs-to-jira (+ Test Plan)
+             jira-tcs-to-plscript → polish-generated-code
 ```
 
 Each arrow = automatic chaining (no human input between steps)
@@ -186,7 +186,7 @@ Each arrow = automatic chaining (no human input between steps)
 
 - **BRD in, green tests out** — no manual TC writing, no manual spec coding
 - **Self-healing locators** — 3-phase fallback: primary selector → semantic AI → full browser re-inspection
-- **Bidirectional Azure DevOps** — generate FROM ADO work items OR push TO ADO with full traceability
+- **Bidirectional Jira** — generate FROM Jira work items OR push TO Jira with full traceability
 - **Zero manual locator hunting** — extracted from specs, organized in repositories
 - **Autonomous test repair** — `/execute-and-fix-tests` inspects failures, fixes locators/methods, re-runs
 
@@ -217,9 +217,9 @@ Characteristics:
 
 1. **taf-full-pipeline** — Detects TAF progress, chains 6 downstream skills sequentially
 2. **brd-full-pipeline** — PDF parsing → user story codegen → test case generation → Playwright scripts → commit
-3. **ado-full-pipeline** — BRD → Azure DevOps work items → Test Plan/Suite creation → local artifacts
+3. **jira-full-pipeline** — BRD → Jira work items → Test Plan/Suite creation → local artifacts
 4. **execute-and-fix-tests** — Autonomous run→inspect→fix→re-run loop with Playwright MCP browser
-5. **ado-tcs-to-plscript** — Fetches live ADO test case data → generates full TAF code → registers pages
+5. **jira-tcs-to-plscript** — Fetches live Jira test case data → generates full TAF code → registers pages
 6. **analyze-trace** — Parse Playwright trace.zip → classify failure → apply targeted patch
 7. **polish-generated-code** — 5 distinct code-quality passes (escape fixes, method reordering, locator extraction, method scaffolding, helper validation)
 
@@ -261,7 +261,7 @@ agent = AgentExecutor(
 )
 ```
 
-**Example 2: `/ado-full-pipeline` in CrewAI**
+**Example 2: `/jira-full-pipeline` in CrewAI**
 ```python
 crew = Crew(
   agents=[
@@ -290,14 +290,14 @@ Located in `pipelines/` folder:
 
 | File | Purpose | Uses SKILLS? |
 |---|---|---|
-| `azure-pipelines.yml` | PR/push trigger → run tests for changed areas → publish reports | ❌ No (uses Node script) |
+| `azure-pipelines.yml (legacy)` | PR/push trigger → run tests for changed areas → publish reports | ❌ No (uses Node script) |
 | `main.yml` | Earlier variant of above | ❌ No |
-| `ai-generation.yml` | Manual queue: Stage 1 = `/ado-full-pipeline`, Stage 2 = `/execute-and-fix-tests` | ✅ YES (both) |
+| `.github/workflows/qa-automation.yml | ✅ YES (both) |
 | `execute-fix.yml` | On-demand `/execute-and-fix-tests` with configurable scope | ✅ YES |
 
 **Invocation pattern:**
 ```bash
-printf '/ADO_Full_Pipeline\n%s' "$(cat $BRD_FILE)" \
+printf '/Jira_Full_Pipeline\n%s' "$(cat $BRD_FILE)" \
   | claude --dangerously-skip-permissions --output-format stream-json -p
 ```
 
@@ -305,16 +305,16 @@ printf '/ADO_Full_Pipeline\n%s' "$(cat $BRD_FILE)" \
 
 ## Slide 15: CI/CD Integration Patterns
 
-**Pattern 1: AI Generation Gate** (`ai-generation.yml` Stage 1)
-- New BRD committed → `/ado-full-pipeline` runs → generates US, TCs, Playwright scripts → pushes feature branch
+**Pattern 1: AI Generation Gate** (`.github/workflows/qa-automation.yml Stage 1)
+- New BRD committed → `/jira-full-pipeline` runs → generates US, TCs, Playwright scripts → pushes feature branch
 - Optional Stage 2: `/execute-and-fix-tests` validates generated scripts
 
 **Pattern 2: On-Demand Test Fix** (`execute-fix.yml`)
 - Developer queues pipeline with scope: `@regression`, `Projects`, `All tests`
 - Claude inspects live failures → fixes locators/methods → re-runs until green
 
-**Pattern 3: Classic Playwright** (`azure-pipelines.yml`)
-- PR trigger → run area-filtered tests → publish JUnit + HTML to ADO
+**Pattern 3: Classic Playwright** (`azure-pipelines.yml (legacy)`)
+- PR trigger → run area-filtered tests → publish JUnit + HTML reports
 
 **Important clarification on `--dangerously-skip-permissions`:**
 - Flag sounds dangerous but is **safe in CI** because pipelines run in **ephemeral Ubuntu VMs**
@@ -333,19 +333,19 @@ printf '/ADO_Full_Pipeline\n%s' "$(cat $BRD_FILE)" \
 
 **Gaps:**
 - `pipeline-guard` stub → Implement pre-merge validation (new TCs must have matching automation)
-- `token-cost-tracker` stub → Log token usage per skill run → emit to ADO or Slack
+- `token-cost-tracker` stub → Log token usage per skill run → emit to Jira or Slack
 - Sequential chaining → Parallel execution for skills with no data dependency
 - No deduplication → Auto-run `/merge-tc-sets` after every TC generation
 
 **Performance:**
 - Snapshot-based healing: cache last-good DOM → Phase 3 AI uses snapshot diff (faster, cheaper)
-- `ai-generation.yml` push step commented out → enable + wire PR creation for hands-free BRD→PR
+- `.github/workflows/qa-automation.yml push step commented out → enable + wire PR creation for hands-free BRD→PR
 
 ---
 
 ## Slide 17: Roadmap Ideas
 
-- **ADO Dashboard** — live pass/fail mapped to work items (not just JUnit XML)
+- **Jira Dashboard** — live pass/fail mapped to work items (not just JUnit XML)
 - **Multi-env skills** — test vs. staging ENV switching per skill
 - **API Contract Layer** — OpenAPI spec → API test cases → `AdvancedAPIHelper` specs
 - **SKILL Versioning** — tag skills with semver; track which version generated which spec

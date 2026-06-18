@@ -55,7 +55,7 @@ URL of the wireframe / UI prototype (e.g. Figma, Zeplin, live staging app). When
 - When inferring selectors from TC steps, the skill matches step text against wireframe elements semantically and uses real selectors instead of guessing from text alone
 - Improves locator accuracy and reduces brittle `text=` or positional selectors
 
-If absent, the skill **automatically prompts** via `AskUserQuestion` (Step B-5) asking whether you have a wireframe URL. This prompt is **mandatory** for direct invocations — it cannot be skipped unless the skill is called from a pipeline orchestrator (`brd-full-pipeline`, `ado-full-pipeline`).
+If absent, the skill **automatically prompts** via `AskUserQuestion` (Step B-5) asking whether you have a wireframe URL. This prompt is **mandatory** for direct invocations — it cannot be skipped unless the skill is called from a pipeline orchestrator (`brd-full-pipeline`, `jira-full-pipeline`).
 
 ---
 
@@ -204,9 +204,9 @@ await pomSelfHealing.reactionClassPage.fillClassName(testData.className);
 ## Pipeline position
 
 ```text
-brd-to-uss / ado-uss-to-tcs
+brd-to-uss / jira-uss-to-tcs
         ↓
-  uss-to-tcs / ado-uss-to-tcs
+  uss-to-tcs / jira-uss-to-tcs
         ↓
 [tcs-to-plscript]  ← you are here
         ↓  auto-continues
@@ -216,7 +216,7 @@ polish-generated-code <ModuleName>  ← scoped to this run only
 > Polish is invoked with the module name(s) processed in this run so it only touches the
 > files created or modified during this execution — not every file in the project.
 
-Also invoked directly from `brd-full-pipeline` and `ado-full-pipeline` (EXECUTE & FIX and
+Also invoked directly from `brd-full-pipeline` and `jira-full-pipeline` (EXECUTE & FIX and
 CREATE PR phases are always skipped when called from a pipeline orchestrator).
 
 ---

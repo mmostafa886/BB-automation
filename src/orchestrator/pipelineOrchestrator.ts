@@ -6,7 +6,7 @@ import testFilter from '../../config/testCaseFilter.js';
 import type { TestCaseData } from '../listeners/testPlanListener.js';
 
 interface TestRegistryEntry {
-  testCaseId: number;
+  testCaseId: string;
   filePath: string;
   module: string;
   area: string;
@@ -29,7 +29,7 @@ interface TestListResult {
   affectedAreas: string[];
   totalTests: number;
   tests: Array<{
-    id: number;
+    id: string;
     title: string;
     module: string;
     area: string;
@@ -40,7 +40,7 @@ interface TestListResult {
 
 class PipelineOrchestrator {
   private readonly testDirectory: string;
-  private testRegistry: Map<number, TestRegistryEntry>;
+  private testRegistry: Map<string, TestRegistryEntry>;
 
   constructor(testDirectory: string) {
     this.testDirectory = testDirectory;
@@ -58,14 +58,14 @@ class PipelineOrchestrator {
     }
   }
 
-  determineModuleFolder(testCaseId: number): string {
+  determineModuleFolder(testCaseId: string): string {
     if (!testFilter || testFilter.filterMode !== 'modules' || !testFilter.modules) {
       tcGenerateLogger.debug(`No module filter configured for test case ${testCaseId}`);
       return 'Uncategorized';
     }
 
     for (const module of testFilter.modules) {
-      if (module.testCaseIds && module.testCaseIds.includes(testCaseId)) {
+      if (module.testCaseIds && (module.testCaseIds as string[]).includes(testCaseId)) {
         tcGenerateLogger.debug(`Test case ${testCaseId} belongs to module: ${module.name}`);
         return module.name;
       }
@@ -92,9 +92,9 @@ class PipelineOrchestrator {
       const filePath = path.join(moduleDir, fileName);
 
       const metadata = `/**
- * Auto-generated Playwright TypeScript test from Azure Test Plan
+ * Auto-generated Playwright TypeScript test from Jira
  *
- * @testcase TC-${testCase.id}
+ * @jira_tc ${testCase.id}
  * @title ${testCase.title}
  * @module ${moduleName}
  * @area ${area || 'N/A'}
@@ -152,9 +152,9 @@ class PipelineOrchestrator {
         }
 
         const metadata = `/**
- * Auto-generated Playwright TypeScript test from Azure Test Plan
+ * Auto-generated Playwright TypeScript test from Jira
  *
- * @testcase TC-${testCase.id}
+ * @jira_tc ${testCase.id}
  * @title ${testCase.title}
  * @module ${existingTest.module}
  * @area ${area || 'N/A'}
@@ -188,7 +188,7 @@ class PipelineOrchestrator {
     }
   }
 
-  async deleteGeneratedTest(testCaseId: number): Promise<boolean> {
+  async deleteGeneratedTest(testCaseId: string): Promise<boolean> {
     try {
       const test = this.testRegistry.get(testCaseId);
 
@@ -276,7 +276,7 @@ class PipelineOrchestrator {
       const registry = JSON.parse(data) as Record<string, TestRegistryEntry>;
 
       this.testRegistry = new Map(
-        Object.entries(registry).map(([k, v]) => [parseInt(k), v]),
+        Object.entries(registry).map(([k, v]) => [k, v]),
       );
       tcGenerateLogger.info(`📚 Loaded ${this.testRegistry.size} tests from registry`);
     } catch (error) {

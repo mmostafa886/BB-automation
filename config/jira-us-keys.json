@@ -1,14 +1,14 @@
 [
     {
         "featureName": "Reaction_Setup_Viewer",
-        "ids": [
-           6503
+        "keys": [
+           "BB-6503"
         ]
-    } ,
+    },
     {
         "featureName": "Campaign-Creation",
-        "ids": [
-            6500
+        "keys": [
+            "BB-6500"
         ]
     }
 ]

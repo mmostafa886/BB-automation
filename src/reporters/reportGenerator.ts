@@ -11,7 +11,7 @@ interface TestResult {
   duration: number;
   error: string | null;
   retries: number;
-  testCaseId?: number;
+  testCaseId?: string;
   area?: string;
 }
 
@@ -136,7 +136,7 @@ class ReportGenerator {
       for (const spec of suite.specs) {
         const testResult = this.processSpec(spec);
         report.testResults.push(testResult);
-        (report.summary as Record<string, number>)[testResult.status]++;
+        (report.summary as unknown as Record<string, number>)[testResult.status]++;
       }
     }
 

@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import TestPlanListener from './listeners/testPlanListener.js';
+import JiraListener from './listeners/testPlanListener.js';
 import PlaywrightGenerator from './generators/playwrightGenerator.js';
 import GitMonitor from './monitors/gitMonitor.js';
 import PipelineOrchestrator from './orchestrator/pipelineOrchestrator.js';
@@ -16,7 +16,7 @@ interface ProcessResults {
 }
 
 class QAAgent {
-  readonly listener: TestPlanListener;
+  readonly listener: InstanceType<typeof JiraListener>;
   readonly generator: PlaywrightGenerator;
   readonly gitMonitor: GitMonitor;
   readonly orchestrator: PipelineOrchestrator;
@@ -24,10 +24,12 @@ class QAAgent {
   private isInitialized: boolean;
 
   constructor() {
-    this.listener = new TestPlanListener(
-      process.env.AZURE_DEVOPS_ORG_URL!,
-      process.env.AZURE_PERSONAL_ACCESS_TOKEN!,
-      process.env.AZURE_PROJECT_NAME!,
+    this.listener = new JiraListener(
+      process.env.JIRA_BASE_URL!,
+      process.env.JIRA_EMAIL!,
+      process.env.JIRA_API_TOKEN!,
+      process.env.JIRA_PROJECT_KEY!,
+      process.env.JIRA_TC_ISSUE_TYPE || 'Task',
     );
 
     this.generator = PlaywrightGenerator.fromEnv();

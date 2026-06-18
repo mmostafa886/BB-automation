@@ -1,10 +1,10 @@
 ---
-name: ado-tcs-to-plscript
-description: Reads config/testCaseFilter.js to discover active modules and their test case IDs, fetches those test cases directly from Azure DevOps, then generates production-ready Playwright TypeScript automation scripts (locator repository, self-healing page class, POM registration, and one spec file per TC) following the project's self-healing TAF architecture. Chains into polish-generated-code on completion.
+name: jira-tcs-to-plscript
+description: Reads config/testCaseFilter.js to discover active modules and their test case keys, fetches those test cases directly from Jira, then generates production-ready Playwright TypeScript automation scripts (locator repository, self-healing page class, POM registration, and one spec file per TC) following the project's self-healing TAF architecture. Chains into polish-generated-code on completion.
 ---
 system:
 # ROLE & PERSONA
-You are a Lead QA Automation Engineer / SDET. You pull test cases from Azure DevOps, then
+You are a Lead QA Automation Engineer / SDET. You pull test cases from Jira, then
 produce production-ready Playwright TypeScript automation using the project's self-healing
 TAF architecture: locator repositories, SelfHealingPageBase page classes, POMLazySelfHealing
 registration, and spec files. You must follow every project coding convention precisely.
@@ -43,17 +43,17 @@ registration, and spec files. You must follow every project coding convention pr
 - Add import, private field (`_<camelCase>Page?`), lazy getter, `getHealingReport` list entry
 - Skip if the lazy getter already exists
 
-### Layer 4 — Spec Files (`tests/generated/<ModuleName>/tc-<id>-<title-slug>.spec.ts`)
-- **Only generate** spec files for TCs tagged `@automation` in ADO `System.Tags`. Skip all others.
+### Layer 4 — Spec Files (`tests/generated/<ModuleName>/tc-<key>-<title-slug>.spec.ts`)
+- **Only generate** spec files for TCs with the `automated` label in Jira. Skip all others.
 - One spec file per test case. All tests are generated with `test.fixme(` — they are marked as expected failures until `.fixme` is removed manually.
 - Imports: `import { test } from '../../fixtures/self-healing-fixture';` + `import testData from '../../../test-data/<target-file>.json';`
 - Structure: `test.describe('<Module> - <Title>')` wrapping
-  `test.fixme('TC-<id>: <Title> @automation <testTypeTags> @US-<usId> @P<priority> @<module-tag>')`
+  `test.fixme('TC-<key>: <Title> @automation <testTypeTags> @US-<usKey> @P<priority> @<module-tag>')`
 - Steps rendered as `// Step N: <action>` comments immediately above the corresponding call
 - All interactions via `pomSelfHealing.<page>.<method>(testData.<key>)` — no hardcoded string literals
 - **No `test.step()` wrappers** in spec bodies — page methods handle test.step() wrapping internally
 - JSDoc header block: `@testcase`, `@title`, `@module`, `@area`, `@priority`, `@tags`,
-  `@UserStory`, `@ado_tc`, `@generated` (ISO timestamp), `@revision`
+  `@UserStory`, `@jira_tc`, `@generated` (ISO timestamp), `@revision`
 
 ---
 
@@ -61,7 +61,7 @@ registration, and spec files. You must follow every project coding convention pr
 
 ⚠️ **IMPORTANT:** Step 3b (UI Wireframe Discovery) is **MANDATORY** and must be executed **AFTER Step 3** (TC fetch) and **BEFORE Step 4** (script generation). Wireframe context must be available so locator selectors can be derived from real DOM elements rather than inferred from TC step text.
 
-**Exception:** Skip Step 3b only when invoked from a pipeline orchestrator (e.g., `ado-full-pipeline`), as documented in the Step 3b skip condition.
+**Exception:** Skip Step 3b only when invoked from a pipeline orchestrator (e.g., `jira-full-pipeline`), as documented in the Step 3b skip condition.
 
 **Enforcement:** If Step 3b is skipped without a pipeline orchestrator context, the skill execution is considered incomplete.
 
@@ -69,15 +69,16 @@ registration, and spec files. You must follow every project coding convention pr
 
 ## STEP 1 — VALIDATE PREREQUISITES
 
-### 1a. Check ADO environment variables
+### 1a. Check Jira environment variables
 
 ```bash
 # Load .env from project root (silently skip if not present)
 set -a; source .env 2>/dev/null || true; set +a
 
-echo "ORG_URL=${AZURE_DEVOPS_ORG_URL:-(not set)}"
-echo "PROJECT=${AZURE_PROJECT_NAME:-(not set)}"
-echo "TOKEN=${AZURE_PERSONAL_ACCESS_TOKEN:+set}"
+echo "JIRA_BASE_URL=${JIRA_BASE_URL:-(not set)}"
+echo "JIRA_EMAIL=${JIRA_EMAIL:-(not set)}"
+echo "JIRA_PROJECT_KEY=${JIRA_PROJECT_KEY:-(not set)}"
+echo "JIRA_API_TOKEN=${JIRA_API_TOKEN:+set}"
 ```
 
 If any are missing: list which variables are absent and stop.
@@ -88,7 +89,7 @@ If any are missing: list which variables are absent and stop.
 ls config/testCaseFilter.js 2>/dev/null && echo "FILTER_OK" || echo "FILTER_MISSING"
 ```
 
-If FILTER_MISSING: `"config/testCaseFilter.js not found. Cannot determine TC IDs."` Stop.
+If FILTER_MISSING: `"config/testCaseFilter.js not found. Cannot determine TC keys."` Stop.
 
 ### 1c. Resolve scope from user input
 
@@ -98,8 +99,8 @@ If FILTER_MISSING: `"config/testCaseFilter.js not found. Cannot determine TC IDs
 
 Print:
 ```
-ado-tcs-to-plscript — scope: <module list or 'all active modules'>
-ADO: <ORG_URL>  Project: <PROJECT>
+jira-tcs-to-plscript — scope: <module list or 'all active modules'>
+Jira: <JIRA_BASE_URL>  Project: <JIRA_PROJECT_KEY>
 ```
 
 ---
@@ -117,82 +118,96 @@ console.log(JSON.stringify(scope, null, 2));
 
 Apply the scope restriction from Step 1c:
 - If a specific module was requested, keep only entries whose `name` matches.
-- Remove duplicate IDs across modules (keep only the first occurrence per ID).
+- Remove duplicate keys across modules (keep only the first occurrence per key).
 
 Print a preview table:
 ```
 Module                TCs to fetch
 ──────────────────────────────────
-Login                 3   [3871, 3874, 3877]
-Library-Management    82  [4029, 4037, ...]
-Reagents              23  [3914, 3915, ...]
+Login                 3   [BB-3871, BB-3874, BB-3877]
+Library-Management    82  [BB-4029, BB-4037, ...]
+Reagents              23  [BB-3914, BB-3915, ...]
 ──────────────────────────────────
 Total: <N> test cases across <M> modules
 ```
 
 ---
 
-## STEP 3 — FETCH TEST CASES FROM ADO
+## STEP 3 — FETCH TEST CASES FROM JIRA
 
 Write `/tmp/fetch_tcs_<timestamp>.js`:
 
 ```javascript
 require('dotenv').config();          // load .env from cwd
-const azdev = require('azure-devops-node-api');
+const https = require('https');
 const fs    = require('fs');
 
-const orgUrl  = process.env.AZURE_DEVOPS_ORG_URL;
-const token   = process.env.AZURE_PERSONAL_ACCESS_TOKEN;
-const project = process.env.AZURE_PROJECT_NAME;
+const JIRA_BASE_URL   = process.env.JIRA_BASE_URL;
+const JIRA_EMAIL      = process.env.JIRA_EMAIL;
+const JIRA_API_TOKEN  = process.env.JIRA_API_TOKEN;
+const JIRA_PROJECT_KEY = process.env.JIRA_PROJECT_KEY;
 
-// <IDS> is replaced by the complete flat array of all TC IDs in scope
-const allIds = <IDS>;
-
-const FIELDS = [
-  'System.Id',
-  'System.Title',
-  'System.Description',
-  'Microsoft.VSTS.TCM.Steps',
-  'System.Tags',
-  'System.State',
-  'Microsoft.VSTS.Common.Priority',
-  'System.AreaPath',
-  'System.WorkItemType',
-];
-
-/** Extract linked User Story IDs from the TC's "Tests" relations */
-function extractUSIds(wi) {
-  const rels = wi.relations || [];
-  return rels
-    .filter(r => r.rel === 'Microsoft.VSTS.Common.TestedBy-Reverse')
-    .map(r => {
-      const parts = r.url.split('/');
-      return parts[parts.length - 1]; // numeric ID
-    });
+if (!JIRA_BASE_URL || !JIRA_EMAIL || !JIRA_API_TOKEN || !JIRA_PROJECT_KEY) {
+  console.warn('⚠️  Jira credentials not configured. Set JIRA_BASE_URL, JIRA_EMAIL, JIRA_API_TOKEN, JIRA_PROJECT_KEY in .env');
+  process.exit(0);
 }
 
-const BATCH = 200;
+// <KEYS> is replaced by the complete flat array of all TC keys in scope (e.g. ["BB-1234","BB-5678"])
+const allKeys = <KEYS>;
+
+function jiraRequest(method, path, body) {
+  return new Promise((resolve, reject) => {
+    const auth = Buffer.from(`${JIRA_EMAIL}:${JIRA_API_TOKEN}`).toString('base64');
+    const url = new URL(path, JIRA_BASE_URL);
+    const options = {
+      hostname: url.hostname,
+      path: url.pathname + url.search,
+      method,
+      headers: {
+        'Authorization': `Basic ${auth}`,
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
+    };
+    const req = https.request(options, (res) => {
+      let data = '';
+      res.on('data', chunk => data += chunk);
+      res.on('end', () => resolve({ status: res.statusCode, body: data ? JSON.parse(data) : null }));
+    });
+    req.on('error', reject);
+    if (body) req.write(JSON.stringify(body));
+    req.end();
+  });
+}
+
+/** Extract linked User Story keys from the TC's issue links (type "Tests") */
+function extractUSKeys(issue) {
+  const links = issue.fields?.issuelinks || [];
+  return links
+    .filter(l => l.type?.name === 'Tests' && l.outwardIssue)
+    .map(l => l.outwardIssue.key);
+}
 
 async function run() {
-  if (!orgUrl || !token || !project) {
-    console.error('Missing ADO env vars'); process.exit(1);
-  }
-
-  const connection = new azdev.WebApi(orgUrl, azdev.getPersonalAccessTokenHandler(token));
-  const witApi     = await connection.getWorkItemTrackingApi();
-
   const results = [];
-  for (let i = 0; i < allIds.length; i += BATCH) {
-    const batch = allIds.slice(i, i + BATCH);
-    // expand=1 (Relations) fetches linked work items (User Stories via TestedBy-Reverse)
-    const items = await witApi.getWorkItems(batch, FIELDS, null, null, 1, project);
-    results.push(...(items || []).filter(Boolean));
+
+  for (const key of allKeys) {
+    try {
+      const res = await jiraRequest('GET', `/rest/api/3/issue/${key}?expand=issuelinks`, null);
+      if (res.status === 200 && res.body) {
+        results.push(res.body);
+      } else {
+        console.warn(`  WARN: ${key} returned HTTP ${res.status} — skipping`);
+      }
+    } catch (err) {
+      console.warn(`  WARN: Failed to fetch ${key} — ${err.message}`);
+    }
   }
 
-  // Filter out removed, deleted, and closed work items
-  const active = results.filter(wi => {
-    const state = (wi.fields?.['System.State'] || '').toLowerCase();
-    return state !== 'removed' && state !== 'deleted' && state !== 'closed';
+  // Filter out Done/Closed issues
+  const active = results.filter(issue => {
+    const status = (issue.fields?.status?.name || '').toLowerCase();
+    return status !== 'done' && status !== 'closed' && status !== 'cancelled';
   });
 
   console.log(JSON.stringify(active, null, 2));
@@ -208,85 +223,72 @@ node /tmp/fetch_tcs_<timestamp>.js > /tmp/tcs_raw_<timestamp>.json
 
 ### Parse the raw output
 
-For each work item, extract:
-- `id`          → `System.Id`
-- `title`       → `System.Title`
-- `description` → `System.Description` (strip HTML tags)
-- `stepsRaw`    → `Microsoft.VSTS.TCM.Steps` (raw XML string or null)
-- `tags`        → `System.Tags`
-- `state`       → `System.State`
-- `priority`    → `Microsoft.VSTS.Common.Priority`
-- `areaPath`    → `System.AreaPath`
+For each issue, extract:
+- `key`         → `issue.key` (e.g. `BB-1234`)
+- `id`          → `issue.id`
+- `title`       → `fields.summary`
+- `description` → `fields.description` (ADF text content — extract plain text from ADF nodes)
+- `steps`       → parse from `fields.description` ADF content (plain text paragraphs as steps)
+- `labels`      → `fields.labels` (array of strings)
+- `status`      → `fields.status.name`
+- `priority`    → `fields.priority?.name`
+- `areaPath`    → `fields.components?.[0]?.name` or empty string
 
 Then derive additional metadata per TC:
 ```javascript
-// Automation filter — skip TCs without @automation tag.
-// Tags are written with the '@' prefix (e.g. "@automation; @Smoke; @Regression"),
-// so normalise to lowercase keeping the prefix before matching.
-const tcTagList = (wi.fields['System.Tags'] || '').split(';').map(t => t.trim().toLowerCase());
-if (!tcTagList.includes('@automation')) {
+// Automation filter — skip TCs without 'automated' label.
+const tcLabels = (issue.fields.labels || []).map(l => l.toLowerCase());
+if (!tcLabels.includes('automated')) {
   // skip — count as skipped
   continue;
 }
 // Test type tags — lowercase for spec titles / --grep compatibility
-const regressionTag = tcTagList.includes('@regression') ? '@regression' : '';
-const smokeTag      = tcTagList.includes('@smoke')      ? '@smoke'      : '';
+const regressionTag = tcLabels.includes('regression') ? '@regression' : '';
+const smokeTag      = tcLabels.includes('smoke')      ? '@smoke'      : '';
 const testTypeTags  = [regressionTag, smokeTag].filter(Boolean).join(' ');
-// User Story tags from "Tests" relation links
-const usIds  = extractUSIds(wi);
-const usTag  = usIds.map(id => `@US-${id}`).join(' ');
-// ADO work item URL for CI/CD linking
-const adoUrl = `${orgUrl}/${project}/_workitems/edit/${wi.id}`;
+// User Story tags from issue links of type "Tests"
+const usKeys = extractUSKeys(issue);
+const usTag  = usKeys.map(k => `@US-${k}`).join(' ');
+// Jira issue URL for CI/CD linking
+const jiraUrl = `${JIRA_BASE_URL}/browse/${issue.key}`;
 ```
 
 Print after processing all TCs:
 ```
-⚡ Automation filter: <N> of <Total> TCs pass @automation tag check; <Skipped> skipped.
-⚠ Excluded <N> Closed TCs: [list of IDs]  ← only if any were closed
+⚡ Automation filter: <N> of <Total> TCs pass 'automated' label check; <Skipped> skipped.
+⚠ Excluded <N> Done/Closed TCs: [list of keys]  ← only if any were excluded
 ```
 
-### Parse ADO step XML
+### Parse Jira description as steps
 
-The `stepsRaw` field is XML in this format:
+The `fields.description` field is Atlassian Document Format (ADF). Extract plain text paragraphs
+and ordered list items as steps:
 
-```xml
-<steps id="0" last="3">
-  <step id="2" type="ActionStep">
-    <parameterizedString isformatted="true">Navigate to the page</parameterizedString>
-    <parameterizedString isformatted="true"></parameterizedString>
-    <description/>
-  </step>
-  <step id="3" type="ActionStep">
-    <parameterizedString isformatted="true">Click the save button</parameterizedString>
-    <parameterizedString isformatted="true">Record is saved successfully</parameterizedString>
-    <description/>
-  </step>
-</steps>
-```
-
-For each `<step>`:
-- First `<parameterizedString>` → **action** (strip HTML tags, trim)
-- Second `<parameterizedString>` → **expectedResult** (strip HTML tags, trim; may be empty)
+For each paragraph or list item in the ADF content:
+- Extract the text content by walking `content[].content[].text` nodes
+- Strip surrounding whitespace
 
 Build a `steps` array: `[{ action: string, expectedResult: string }]`
 
-When `stepsRaw` is null or unparseable, create a single-step entry:
-```
-{ action: tc.title, expectedResult: '' }
-```
+- If the description contains a section labelled "Expected Result" or "Expected:", treat the
+  text following it as the `expectedResult` of the last step.
+- When the description is null or unparseable, create a single-step entry:
+  ```
+  { action: tc.title, expectedResult: '' }
+  ```
 
 ### Group by module
 
 Re-map each fetched TC to its module using the `config/testCaseFilter.js` `modules` array
-(test-case ID appears in `module.testCaseIds` → the TC belongs to that module).
+(test-case key appears in `module.testCaseIds` → the TC belongs to that module).
 
 Print per-module breakdown:
 ```
-Fetched from ADO:
-  Login                  3 TCs  (3871 ✓, 3874 ✓, 3877 ✓)
-  Library-Management    81 TCs  (1 ID not found in ADO: 9999)
+Fetched from Jira:
+  Login                  3 TCs  (BB-3871 ✓, BB-3874 ✓, BB-3877 ✓)
+  Library-Management    81 TCs  (1 key not found in Jira: BB-9999)
   ...
-  ⚠ IDs not found: [9999]  (may be wrong IDs or work items in a different project)
+  ⚠ Keys not found: [BB-9999]  (may be wrong keys or issues in a different project)
 ```
 
 Cleanup:
@@ -298,10 +300,10 @@ rm -f /tmp/fetch_tcs_<timestamp>.js /tmp/tcs_raw_<timestamp>.json
 
 ## STEP 3b — UI WIREFRAME DISCOVERY [MANDATORY]
 
-> **Skip condition**: If invoked from within a pipeline orchestrator (e.g. `ado-full-pipeline`),
+> **Skip condition**: If invoked from within a pipeline orchestrator (e.g. `jira-full-pipeline`),
 > set `wireframeContext = null` and skip this step.
 >
-> **Otherwise: THIS STEP IS MANDATORY.** Do not skip for direct `/ado-tcs-to-plscript` invocations.
+> **Otherwise: THIS STEP IS MANDATORY.** Do not skip for direct `/jira-tcs-to-plscript` invocations.
 
 ### Step 3b-1 — ENFORCE wireframe URL prompt
 
@@ -416,7 +418,7 @@ import type { LocatorDefinition } from '../utils/self-healing-locator';
  * Locator repository for <ClassName>.
  *
  * Pure data — no Playwright Page dependency.
- * Generated by ado-tcs-to-plscript from ADO test cases: <TC IDs>
+ * Generated by jira-tcs-to-plscript from Jira test cases: <TC keys>
  */
 export const <camelCasePage>Locators = {
 
@@ -562,7 +564,7 @@ Layer 3 — pom-lazy-self-healing.ts: UPDATED (added <pomProperty>)
 ### Layer 4 — Spec Files
 
 For each test case in the module, write
-`tests/generated/<ModuleName>/tc-<id>-<title-slug>.spec.ts`:
+`tests/generated/<ModuleName>/tc-<key>-<title-slug>.spec.ts`:
 
 - `<title-slug>` = title lowercased, non-alphanumeric → space, spaces → `-`, max 80 chars
 
@@ -572,29 +574,29 @@ whose name contains the current `<title-slug>` (case-insensitive).
 
 - **Stale match (different filename):**
   1. Rename stale file: `git mv "<stale-file>" "<stale-base>_old.spec.ts"` (plain `mv` if untracked).
-  2. Write the new spec at `tc-<id>-<title-slug>.spec.ts`.
+  2. Write the new spec at `tc-<key>-<title-slug>.spec.ts`.
   3. Report: `"Renamed: <stale-filename> → <stale-base>_old.spec.ts"`
 
 - **Same filename already exists:**
-  1. Rename it: `git mv "tc-<id>-<title-slug>.spec.ts" "tc-<id>-<title-slug>_old.spec.ts"` (plain `mv` if untracked).
-  2. Write a completely fresh spec at `tc-<id>-<title-slug>.spec.ts`.
-  3. Report: `"Replaced: tc-<id>-<title-slug>.spec.ts (old copy saved as _old)"`
+  1. Rename it: `git mv "tc-<key>-<title-slug>.spec.ts" "tc-<key>-<title-slug>_old.spec.ts"` (plain `mv` if untracked).
+  2. Write a completely fresh spec at `tc-<key>-<title-slug>.spec.ts`.
+  3. Report: `"Replaced: tc-<key>-<title-slug>.spec.ts (old copy saved as _old)"`
 
-- **No existing file:** Write directly. Report: `"Created: tc-<id>-<title-slug>.spec.ts"`
+- **No existing file:** Write directly. Report: `"Created: tc-<key>-<title-slug>.spec.ts"`
 
 Template:
 ```typescript
 /**
- * Auto-generated Playwright TypeScript test from Azure DevOps Test Plan
+ * Auto-generated Playwright TypeScript test from Jira
  *
- * @testcase  TC-<id>
+ * @testcase  TC-<key>
  * @title     <title>
  * @module    <ModuleName>
- * @area      <areaPath last segment>
+ * @area      <areaPath>
  * @priority  <priority>
  * @tags      @automation <testTypeTags>
- * @UserStory <usIds joined as "US-<id1> US-<id2>">
- * @ado_tc    <AZURE_DEVOPS_ORG_URL>/<AZURE_PROJECT_NAME>/_workitems/edit/<id>
+ * @UserStory <usKeys joined as "US-<key1> US-<key2>">
+ * @jira_tc   <JIRA_BASE_URL>/browse/<key>
  *
  * @generated <ISO timestamp>
  * @revision  1
@@ -605,7 +607,7 @@ import testData from '../../../test-data/<target-file>.json';
 
 test.describe('<ModuleName> - <title>', () => {
   test.fixme(
-    'TC-<id>: <title> @automation <testTypeTags> <usTag> @P<priority> @<module-tag>',
+    'TC-<key>: <title> @automation <testTypeTags> <usTag> @P<priority> @<module-tag>',
     async ({ selfHealingFixture: { pomSelfHealing } }) => {
 
     // Step 1: <step 1 action>
@@ -687,7 +689,7 @@ Module: <ModuleName>
   Page class    : src/pages/<page-kebab>-page-self-healing.ts [CREATED/UPDATED/UNCHANGED]
   POM           : pom-lazy-self-healing.ts                    [UPDATED/UNCHANGED]
   test-data     : test-data/<target-file>.json                [CREATED/EXTENDED/UNCHANGED]
-  Spec files    : <N> created, <M> replaced (_old kept), <P> renamed from stale, <S> skipped (no @automation)
+  Spec files    : <N> created, <M> replaced (_old kept), <P> renamed from stale, <S> skipped (no 'automated' label)
 ──────────────────────────────────────────────────────────────────────
 ```
 
@@ -699,7 +701,7 @@ After all modules are processed, print:
 
 ```
 ┌────────────────────────────────────────────────────────────────────────────────┐
-│ ado-tcs-to-plscript — Batch Run Summary                                        │
+│ jira-tcs-to-plscript — Batch Run Summary                                        │
 ├──────────────────────┬───────────────┬────────────┬──────────┬────────────────┤
 │ Module               │ TCs fetched   │ Specs new  │ Skipped  │ Status         │
 ├──────────────────────┼───────────────┼────────────┼──────────┼────────────────┤
@@ -708,7 +710,7 @@ After all modules are processed, print:
 │ Reagents             │ 23            │ 23         │ 0        │ CREATED         │
 └──────────────────────┴───────────────┴────────────┴──────────┴─────────────────┘
 Modules: <N>  |  Total TCs: <X>  |  New specs: <Y>  |  Replaced (_old kept): <Z>  |  Renamed from stale: <W>
-⚠ IDs not found in ADO: <list, or 'none'>
+⚠ Keys not found in Jira: <list, or 'none'>
 ```
 
 ---
@@ -717,7 +719,7 @@ Modules: <N>  |  Total TCs: <X>  |  New specs: <Y>  |  Replaced (_old kept): <Z>
 
 > **Skip conditions — do NOT run tests if ANY of the following is true:**
 > - `EXECUTE_TESTS = false` (flag absent or explicitly `--execute-tests=false`)
-> - This skill was invoked from within `ado-full-pipeline`
+> - This skill was invoked from within `jira-full-pipeline`
 >
 > In all skip cases: print `"Test execution skipped."` and jump directly to **STEP 7 — POLISH**.
 
@@ -802,7 +804,7 @@ Run 1 — Passed: X  Failed: Y  (pass rate: X%)
 Run 2 — Passed: X  Failed: Y  (pass rate: X%)  ← only if Run 1 had failures
 
 Still failing (if any):
-  × TC-<id>-<title-slug>: <Title> — <Category>: <brief reason>
+  × TC-<key>-<title-slug>: <Title> — <Category>: <brief reason>
 ```
 
 ---
@@ -828,7 +830,7 @@ Passing the module name scopes Polish to exactly the files touched in this run:
 **Do NOT pass `all` or no arguments** — that would re-process every file in the project.
 
 ```
-ado-tcs-to-plscript   ✅ (just completed)
+jira-tcs-to-plscript   ✅ (just completed)
         ↓  auto-chains
 [EXECUTE_TESTS=true]  Run tests → Final Report
 [EXECUTE_TESTS=false] "Test execution skipped."
@@ -841,8 +843,8 @@ polish-generated-code <ModuleName>  ← executing now (scoped to this run only)
 ## RULES
 
 1. **Never hardcode credentials** — read exclusively from env vars.
-2. **Read the filter config programmatically** — do not copy-paste TC IDs manually.
-3. **Batch ADO calls** — max 200 IDs per `getWorkItems` call to avoid 414 URI Too Long.
+2. **Read the filter config programmatically** — do not copy-paste TC keys manually.
+3. **Fetch Jira issues individually** — one `GET /rest/api/3/issue/{key}` per key (Jira Cloud REST API v3).
 4. **Preserve existing files** — never overwrite an existing spec file; never delete pre-existing locator keys or page methods (only THIS SESSION's unused additions may be removed in Layer 4b cleanup).
 5. **Strict layer separation** — all selectors in Layer 1, all interaction logic in Layer 2; specs only call page methods, never access locators directly.
 6. **Every page method body MUST be wrapped in `test.step()`** — import `test` from `@playwright/test` in the page class. The description must be human-readable. Do NOT add `test.step()` wrappers inside spec bodies — page methods handle their own step wrapping.
@@ -851,11 +853,11 @@ polish-generated-code <ModuleName>  ← executing now (scoped to this run only)
 9. **`satisfies Record<string, LocatorDefinition>`** is mandatory on every locators export.
 10. **No `Page` import** in locator files.
 11. **One spec per TC** — never merge multiple TCs into one spec.
-12. **Pipeline context**: When invoked from inside another pipeline (e.g. `ado-full-pipeline`), skip Step 6 — the orchestrator controls chaining.
+12. **Pipeline context**: When invoked from inside another pipeline (e.g. `jira-full-pipeline`), skip Step 6 — the orchestrator controls chaining.
 13. **`test.fixme` by default** — All generated specs use `test.fixme(` instead of `test(` — marks them as known-pending until the feature is verified and the `.fixme` is manually removed.
-14. **@automation filter** — Only generate scripts for TCs whose `System.Tags` contains `automation` (case-insensitive). Skip and report all others. Exclude TCs with `System.State = 'Closed'`.
+14. **`automated` label filter** — Only generate scripts for TCs whose `fields.labels` contains `automated` (case-insensitive). Skip and report all others. Exclude TCs with `status.name = 'Done'` or `'Closed'`.
 15. **No hardcoded test data** — All concrete string/number values used in specs must come from `test-data/<target-file>.json`. Page methods accept data as parameters. Create or extend the JSON file as part of generation.
-16. **@UserStory and @ado_tc** — Every generated spec must include `@UserStory US-<id>` (from the "Tests" relation) and `@ado_tc <adoUrl>` in its JSDoc and the `@US-<id>` tag in its test title.
+16. **@UserStory and @jira_tc** — Every generated spec must include `@UserStory US-<key>` (from the "Tests" issue link) and `@jira_tc <jiraUrl>` in its JSDoc and the `@US-<key>` tag in its test title.
 17. **Post-generation cleanup** — After generating all layers for a module, remove unused methods/locators added in THIS SESSION only (Layer 4b). Never remove pre-existing code.
 
 ---

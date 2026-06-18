@@ -11,7 +11,7 @@ Execute every step of this skill **without pausing to ask the user for confirmat
 - Do NOT wait for approval between steps. Move through STEP 0 → STEP 9 autonomously.
 - Only stop and ask if you hit an ambiguity that genuinely cannot be resolved from the codebase
   or MCP inspection (e.g. two equally likely selectors with no distinguishing factor).
-- **EXCEPTION (only when `ADO_CHECK=true`):** When the ADO test case's documented expected
+- **EXCEPTION (only when `JIRA_CHECK=true`):** When the Jira test case's documented expected
   result contradicts what the live app shows (STEP 3.5 contradiction check), you MUST stop
   and present the contradiction to the user via `AskUserQuestion` before applying any fix.
   This is the only mandatory pause beyond the ambiguity exception above.
@@ -78,7 +78,7 @@ The user will provide one of:
 | A TC ID (e.g. `TC-4778`) | Grep by ID: `--grep "TC-4778"` |
 | A module name (e.g. `Products`) | Folder: `tests/generated/Products` |
 | `--grep <pattern>` | Pass grep directly to Playwright |
-| `--ado-check` (append to any scope) | Fetch ADO TC steps and run contradiction detection before fixing |
+| `--jira-check` (append to any scope) | Fetch Jira TC steps and run contradiction detection before fixing |
 
 ---
 
@@ -142,20 +142,20 @@ Determine the Playwright CLI arguments from the user input:
 | module name | `tests/generated/<Module>` |
 | `--grep <pattern>` | `--grep "<pattern>"` |
 
-#### `--ado-check` flag detection
+#### `--jira-check` flag detection
 
-Scan the raw user input for the literal string `--ado-check`:
+Scan the raw user input for the literal string `--jira-check`:
 
-- If **present**: set `ADO_CHECK=true`, strip `--ado-check` from the Playwright CLI arguments
+- If **present**: set `JIRA_CHECK=true`, strip `--jira-check` from the Playwright CLI arguments
   before running any test command.
-- If **absent**: set `ADO_CHECK=false`. All ADO-related steps (STEP 3.5, STEP 5.5) are skipped
+- If **absent**: set `JIRA_CHECK=false`. All Jira-related steps (STEP 3.5, STEP 5.5) are skipped
   entirely — the skill behaves exactly as it did before this flag existed.
 
-Print the resolved command and ADO check status before running:
+Print the resolved command and Jira check status before running:
 
 ```
 Resolved command : npx playwright test <scope_args>
-ADO check        : enabled | disabled
+Jira check       : enabled | disabled
 ```
 
 ---
@@ -220,49 +220,49 @@ Classify each failure using the failure catalog above.
 
 ---
 
-### STEP 3.5 — Fetch ADO Test Case Documentation *(skip entirely if `ADO_CHECK=false`)*
+### STEP 3.5 — Fetch Jira Test Case Documentation *(skip entirely if `JIRA_CHECK=false`)*
 
-For each unique TC ID discovered in STEP 3, fetch its documented steps from Azure DevOps.
+For each unique TC ID discovered in STEP 3, fetch its documented steps from Jira.
 This provides the **ground truth** for what the test is supposed to verify.
 
-#### 3.5a — Read ADO credentials from `.env`
+#### 3.5a — Read Jira credentials from `.env`
 
-Extract these three values (already read in STEP 0):
-- `AZURE_DEVOPS_ORG_URL`
-- `AZURE_PERSONAL_ACCESS_TOKEN`
-- `AZURE_PROJECT_NAME`
+Extract these four values (already read in STEP 0):
+- `JIRA_BASE_URL`
+- `JIRA_EMAIL`
+- `JIRA_API_TOKEN`
+- `JIRA_PROJECT_KEY`
 
 If any of these values is missing or empty, print a warning and skip to STEP 4 — treat all
-failures as `LOCATOR-ONLY` / `SPEC-WRONG` (no contradiction check possible without ADO data).
+failures as `LOCATOR-ONLY` / `SPEC-WRONG` (no contradiction check possible without Jira data).
 
-#### 3.5b — Extract TC numeric ID from spec filename
+#### 3.5b — Extract TC key from spec filename
 
-The spec filename encodes the ID: `tc-<ID>-<description>.spec.ts`
+The spec filename encodes the Jira issue key: `tc-<KEY>-<description>.spec.ts`
 
 ```bash
-# Example: tc-5764-invalid-creating-reaction-class-with-duplicate-name.spec.ts → 5764
-TC_ID=$(basename "<spec_file>" | grep -oP '(?<=tc-)\d+')
+# Example: tc-PROJ-5764-invalid-creating-reaction-class-with-duplicate-name.spec.ts → PROJ-5764
+TC_ID=$(basename "<spec_file>" | sed 's/^tc-//' | grep -oP '^[A-Z]+-\d+')
 ```
 
-#### 3.5c — Fetch the work item via ADO REST API
+#### 3.5c — Fetch the issue via Jira REST API
 
 ```bash
-curl -s \
-  -u ":${AZURE_PERSONAL_ACCESS_TOKEN}" \
-  "${AZURE_DEVOPS_ORG_URL}/${AZURE_PROJECT_NAME}/_apis/wit/workitems/${TC_ID}?api-version=7.1&\$expand=all" \
+curl -u "${JIRA_EMAIL}:${JIRA_API_TOKEN}" \
+  "${JIRA_BASE_URL}/rest/api/3/issue/${TC_ID}" \
   -H "Accept: application/json"
 ```
 
-#### 3.5d — Parse the steps XML
+#### 3.5d — Parse the steps
 
-The field `fields["Microsoft.VSTS.TCM.Steps"]` contains an XML string. Parse each `<step>`
-element to extract the **Action** (`<parameterizedString isformatted="true">` first child) and
-**Expected Result** (second child). Strip HTML tags from both strings.
+The field `fields["description"]` (Atlassian Document Format) and any custom test-steps field
+contain the test actions and expected results. Parse each step paragraph to extract the
+**Action** and **Expected Result**. Strip ADF/HTML markup from both strings.
 
 Build and print a steps table per TC:
 
 ```
-ADO TC-5764 — Steps
+Jira TC-PROJ-5764 — Steps
 ┌──────┬──────────────────────────────────────┬──────────────────────────────────────────┐
 │ Step │ Action                               │ Expected Result                          │
 ├──────┼──────────────────────────────────────┼──────────────────────────────────────────┤
@@ -271,12 +271,12 @@ ADO TC-5764 — Steps
 └──────┴──────────────────────────────────────┴──────────────────────────────────────────┘
 ```
 
-Record all steps as `ADO_STEPS[TC_ID]` — a list of `{ stepNum, action, expectedResult }`
+Record all steps as `JIRA_STEPS[TC_ID]` — a list of `{ stepNum, action, expectedResult }`
 objects — for use in STEP 5.
 
 If the API call fails (non-200, network error, JSON parse error):
-- Print: `⚠ ADO fetch failed for TC-<ID>: <error>. Skipping contradiction check for this TC.`
-- Continue to STEP 4 without ADO ground truth for that TC.
+- Print: `⚠ Jira fetch failed for TC-<ID>: <error>. Skipping contradiction check for this TC.`
+- Continue to STEP 4 without Jira ground truth for that TC.
 
 ---
 
@@ -355,26 +355,26 @@ TC-4779  TEXT     →  expected "Products" but page shows "Product Library"
 
 Group fixes by target file to minimise edits.
 
-#### Contradiction Detection *(only when `ADO_CHECK=true` and `ADO_STEPS` is populated)*
+#### Contradiction Detection *(only when `JIRA_CHECK=true` and `JIRA_STEPS` is populated)*
 
-After building the initial fix plan, cross-reference each failure against `ADO_STEPS[TC_ID]`
+After building the initial fix plan, cross-reference each failure against `JIRA_STEPS[TC_ID]`
 to classify it into one of three categories:
 
 | Category | Condition | Action |
 |---|---|---|
-| `LOCATOR-ONLY` | Selector mismatch only; ADO expected result matches what app actually shows | Auto-fix |
-| `SPEC-WRONG` | App behaviour matches ADO expected result; spec tests wrong text / logic | Auto-fix |
-| `CONTRADICTION` | ADO expected result says X; MCP observation shows app does Y | **Pause → STEP 5.5** |
+| `LOCATOR-ONLY` | Selector mismatch only; Jira expected result matches what app actually shows | Auto-fix |
+| `SPEC-WRONG` | App behaviour matches Jira expected result; spec tests wrong text / logic | Auto-fix |
+| `CONTRADICTION` | Jira expected result says X; MCP observation shows app does Y | **Pause → STEP 5.5** |
 
 **Decision logic for each failure:**
 
-1. Find the ADO TC step whose **Action** corresponds to the failing spec step (match by
+1. Find the Jira TC step whose **Action** corresponds to the failing spec step (match by
    keywords, e.g. "enter duplicate name" ↔ method `verifyDuplicateNameError`).
-2. Read that step's **Expected Result** from `ADO_STEPS[TC_ID]`.
+2. Read that step's **Expected Result** from `JIRA_STEPS[TC_ID]`.
 3. Compare it against the MCP observation from STEP 4.
-4. If ADO expected result ≈ app actual → no contradiction → classify as `LOCATOR-ONLY` or
+4. If Jira expected result ≈ app actual → no contradiction → classify as `LOCATOR-ONLY` or
    `SPEC-WRONG` and proceed to STEP 6.
-5. If ADO expected result ≠ app actual → `CONTRADICTION` → print the contradiction block
+5. If Jira expected result ≠ app actual → `CONTRADICTION` → print the contradiction block
    and proceed to STEP 5.5 before touching any files.
 
 **Contradiction block format (print before STEP 5.5 pause):**
@@ -382,23 +382,23 @@ to classify it into one of three categories:
 ```
 ⚠ CONTRADICTION DETECTED — TC-<ID>, Step <N>
 
-  ADO TC Expected Result : <exact text from ADO step>
-  App Actual Behavior    : <one-line MCP observation>
+  Jira TC Expected Result : <exact text from Jira step>
+  App Actual Behavior     : <one-line MCP observation>
 
   This means either:
     (a) The app has a bug — the feature is not implemented or has regressed
-    (b) The ADO TC is outdated — the feature was intentionally changed
+    (b) The Jira TC is outdated — the feature was intentionally changed
 
   Current spec tests   : pomSelfHealing.<page>.<method>()
   Proposed spec fix    : <describe what the auto-fix would change>
 ```
 
-If a TC has no `ADO_STEPS` entry (fetch failed or ADO_CHECK=false), classify it as
+If a TC has no `JIRA_STEPS` entry (fetch failed or JIRA_CHECK=false), classify it as
 `LOCATOR-ONLY` / `SPEC-WRONG` — proceed without a contradiction check.
 
 ---
 
-### STEP 5.5 — User Confirmation for Contradictions *(only when `ADO_CHECK=true`)*
+### STEP 5.5 — User Confirmation for Contradictions *(only when `JIRA_CHECK=true`)*
 
 For each `CONTRADICTION` failure, use `AskUserQuestion` to let the user decide how to proceed.
 
@@ -407,14 +407,14 @@ per TC (not per step) — list each contradicting step in the question body.
 
 **Question structure:**
 
-- **Question text:** `"TC-<ID>: ADO documented behavior contradicts the live app — how should we proceed?"`
+- **Question text:** `"TC-<ID>: Jira documented behavior contradicts the live app — how should we proceed?"`
 - **Option 1 — Fix spec to match app:** Update the spec / page-object assertion to reflect
   what the app currently does. The automated fix from STEP 5 is applied.
 - **Option 2 — Skip / investigate app bug:** Do NOT modify the spec. Add a
-  `// TODO: ADO TC-<ID> Step <N>: app may have a bug — expected "<ADO result>" but app shows "<actual>"` comment
+  `// TODO: Jira TC-<ID> Step <N>: app may have a bug — expected "<Jira result>" but app shows "<actual>"` comment
   on the failing assertion line only. No logic changes.
 - **Option 3 — Mark test.fixme:** Apply `test.fixme` to the test with a CONTRADICTION reason
-  (same tagging rules as STEP 8, but reason = `ADO contradiction`). No logic changes.
+  (same tagging rules as STEP 8, but reason = `Jira contradiction`). No logic changes.
 
 After the user answers:
 - **Fix spec to match app** → proceed to STEP 6, apply the fix normally.
@@ -425,7 +425,7 @@ After the user answers:
 
 ### STEP 6 — Apply Fixes
 
-> **Gate (when `ADO_CHECK=true`):** Apply only fixes classified as `LOCATOR-ONLY`,
+> **Gate (when `JIRA_CHECK=true`):** Apply only fixes classified as `LOCATOR-ONLY`,
 > `SPEC-WRONG`, or `CONTRADICTION` where the user chose **"Fix spec to match app"** in
 > STEP 5.5. Never apply a code change to a `CONTRADICTION` case where the user chose
 > **Skip** or **Mark test.fixme** — those are handled in STEP 5.5 itself.
@@ -647,8 +647,8 @@ Run result: <X> passed  |  <Y> fixed  |  <Z> tagged test.fixme
 10. **Preserve self-healing architecture** — all locator changes go into the locator file
     (`src/locators/`), not inline into method bodies. Keep every selector change within
     the `LocatorDefinition` record so the 3-phase healing pipeline still applies.
-11. **ADO TC is the source of truth for intended behavior (when `--ado-check` is used).**
-    Before fixing any failing assertion or test logic, fetch the ADO work item steps and
+11. **Jira TC is the source of truth for intended behavior (when `--jira-check` is used).**
+    Before fixing any failing assertion or test logic, fetch the Jira issue steps and
     compare the documented expected result against what the live app shows. If they conflict,
     always ask the user before applying any change. A test that checks for a feature the app
     doesn't implement may be catching a real regression — not an automation error.

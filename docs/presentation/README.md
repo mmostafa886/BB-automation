@@ -70,9 +70,9 @@ marp skills-presentation.md --output skills-presentation.pdf
 - 7 agentic SKILLS in this project
   - `taf-full-pipeline`
   - `brd-full-pipeline`
-  - `ado-full-pipeline`
+  - `jira-full-pipeline`
   - `execute-and-fix-tests`
-  - `ado-tcs-to-plscript`
+  - `jira-tcs-to-plscript`
   - `analyze-trace`
   - `polish-generated-code`
 
@@ -84,7 +84,7 @@ marp skills-presentation.md --output skills-presentation.pdf
 
 ### Slides 14–15: CI/CD Integration
 - Real pipelines in this project:
-  - `pipelines/ai-generation.yml` — Stage 1 runs `/ado-full-pipeline`, Stage 2 runs `/execute-and-fix-tests`
+  - `pipelines/ai-generation.yml` — Stage 1 runs `/jira-full-pipeline`, Stage 2 runs `/execute-and-fix-tests`
   - `pipelines/execute-fix.yml` — On-demand `/execute-and-fix-tests`
   - `pipelines/azure-pipelines.yml` — Traditional Playwright execution
 - Three integration patterns

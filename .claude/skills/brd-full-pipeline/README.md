@@ -173,7 +173,7 @@ git commit -m "feat(<FeatureName>): add user stories, test cases, and playwright
 | Regenerate only the test cases from updated stories | `uss-to-tcs` |
 | Regenerate only the Playwright scripts from updated test cases | `tcs-to-plscript` |
 | Set up a fresh workspace before using individual skills | `setup-workspace` |
-| Full pipeline with Azure DevOps push | `ado-full-pipeline` |
+| Full pipeline with Jira push | `jira-full-pipeline` |
 
 ---
 

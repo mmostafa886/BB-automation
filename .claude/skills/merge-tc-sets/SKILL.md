@@ -1,6 +1,6 @@
 ---
 name: merge-tc-sets
-description: Merges two locally saved Test Case sets (markdown + JSON mapping) for the same feature into a single combined, deduplicated file, then performs a gap analysis to suggest additional TCs that neither source generated. After merging, automatically assigns tier tags (@Smoke or @Regression) to every TC and additionally marks automation-suitable TCs with @automation — no prompting required. The tagged output is ready for /tcs-to-ado (ADO Test Plan with tags on work items) and /tcs-to-plscript (Playwright scripts filtered by tag). Designed for the workflow where Claude generates one TC set and OpenAI generates another — both produced from the same User Stories.
+description: Merges two locally saved Test Case sets (markdown + JSON mapping) for the same feature into a single combined, deduplicated file, then performs a gap analysis to suggest additional TCs that neither source generated. After merging, automatically assigns tier tags (@Smoke or @Regression) to every TC and additionally marks automation-suitable TCs with @automation — no prompting required. The tagged output is ready for /tcs-to-jira (Jira Test Plan with labels on issues) and /tcs-to-plscript (Playwright scripts filtered by tag). Designed for the workflow where Claude generates one TC set and OpenAI generates another — both produced from the same User Stories.
 ---
 system:
 # ROLE & PERSONA
@@ -107,71 +107,72 @@ If either is missing: print the full resolved path and stop.
 
 ---
 
-## STEP 1.5 — FETCH EXISTING ADO TEST CASES
+## STEP 1.5 — FETCH EXISTING JIRA TEST CASES
 
-Before parsing the input files, check whether existing Test Case work items are already linked
-to the User Stories in ADO. When found, they are excluded from the merged output (so that
-`/tcs-to-ado` does not create duplicates) and treated as covered in the gap analysis.
+Before parsing the input files, check whether existing Test Case issues are already linked
+to the User Stories in Jira. When found, they are excluded from the merged output (so that
+`/tcs-to-jira` does not create duplicates) and treated as covered in the gap analysis.
 
 The skill always continues past this step — but when the fetch cannot run, it prints a
-prominent warning so the user knows the merged output was **not** compared against ADO.
+prominent warning so the user knows the merged output was **not** compared against Jira.
 
-### 1.5a. Check for ADO mapping file
+### 1.5a. Check for Jira mapping file
 
 ```bash
-ls stories/<FeatureName>_ADO_IDs.json 2>/dev/null && echo "MAP_OK" || echo "MAP_MISSING"
+ls stories/<FeatureName>_Jira_IDs.json 2>/dev/null && echo "MAP_OK" || echo "MAP_MISSING"
 ```
 
-- **MAP_OK** → read `stories/<FeatureName>_ADO_IDs.json` and extract the US ADO IDs (integer values from `mapping` object). Proceed to credentials check.
+- **MAP_OK** → read `stories/<FeatureName>_Jira_IDs.json` and extract the US Jira keys (values from `mapping` object). Proceed to credentials check.
 
 - **MAP_MISSING** → print:
-  `"stories/<FeatureName>_ADO_IDs.json not found — attempting to derive from local TC mapping files."`
+  `"stories/<FeatureName>_Jira_IDs.json not found — attempting to derive from local TC mapping files."`
 
   Then scan for a TC mapping file:
 
   ```bash
-  ls test_cases/<FeatureName>_ADO_TCs*.json 2>/dev/null | head -1
+  ls test_cases/<FeatureName>_Jira_TCs*.json 2>/dev/null | head -1
   ```
 
   **If a TC mapping file is found:**
 
-  Read it and extract all unique `parentAdoId` integer values from the `mapping` object. Write a minimal `stories/<FeatureName>_ADO_IDs.json` to the `stories/` folder (create folder if needed):
+  Read it and extract all unique `parentJiraKey` string values from the `mapping` object. Write a minimal `stories/<FeatureName>_Jira_IDs.json` to the `stories/` folder (create folder if needed):
 
   ```json
   {
     "feature": "<FeatureName>",
-    "mapping": { "US-<id1>": <id1>, "US-<id2>": <id2>, ... },
+    "mapping": { "US-<slug1>": "<key1>", "US-<slug2>": "<key2>", ... },
     "generatedFrom": "<TC mapping filename>"
   }
   ```
 
-  Print: `"Derived <N> US ADO ID(s) from <filename> → stories/<FeatureName>_ADO_IDs.json written."`
+  Print: `"Derived <N> US Jira key(s) from <filename> → stories/<FeatureName>_Jira_IDs.json written."`
 
-  Set `usIds` to the extracted IDs and proceed to the credentials check below.
+  Set `usKeys` to the extracted keys and proceed to the credentials check below.
 
   **If no TC mapping file is found either:**
 
-  Print: `"No ADO mapping or TC mapping files found for <FeatureName> — ADO TC comparison skipped. Run /ado-uss-to-tcs first to generate these files."`
+  Print: `"No Jira mapping or TC mapping files found for <FeatureName> — Jira TC comparison skipped. Run /jira-uss-to-tcs first to generate these files."`
 
   Skip to Step 2. This is a normal first-run state — no warning is needed.
 
-Also verify ADO credentials are set:
+Also verify Jira credentials are set:
 
 ```bash
 cd <project-root> && node -e "
 require('./node_modules/dotenv').config();
-console.log('ORG_URL=' + (process.env.AZURE_DEVOPS_ORG_URL      || '(not set)'));
-console.log('PROJECT=' + (process.env.AZURE_PROJECT_NAME         || '(not set)'));
-console.log('TOKEN='   + (process.env.AZURE_PERSONAL_ACCESS_TOKEN ? 'set' : '(not set)'));
+console.log('BASE_URL=' + (process.env.JIRA_BASE_URL    || '(not set)'));
+console.log('EMAIL='    + (process.env.JIRA_EMAIL        || '(not set)'));
+console.log('TOKEN='    + (process.env.JIRA_API_TOKEN    ? 'set' : '(not set)'));
+console.log('PROJECT='  + (process.env.JIRA_PROJECT_KEY  || '(not set)'));
 "
 ```
 
-If any ADO credential is missing: print the warning below and skip to Step 2:
+If any Jira credential is missing: print the warning below and skip to Step 2:
 ```
-⚠ WARNING — ADO deduplication skipped for <FeatureName>
-  Reason : Missing ADO environment variable(s): <list unset vars>
-  Impact : Existing ADO Test Cases were NOT compared against the merged set.
-           /tcs-to-ado may create duplicate TCs if any already exist in ADO.
+⚠ WARNING — Jira deduplication skipped for <FeatureName>
+  Reason : Missing Jira environment variable(s): <list unset vars>
+  Impact : Existing Jira Test Cases were NOT compared against the merged set.
+           /tcs-to-jira may create duplicate TCs if any already exist in Jira.
   Fix    : Add the missing variable(s) to .env and re-run /merge-tc-sets.
 ```
 
@@ -182,72 +183,70 @@ Write `<FeatureName>_fetch_existing_tcs.js` to the **project root** via the Writ
 ```javascript
 'use strict';
 require('./node_modules/dotenv').config();
-const azdev = require('./node_modules/azure-devops-node-api');
+const https = require('https');
 const fs    = require('fs');
 
-const orgUrl  = process.env.AZURE_DEVOPS_ORG_URL;
-const token   = process.env.AZURE_PERSONAL_ACCESS_TOKEN;
-const project = process.env.AZURE_PROJECT_NAME;
-const usIds   = [<id1>, <id2>, ...];  // integer ADO IDs from stories/<FeatureName>_ADO_IDs.json
+const JIRA_BASE_URL  = process.env.JIRA_BASE_URL;
+const JIRA_EMAIL     = process.env.JIRA_EMAIL;
+const JIRA_API_TOKEN = process.env.JIRA_API_TOKEN;
+const usKeys = [<key1>, <key2>, ...];  // Jira issue keys from stories/<FeatureName>_Jira_IDs.json
+
+function jiraRequest(method, path, body) {
+  return new Promise((resolve, reject) => {
+    const auth = Buffer.from(`${JIRA_EMAIL}:${JIRA_API_TOKEN}`).toString('base64');
+    const url = new URL(path, JIRA_BASE_URL);
+    const options = {
+      hostname: url.hostname,
+      path: url.pathname + url.search,
+      method,
+      headers: { 'Authorization': `Basic ${auth}`, 'Content-Type': 'application/json', 'Accept': 'application/json' },
+    };
+    const req = https.request(options, (res) => {
+      let data = '';
+      res.on('data', chunk => data += chunk);
+      res.on('end', () => resolve({ status: res.statusCode, body: data ? JSON.parse(data) : null }));
+    });
+    req.on('error', reject);
+    if (body) req.write(JSON.stringify(body));
+    req.end();
+  });
+}
 
 async function run() {
-  const connection = new azdev.WebApi(orgUrl, azdev.getPersonalAccessTokenHandler(token));
-  const witApi     = await connection.getWorkItemTrackingApi();
-
-  const byUsId = {};
+  const byUsKey = {};
   let totalExisting = 0;
 
-  for (const usId of usIds) {
-    // Expand all relations — do NOT filter by relation type so TCs linked via
-    // "Tests", "Related", "Child", "Duplicate", or any custom type are all found.
-    const usDetail = await witApi.getWorkItem(usId, null, null, 4 /* expand = All */);
-    const relations = usDetail.relations || [];
+  for (const usKey of usKeys) {
+    // Search for Test Cases linked to this User Story issue
+    const jql = encodeURIComponent(`issueType = "Test Case" AND "Tested By" = ${usKey}`);
+    const res = await jiraRequest('GET', `/rest/api/3/search?jql=${jql}&fields=summary,description,labels`, null);
 
-    // Extract linked work item IDs from relation URLs, then deduplicate
-    const linkedIds = [...new Set(
-      relations
-        .map(r => { const m = r.url && r.url.match(/\/workItems\/(\d+)$/); return m ? parseInt(m[1], 10) : null; })
-        .filter(id => id !== null && id !== usId)
-    )];
-
-    if (linkedIds.length === 0) {
-      byUsId[String(usId)] = [];
+    if (res.status !== 200) {
+      console.warn(`  WARNING: failed to fetch TCs for ${usKey}: ${res.status}`);
+      byUsKey[usKey] = [];
       continue;
     }
 
-    // Batch-fetch linked work items and keep only Test Cases
-    const linked = await witApi.getWorkItems(linkedIds, [
-      'System.Id',
-      'System.Title',
-      'System.WorkItemType',
-      'Microsoft.VSTS.TCM.Steps',
-      'System.Description',
-      'System.Tags',
-    ]);
+    const tcs = (res.body.issues || []).map(issue => ({
+      jiraKey:     issue.key,
+      title:       issue.fields.summary        || '',
+      description: issue.fields.description    || '',
+      labels:      issue.fields.labels         || [],
+    }));
 
-    const tcs = (linked || [])
-      .filter(wi => wi && wi.fields && wi.fields['System.WorkItemType'] === 'Test Case')
-      .map(wi => ({
-        adoId:       wi.fields['System.Id'],
-        title:       wi.fields['System.Title']        || '',
-        description: wi.fields['System.Description']  || '',
-        stepsXml:    wi.fields['Microsoft.VSTS.TCM.Steps'] || '',
-        tags:        wi.fields['System.Tags']         || '',
-      }));
-
-    byUsId[String(usId)] = tcs;
+    byUsKey[usKey] = tcs;
     totalExisting += tcs.length;
-    console.log(`  US #${usId}: ${tcs.length} existing TC(s) found`);
+    console.log(`  US ${usKey}: ${tcs.length} existing TC(s) found`);
   }
 
-  fs.writeFileSync('tmp_existing_tcs_<FeatureName>.json', JSON.stringify({ byUsId, totalExisting }, null, 2));
+  fs.writeFileSync('tmp_existing_tcs_<FeatureName>.json', JSON.stringify({ byUsKey, totalExisting }, null, 2));
   console.log(`\nExisting TCs written to tmp_existing_tcs_<FeatureName>.json (total: ${totalExisting})`);
 }
 
 run().catch(err => { console.error(err); process.exit(1); });
 ```
 
-> **Note:** Replace `<FeatureName>` in the filename string and `usIds` array with actual values before writing.
+> **Note:** Replace `<FeatureName>` in the filename string and `usKeys` array with actual values before writing.
 
 Run:
 ```bash
@@ -255,16 +254,16 @@ cd <project-root> && node <FeatureName>_fetch_existing_tcs.js
 rm -f <FeatureName>_fetch_existing_tcs.js
 ```
 
-If the script exits with code 1 (ADO error): print the warning below, set `existingAdoTcs = []`, and continue to Step 2:
+If the script exits with code 1 (Jira error): print the warning below, set `existingJiraTcs = []`, and continue to Step 2:
 ```
-⚠ WARNING — ADO deduplication skipped for <FeatureName>
-  Reason : ADO fetch script failed — <error message from script output>
-  Impact : Existing ADO Test Cases were NOT compared against the merged set.
-           /tcs-to-ado may create duplicate TCs if any already exist in ADO.
-  Fix    : Check your ADO credentials and network access, then re-run /merge-tc-sets.
+⚠ WARNING — Jira deduplication skipped for <FeatureName>
+  Reason : Jira fetch script failed — <error message from script output>
+  Impact : Existing Jira Test Cases were NOT compared against the merged set.
+           /tcs-to-jira may create duplicate TCs if any already exist in Jira.
+  Fix    : Check your Jira credentials and network access, then re-run /merge-tc-sets.
 ```
 
-Use the Read tool to read `tmp_existing_tcs_<FeatureName>.json`. Build a flat `existingAdoTcs[]` array by merging all `byUsId` values.
+Use the Read tool to read `tmp_existing_tcs_<FeatureName>.json`. Build a flat `existingJiraTcs[]` array by merging all `byUsKey` values.
 
 Delete the temp file:
 ```bash
@@ -273,18 +272,18 @@ rm -f tmp_existing_tcs_<FeatureName>.json
 
 Print a summary:
 ```
-Step 1.5 — Existing ADO Test Cases:
-  US #5692: 7 existing TC(s) found
-  US #5693: 3 existing TC(s) found
-Total existing ADO TCs: 10 — will be excluded from merged set and gap analysis.
+Step 1.5 — Existing Jira Test Cases:
+  US PROJ-5692: 7 existing TC(s) found
+  US PROJ-5693: 3 existing TC(s) found
+Total existing Jira TCs: 10 — will be excluded from merged set and gap analysis.
 ```
 
 If `totalExisting === 0`:
 ```
-Step 1.5 — No existing Test Cases found in ADO — full merge will run.
+Step 1.5 — No existing Test Cases found in Jira — full merge will run.
 ```
 
-`existingAdoTcs[]` is available to Steps 3 and 5b.
+`existingJiraTcs[]` is available to Steps 3 and 5b.
 
 ---
 
@@ -377,12 +376,12 @@ File B: <FileB>  →  <N_B> Test Cases across <M_B> User Stories
 3. **Unique TCs from File B** — all File B TCs that are not duplicates are appended after the
    last TC of their matching `### Story:` group. If the story heading does not exist in File A,
    a new `### Story:` group is added at the end of the merged file.
-4. **Already in ADO** *(only when `existingAdoTcs[]` is non-empty from Step 1.5)* — after
+4. **Already in Jira** *(only when `existingJiraTcs[]` is non-empty from Step 1.5)* — after
    rules 1–3 are applied, compare every TC in the candidate merged set (from File A and
-   unique File B TCs) against each entry in `existingAdoTcs[]` using the same normalised
-   Levenshtein ratio. If similarity ≥ 0.80, mark the TC as `ALREADY IN ADO` and exclude it
-   from the merged set. Log `"TC-Foo already covered in ADO (#67890) — excluded"`. This
-   prevents `/tcs-to-ado` from creating duplicate work items on the next run.
+   unique File B TCs) against each entry in `existingJiraTcs[]` using the same normalised
+   Levenshtein ratio. If similarity ≥ 0.80, mark the TC as `ALREADY IN JIRA` and exclude it
+   from the merged set. Log `"TC-Foo already covered in Jira (PROJ-67890) — excluded"`. This
+   prevents `/tcs-to-jira` from creating duplicate issues on the next run.
 
 ### TC ID collision on unique TCs
 
@@ -403,7 +402,7 @@ Merge preview for: <FeatureName>
 From File A (kept as-is):        <N_A_kept> Test Cases
 From File B (unique, added):     <N_B_added> Test Cases
 Duplicates discarded (A vs B):   <N_dup> Test Cases
-Already in ADO (excluded):       <N_ado> Test Cases
+Already in Jira (excluded):      <N_ado> Test Cases
 ─────────────────────────────────────────────────────
 Total in merged set:             <N_total> Test Cases
 
@@ -411,15 +410,15 @@ Duplicate details (A vs B):
   [TC-Valid_Employee_Creation] exact match — kept File A
   ["Verify Employee Form Validation" ≈ "Invalid Missing Fields"] similarity=0.83 — kept File A
 
-Already in ADO (excluded from merged set):
-  TC-Boundary_Max_Employee_Records → ALREADY IN ADO (#67890) — excluded
-  TC-Security_SQL_Injection_Name   → ALREADY IN ADO (#67891) — excluded
+Already in Jira (excluded from merged set):
+  TC-Boundary_Max_Employee_Records → ALREADY IN JIRA (PROJ-67890) — excluded
+  TC-Security_SQL_Injection_Name   → ALREADY IN JIRA (PROJ-67891) — excluded
 
 Unique TCs added from File B:
   TC-Concurrent_Save_Conflict      (added under US-Add_Employee-Add_New_Employee_Record)
 ```
 
-The `Already in ADO (excluded)` line and section are **omitted entirely** when `existingAdoTcs[]`
+The `Already in Jira (excluded)` line and section are **omitted entirely** when `existingJiraTcs[]`
 is empty (Step 1.5 was skipped or found zero TCs). Do not show a `0 Test Cases` line in that case.
 
 Confirm with the user before writing (show `"Write merged files? [y/N]"`).
@@ -496,11 +495,11 @@ Check for a local User Stories markdown to get the full acceptance criteria text
 
 ```bash
 ls stories/<FeatureName>_UserStories.md 2>/dev/null && echo "US_MD_OK" || echo "US_MD_MISSING"
-ls stories/<FeatureName>_ADO_IDs.json   2>/dev/null && echo "US_IDS_OK" || echo "US_IDS_MISSING"
+ls stories/<FeatureName>_Jira_IDs.json  2>/dev/null && echo "US_IDS_OK" || echo "US_IDS_MISSING"
 ```
 
 - If `stories/<FeatureName>_UserStories.md` exists: read it for acceptance criteria text.
-- If only `stories/<FeatureName>_ADO_IDs.json` exists: derive context from story slugs + TC
+- If only `stories/<FeatureName>_Jira_IDs.json` exists: derive context from story slugs + TC
   content already parsed.
 - If neither exists: proceed with gap analysis based solely on the merged TC set.
 
@@ -509,7 +508,7 @@ ls stories/<FeatureName>_ADO_IDs.json   2>/dev/null && echo "US_IDS_OK" || echo 
 Scan **three sources** per User Story for a "Definition of Done" section — in this priority
 order (first match per story wins):
 
-**Source 1 — `stories/<FeatureName>_UserStories.md`** (when available)
+**Source 1 — `stories/<FeatureName>_UserStories.md`** (when available; primary source)
 
 Scan each User Story block in the markdown file. Recognise DoD in either form:
 
@@ -521,66 +520,81 @@ Scan each User Story block in the markdown file. Recognise DoD in either form:
    (case-insensitive) appearing as a standalone bold line or prefixing a bullet list.
    DoD content = the remainder of that paragraph / bullet list.
 
-**Source 2 — ADO `description`, `acceptanceCriteria`, and comments** (optional; requires ADO credentials)
+**Source 2 — Jira `description`, `acceptanceCriteria`, and comments** (optional; requires Jira credentials)
 
-When `stories/<FeatureName>_ADO_IDs.json` is available and no DoD was found in the markdown,
-check whether ADO env vars are set:
+When `stories/<FeatureName>_Jira_IDs.json` is available and no DoD was found in the markdown,
+check whether Jira env vars are set:
 
 ```bash
 cd <project-root> && node -e "
 require('./node_modules/dotenv').config();
-console.log('ORG_URL=' + (process.env.AZURE_DEVOPS_ORG_URL      || '(not set)'));
-console.log('PROJECT=' + (process.env.AZURE_PROJECT_NAME         || '(not set)'));
-console.log('TOKEN='   + (process.env.AZURE_PERSONAL_ACCESS_TOKEN ? 'set' : '(not set)'));
+console.log('BASE_URL=' + (process.env.JIRA_BASE_URL    || '(not set)'));
+console.log('EMAIL='    + (process.env.JIRA_EMAIL        || '(not set)'));
+console.log('TOKEN='    + (process.env.JIRA_API_TOKEN    ? 'set' : '(not set)'));
+console.log('PROJECT='  + (process.env.JIRA_PROJECT_KEY  || '(not set)'));
 "
 ```
 
-If all three are set, write and run a script to fetch the `System.Description`,
-`Microsoft.VSTS.Common.AcceptanceCriteria`, and work item comments for each US ADO ID found
-in `stories/<FeatureName>_ADO_IDs.json`:
+If all four are set, write and run a script to fetch the `description`, `acceptanceCriteria`,
+and issue comments for each US Jira key found in `stories/<FeatureName>_Jira_IDs.json`:
 
 ```javascript
 // <FeatureName>_fetch_comments.js  (written to project root via Write tool)
 'use strict';
 require('./node_modules/dotenv').config();
-const azdev = require('./node_modules/azure-devops-node-api');
+const https = require('https');
 const fs    = require('fs');
 
-const orgUrl  = process.env.AZURE_DEVOPS_ORG_URL;
-const token   = process.env.AZURE_PERSONAL_ACCESS_TOKEN;
-const project = process.env.AZURE_PROJECT_NAME;
+const JIRA_BASE_URL  = process.env.JIRA_BASE_URL;
+const JIRA_EMAIL     = process.env.JIRA_EMAIL;
+const JIRA_API_TOKEN = process.env.JIRA_API_TOKEN;
 
-const idsMap = JSON.parse(fs.readFileSync('stories/<FeatureName>_ADO_IDs.json', 'utf8'));
-const ids    = Object.values(idsMap.mapping || idsMap).map(Number).filter(Boolean);
+const keysMap = JSON.parse(fs.readFileSync('stories/<FeatureName>_Jira_IDs.json', 'utf8'));
+const keys    = Object.values(keysMap.mapping || keysMap).filter(Boolean);
+
+function jiraRequest(method, path, body) {
+  return new Promise((resolve, reject) => {
+    const auth = Buffer.from(`${JIRA_EMAIL}:${JIRA_API_TOKEN}`).toString('base64');
+    const url = new URL(path, JIRA_BASE_URL);
+    const options = {
+      hostname: url.hostname,
+      path: url.pathname + url.search,
+      method,
+      headers: { 'Authorization': `Basic ${auth}`, 'Content-Type': 'application/json', 'Accept': 'application/json' },
+    };
+    const req = https.request(options, (res) => {
+      let data = '';
+      res.on('data', chunk => data += chunk);
+      res.on('end', () => resolve({ status: res.statusCode, body: data ? JSON.parse(data) : null }));
+    });
+    req.on('error', reject);
+    if (body) req.write(JSON.stringify(body));
+    req.end();
+  });
+}
 
 async function run() {
-  const connection = new azdev.WebApi(orgUrl, azdev.getPersonalAccessTokenHandler(token));
-  const witApi     = await connection.getWorkItemTrackingApi();
-
-  // Fetch description + AC fields (same fields as ado-uss-to-tcs)
-  const items = await witApi.getWorkItems(ids, [
-    'System.Id',
-    'System.Description',
-    'Microsoft.VSTS.Common.AcceptanceCriteria',
-    'Custom.DefinitionofDone',  // custom DoD field — silently absent if not configured
-  ]);
-  const fieldsMap = {};
-  for (const item of (items || [])) {
-    fieldsMap[item.id] = {
-      customField:        item.fields['Custom.DefinitionofDone']                  || '',
-      description:        item.fields['System.Description']                       || '',
-      acceptanceCriteria: item.fields['Microsoft.VSTS.Common.AcceptanceCriteria'] || '',
-    };
-  }
-
-  // Fetch comments per work item
+  const fieldsMap  = {};
   const commentsMap = {};
-  for (const id of ids) {
+
+  for (const key of keys) {
+    // Fetch issue fields
+    const res = await jiraRequest('GET', `/rest/api/3/issue/${key}?fields=description,customfield_10014`, null);
+    if (res.status === 200) {
+      fieldsMap[key] = {
+        description:        JSON.stringify(res.body.fields.description || ''),
+        acceptanceCriteria: res.body.fields.customfield_10014 || '',
+      };
+    } else {
+      fieldsMap[key] = { description: '', acceptanceCriteria: '' };
+    }
+
+    // Fetch comments
     try {
-      const result = await witApi.getComments(project, id);
-      commentsMap[id] = (result.comments || []).map(c => c.text || '').join('\n');
+      const cRes = await jiraRequest('GET', `/rest/api/3/issue/${key}/comment`, null);
+      commentsMap[key] = (cRes.body.comments || []).map(c => JSON.stringify(c.body || '')).join('\n');
     } catch (_) {
-      commentsMap[id] = '';  // graceful — never fail the whole fetch
+      commentsMap[key] = '';  // graceful — never fail the whole fetch
     }
   }
 
@@ -588,7 +602,7 @@ async function run() {
     'tmp_us_comments_<FeatureName>.json',
     JSON.stringify({ fieldsMap, commentsMap }, null, 2)
   );
-  console.log(`Fetched description, AC, and comments for ${ids.length} User Stories.`);
+  console.log(`Fetched description and comments for ${keys.length} User Stories.`);
 }
 run().catch(err => { console.error(err); process.exit(1); });
 ```
@@ -600,15 +614,13 @@ rm -f <FeatureName>_fetch_comments.js
 ```
 
 After running, read `tmp_us_comments_<FeatureName>.json` (structure: `{ fieldsMap, commentsMap }`)
-and scan **four sub-sources per story** in this priority order (first match wins):
+and scan **three sub-sources per story** in this priority order (first match wins):
 
-0. `fieldsMap[id].customField` — `Custom.DefinitionofDone` ADO custom field (strip HTML; silently
-   absent on ADO configurations that do not define this field — treat empty string as absent)
-1. `fieldsMap[id].description` — ADO description HTML
-2. `fieldsMap[id].acceptanceCriteria` — ADO acceptance criteria HTML
-3. `commentsMap[id]` — concatenated work item comment HTML
+1. `fieldsMap[key].description` — Jira issue description (Atlassian Document Format JSON, strip to plain text)
+2. `fieldsMap[key].acceptanceCriteria` — Jira acceptance criteria custom field
+3. `commentsMap[key]` — concatenated issue comment body
 
-**Detection patterns** applied identically to all three sub-sources (same as ado-uss-to-tcs):
+**Detection patterns** applied identically to all sub-sources (same as jira-uss-to-tcs):
 
 | Pattern | Examples |
 | --- | --- |
@@ -616,16 +628,16 @@ and scan **four sub-sources per story** in this priority order (first match wins
 | Bold/inline title anywhere in the text | `<b>Definition of Done</b>` \| `<strong>Definition of Done</strong>` \| `**Definition of Done**` |
 
 DoD content = all text until the next heading of equal or higher level (or end of block).
-Strip all HTML tags from the extracted DoD block and store as plain text.
+Strip all HTML/ADF markup from the extracted DoD block and store as plain text.
 
 Delete `tmp_us_comments_<FeatureName>.json` after extraction is complete.
 
-If ADO env vars are **not** set, skip the ADO fetch silently — no error.
+If Jira env vars are **not** set, skip the Jira fetch silently — no error.
 
 **Overall priority order across all sources** (first match per story wins):
 
 ```
-Source 1 (userStoriesMd)  →  Source 2a (ADO customField)  →  Source 2b (ADO description)  →  Source 2c (ADO acceptanceCriteria)  →  Source 2d (ADO comment)
+Source 1 (userStoriesMd)  →  Source 2a (Jira description)  →  Source 2b (Jira acceptanceCriteria)  →  Source 2c (Jira comment)
 ```
 
 **Recording the source**
@@ -633,7 +645,7 @@ Source 1 (userStoriesMd)  →  Source 2a (ADO customField)  →  Source 2b (ADO 
 For each story, record which source provided the DoD:
 
 ```
-dodSource: "userStoriesMd" | "customField" | "description" | "acceptanceCriteria" | "comment" | null
+dodSource: "userStoriesMd" | "description" | "acceptanceCriteria" | "comment" | null
 ```
 
 Print a summary once all sources have been scanned:
@@ -651,20 +663,20 @@ No Definition of Done sections detected — Lens 5 will be skipped.
 
 ### 5b. Coverage gap analysis
 
-**ADO-existing TCs as additional coverage context**
+**Jira-existing TCs as additional coverage context**
 
-When `existingAdoTcs[]` is non-empty (from Step 1.5), treat those TCs as additional covered TCs
+When `existingJiraTcs[]` is non-empty (from Step 1.5), treat those TCs as additional covered TCs
 alongside the merged set for **all lenses below**. They were already excluded from the merged
-output (Rule 4 in Step 3) precisely because they exist in ADO — but they still represent real
+output (Rule 4 in Step 3) precisely because they exist in Jira — but they still represent real
 coverage that should suppress gap suggestions.
 
-Print this header before gap analysis begins when ADO TCs are present:
+Print this header before gap analysis begins when Jira TCs are present:
 ```
-Note: <N> existing ADO TCs are included in coverage analysis (excluded from merged set).
+Note: <N> existing Jira TCs are included in coverage analysis (excluded from merged set).
 ```
 
 For each `### Story:` group in the merged set, apply all four lenses using both the merged TCs
-**and** any `existingAdoTcs[]` entries whose tags or US mapping aligns with the story:
+**and** any `existingJiraTcs[]` entries whose labels or US mapping aligns with the story:
 
 **Lens 1 — Type coverage per story**
 
@@ -894,14 +906,14 @@ Merged markdown re-written with test tags: <OUTPUT_PATH>
 
 ### 6f. Update JSON mapping (if present)
 
-If `test_cases/<FeatureName>_ADO_TCs.json` exists (produced earlier this run or already on
+If `test_cases/<FeatureName>_Jira_TCs.json` exists (produced earlier this run or already on
 disk), update the `tags` array for every entry to match the assigned tags.
 
-Write the updated JSON back to `test_cases/<FeatureName>_ADO_TCs.json`.
+Write the updated JSON back to `test_cases/<FeatureName>_Jira_TCs.json`.
 
 Print:
 ```
-JSON mapping updated: test_cases/<FeatureName>_ADO_TCs.json
+JSON mapping updated: test_cases/<FeatureName>_Jira_TCs.json
   @Smoke: <X> TCs  (@automation: <A>)
   @Regression: <Y> TCs  (@automation: <C>)
 ```
@@ -924,7 +936,7 @@ TC counts:
   File A TCs kept:             <N_A_kept>
   File B unique TCs added:     <N_B_added>
   Duplicates removed (A vs B): <N_dup>
-  Already in ADO (excluded):   <N_ado>   ← omit this line when N_ado = 0
+  Already in Jira (excluded):  <N_ado>   ← omit this line when N_ado = 0
   Suggestions accepted:        <N_suggestions_accepted> of <N_suggestions_total>
   Total TCs in final set:      <N_total>
 
@@ -935,18 +947,18 @@ Test tags:
 
 Recommended next steps:
 
-  A. Push TCs to ADO (creates Test Plan + Suite + TC work items with tags):
-       /tcs-to-ado <FeatureName>
-     Requires: stories/<FeatureName>_ADO_IDs.json
-     Tags (@Smoke, @Regression, @automation) are written to System.Tags on each work item.
+  A. Push TCs to Jira (creates Test Plan + Suite + TC issues with labels):
+       /tcs-to-jira <FeatureName>
+     Requires: stories/<FeatureName>_Jira_IDs.json
+     Labels (@Smoke, @Regression, @automation) are written to labels on each issue.
 
   B. Generate Playwright scripts for @automation TCs (local markdown):
        /tcs-to-plscript <FeatureName>
-     No ADO connection required — reads @automation tag from merged markdown directly.
+     No Jira connection required — reads @automation tag from merged markdown directly.
 
-  C. Generate Playwright scripts from ADO (after option A):
-       /ado-tcs-to-plscript --tag @automation
-     Generates scripts only for TCs tagged @automation in ADO.
+  C. Generate Playwright scripts from Jira (after option A):
+       /jira-tcs-to-plscript --tag @automation
+     Generates scripts only for TCs labelled @automation in Jira.
      Use --tag @Smoke to generate the smoke suite only.
 ```
 
@@ -960,16 +972,16 @@ Recommended next steps:
 3. Deduplication removes File B TCs, never File A TCs.
 4. TC ID suffix `-B` is applied only when needed (id collision on otherwise unique TC).
 5. The merged markdown must use the exact same format as `/uss-to-tcs` output so that
-   downstream skills (`tcs-to-ado`, `tcs-to-plscript`) parse it correctly.
+   downstream skills (`tcs-to-jira`, `tcs-to-plscript`) parse it correctly.
 7. Gap analysis suggestions must be **fully formed TCs** — never vague stubs. Every
    suggestion must have a complete `tcId`, `title`, `type`, `preconditions`, `steps[]`,
-   and `expectedResult` that could be pushed to ADO unchanged.
+   and `expectedResult` that could be pushed to Jira unchanged.
 8. Suggestions are never written to the file without the user explicitly accepting them.
    Show the full TC block for each suggestion so the user can evaluate quality before
    deciding.
 9. Accepted suggestions are appended in the same `### Story:` group as their parent.
    If a suggestion spans a story not in the merged set, create a new `### Story:` group.
-10. The skill does NOT push anything to ADO — the user runs `/tcs-to-ado` afterwards.
+10. The skill does NOT push anything to Jira — the user runs `/tcs-to-jira` afterwards.
 11. No auto-chaining — inform the user of the next steps to run.
 12. Every TC in the merged set receives at least one tier tag: `@Smoke`, `@Regression`, or
     both. No TC is left without a tier tag after Step 6. A TC may carry both when it
@@ -978,7 +990,7 @@ Recommended next steps:
     tagged `@automation` always also has at least one of `@Smoke` or `@Regression`.
 14. Tags are stored in two places: the `**Tags:**` field in the markdown TC block (semicolon-
     separated, tier tags first, `@automation` last) and the `tags` array in the JSON mapping
-    entry. Both are kept in sync by Step 6f.
+    entry. Both are kept in sync by Step 6f (updates `test_cases/<FeatureName>_Jira_TCs.json`).
 15. Tagging is fully automatic — no user prompting. The criteria in Steps 6a and 6b are the
     sole basis for tag assignment.
 

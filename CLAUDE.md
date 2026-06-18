@@ -1,11 +1,11 @@
-# AZ-Automation — Claude Context Guide
+# BB-Automation — Claude Context Guide
 
 ## Project Overview
 
 AI-powered **Playwright TypeScript QA automation framework** for a chemistry synthesis web application. The framework automates the full QA lifecycle:
 
 - **BRD → User Stories → Test Cases → Playwright scripts** (via Claude Code skills)
-- **Azure DevOps integration** — reads/writes work items, test plans, test suites
+- **Jira integration** — reads/writes issues (Stories, Tasks/Test Cases, Epics)
 - **Self-healing locators** — 3-phase fallback (primary CSS/XPath → semantic Playwright strategies → AI via MCP)
 - **22 Claude Code skills** orchestrating every stage of the automation lifecycle
 
@@ -21,7 +21,7 @@ npm test                              # Run all tests
 npm run test:area                     # Run tests by app area
 npm run test:module MODULE=<Name>     # Run a specific module (e.g. MODULE=Instruments)
 npm run modules:list                  # List all registered test modules
-npm run sync                          # Sync test plans from Azure DevOps
+npm run sync                          # Sync issues from Jira
 npm run auth:reset                    # Clear auth state (re-authenticate on next test run)
 npm run report                        # Open last HTML report
 npm run locators:extract              # Extract locators from existing specs
@@ -32,19 +32,25 @@ npm run locators:extract              # Extract locators from existing specs
 ## Folder Structure
 
 ```
-AZ-Automation/
+BB-Automation/
 ├── .claude/
 │   └── skills/                  # 22 Claude Code skills (see Skills section)
+├── .github/
+│   └── workflows/
+│       └── qa-automation.yml    # GitHub Actions CI/CD pipeline
 ├── brd/                         # Raw BRD input documents
 ├── config/
-│   ├── testCaseFilter.js        # Modules + TC IDs registered for PLScript generation
+│   ├── testCaseFilter.ts        # Modules + TC keys registered for PLScript generation
+│   ├── jira-us-keys.json        # Jira User Story issue keys per feature
 │   └── testMapping.js           # Code area → test tag mapping
 ├── docs/                        # Project documentation
-├── pipelines/                   # CI/CD pipeline definitions
+├── pipelines/                   # Legacy CI/CD definitions (azure-pipelines.yml kept for reference)
 ├── src/
 │   ├── factories/
 │   │   └── helper-factory.ts    # Factory for creating helper instances
 │   ├── generators/              # AI-driven test generators (JS)
+│   ├── listeners/
+│   │   └── testPlanListener.ts  # Jira listener — polls for issue changes
 │   ├── locators/                # Locator repositories (pure data, no logic)
 │   │   └── <page>-page-locators.ts
 │   ├── pages/                   # Page object classes (self-healing pattern)
@@ -53,9 +59,9 @@ AZ-Automation/
 │   │   └── pom-lazy-self-healing.ts    # Page Object Manager (lazy init)
 │   ├── scripts/
 │   │   ├── global-setup.ts      # Auth setup — runs before test suite
-│   │   ├── list-modules.js      # CLI: list modules
-│   │   ├── manual-sync.js       # CLI: sync ADO test plans
-│   │   └── run-tests-for-area.js
+│   │   ├── list-modules.ts      # CLI: list modules
+│   │   ├── manual-sync.ts       # CLI: sync Jira issues
+│   │   └── run-tests-for-area.ts
 │   └── utils/
 │       ├── advanced-actions-helper.ts      # Wraps page actions (goto, click, fill…)
 │       ├── advanced-assertions-helper.ts   # Wraps expect assertions
@@ -127,9 +133,9 @@ test('example', async ({ pomSelfHealing }) => {
 
 ---
 
-## Registered Modules (config/testCaseFilter.js)
+## Registered Modules (config/testCaseFilter.ts)
 
-These 12 modules have TC IDs registered for PLScript generation:
+These 17 modules have TC keys registered for PLScript generation:
 
 | Module | Folder in tests/generated/ |
 |---|---|
@@ -145,8 +151,13 @@ These 12 modules have TC IDs registered for PLScript generation:
 | Audit-Trail | `Audit-Trail/` |
 | Instruments | `Instruments/` |
 | Sign-Out | `Sign-Out/` |
+| Instrument-Metadata-Update | `Instrument-Metadata-Update/` |
+| Upload-Reaction-CSV | `Upload-Reaction-CSV/` |
+| Reaction-Setup-Viewer | `Reaction-Setup-Viewer/` |
+| Scale-Substrate-Config | `Scale-Substrate-Config/` |
+| Continue-Campaign-Wizard | `Continue-Campaign-Wizard/` |
 
-To add a new module: add it to `config/testCaseFilter.js` with its TC IDs.
+To add a new module: add it to `config/testCaseFilter.ts` with its Jira issue keys (e.g. `["BB-1234", "BB-1235"]`).
 
 ---
 
@@ -159,18 +170,18 @@ Invoke any skill with `/skill-name` in the Claude chat. Skills are located in `.
 | Skill | When to use |
 |---|---|
 | `/brd-full-pipeline` | Full BRD → US → TC → Playwright → commit in one command |
-| `/ado-full-pipeline` | Same as above but US + TC are pushed to Azure DevOps |
+| `/jira-full-pipeline` | Same as above but US + TC are pushed to Jira (Epic + Story/Task issues) |
 | `/taf-full-pipeline` | Full TAF migration: scaffold → create → migrate → polish |
 
 ### Artifact Generation Skills
 
 | Skill | When to use |
 |---|---|
-| `/brd-to-uss` | Convert BRD text to User Stories (local save + optional ADO push) |
+| `/brd-to-uss` | Convert BRD text to User Stories (local save + optional Jira push) |
 | `/uss-to-tcs` | Transform User Stories to structured manual Test Cases |
 | `/tcs-to-plscript` | Convert local TC markdown files to Playwright scripts |
-| `/ado-uss-to-tcs` | Fetch User Stories from ADO, generate TCs, push back to ADO |
-| `/ado-tcs-to-plscript` | Fetch TCs from ADO, generate Playwright scripts (uses testCaseFilter.js) |
+| `/jira-uss-to-tcs` | Fetch User Stories from Jira, generate TCs, push back to Jira |
+| `/jira-tcs-to-plscript` | Fetch TCs from Jira, generate Playwright scripts (uses testCaseFilter.ts) |
 
 ### Page Object / Locator Skills
 
@@ -204,7 +215,7 @@ Invoke any skill with `/skill-name` in the Claude chat. Skills are located in `.
 |---|---|
 | `/scaffold-taf-infrastructure` | Create TAF structure from scratch on a new branch |
 | `/setup-workspace` | Initialize folder structure (stories/, test_cases/, src/pages/, tests/) |
-| `/tcs-to-ado` | Push locally-saved TCs to ADO Test Plan + Suite + work items |
+| `/tcs-to-jira` | Push locally-saved TCs to Jira as Epic + Task issues with links |
 
 ---
 
@@ -220,9 +231,12 @@ Copy `.env.example` to `.env` and fill in values.
 | `OPENAI_API_KEY` | OpenAI key for AI generation/healing |
 | `ANTHROPIC_API_KEY` | Anthropic key (alternative AI provider) |
 | `GEMINI_API_KEY` | Gemini key (alternative AI provider) |
-| `AZURE_DEVOPS_ORG_URL` | ADO org URL |
-| `AZURE_PERSONAL_ACCESS_TOKEN` | ADO PAT for work item read/write |
-| `AZURE_PROJECT_NAME` | ADO project name |
+| `JIRA_BASE_URL` | Jira Cloud base URL (e.g. `https://yourcompany.atlassian.net`) |
+| `JIRA_EMAIL` | Jira account email (used for Basic auth) |
+| `JIRA_API_TOKEN` | Jira API token — generate at id.atlassian.com |
+| `JIRA_PROJECT_KEY` | Jira project key (e.g. `BB`) |
+| `JIRA_TC_ISSUE_TYPE` | Issue type for Test Cases (default: `Task`) |
+| `JIRA_US_ISSUE_TYPE` | Issue type for User Stories (default: `Story`) |
 | `APP_IN_OPERATION` | `true` = enable live MCP browser snapshots during generation |
 
 ---
@@ -239,9 +253,9 @@ Copy `.env.example` to `.env` and fill in values.
 - `timeout`: 120 000 ms per test
 - Active project: `chromium` only (Firefox/WebKit commented out)
 
-### config/testCaseFilter.js
+### config/testCaseFilter.ts
 
-Defines which TC IDs belong to each module. Used by `/ado-tcs-to-plscript` to know what to fetch and generate. Edit here to add/remove TCs from automation scope.
+Defines which Jira issue keys belong to each module. Used by `/jira-tcs-to-plscript` to know what to fetch and generate. Edit here to add/remove TCs from automation scope. Keys are strings in the format `"BB-XXXX"`.
 
 ### config/testMapping.js
 
@@ -251,7 +265,7 @@ Maps source code areas to test tags. Used by `npm run test:area` to select relev
 
 ## Conventions & Rules
 
-- **Spec naming**: `tc-<ADO-ID>-<kebab-case-description>.spec.ts`
+- **Spec naming**: `tc-<Jira-Key>-<kebab-case-description>.spec.ts` (e.g. `tc-BB-3871-login-valid-credentials.spec.ts`)
 - **Module folders**: PascalCase (e.g. `Library-Management/`, `Audit-Trail/`)
 - **Locator files**: pure selector data — no conditional logic, no page actions
 - **Page object files**: extend `SelfHealingPageBase`, import locators from `src/locators/`
@@ -278,7 +292,7 @@ The app uses **Microsoft Azure AD MFA**. Auth is handled once before the suite r
 
 These are pre-existing issues in `tests/generated/` — do not flag as new bugs:
 
-- **`csv-parser`** — missing package causes test listing failure in `tc-5097` tests
+- **`csv-parser`** — missing package causes test listing failure in `tc-BB-5097` tests
 - **Non-existent matchers** — some specs use `toHaveCountGreaterThan`, `toHaveCountLessThan`, `toHaveDownloaded` which do not exist in Playwright
 - **Invalid locator filter** — some specs use `.filter({name: ...})` which is not a valid Locator option
 

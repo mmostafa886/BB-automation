@@ -1,8 +1,8 @@
-# ado-tcs-to-plscript
+# jira-tcs-to-plscript
 
 ## What it does
 
-Fetches test cases directly from Azure DevOps based on the IDs and modules configured in
+Fetches test cases directly from Jira based on the keys and modules configured in
 `config/testCaseFilter.js`, then generates production-ready Playwright TypeScript automation
 scripts following the project's self-healing TAF architecture.
 
@@ -13,7 +13,7 @@ For every active module it produces four layers:
 | 1 — Locators | `src/locators/<page>-page-locators.ts` | Created or extended |
 | 2 — Page class | `src/pages/<page>-page-self-healing.ts` | Created or extended |
 | 3 — POM registration | `src/pages/pom-lazy-self-healing.ts` | Updated in-place |
-| 4 — Spec files | `tests/generated/<Module>/tc-<id>-<slug>.spec.ts` | One per TC (stale copies renamed to `_old`) |
+| 4 — Spec files | `tests/generated/<Module>/tc-<key>-<slug>.spec.ts` | One per TC (stale copies renamed to `_old`) |
 
 Chains automatically into `/polish-generated-code` when complete, scoped to only the modules processed in this run.
 
@@ -23,10 +23,11 @@ Chains automatically into `/polish-generated-code` when complete, scoped to only
 
 | Variable | Description |
 |----------|-------------|
-| `AZURE_DEVOPS_ORG_URL` | e.g. `https://dev.azure.com/MyOrg` |
-| `AZURE_PROJECT_NAME` | e.g. `MyProject` |
-| `AZURE_PERSONAL_ACCESS_TOKEN` | PAT with Work Items **read** scope |
-| `config/testCaseFilter.js` | Module ↔ TC-IDs mapping (already in repo) |
+| `JIRA_BASE_URL` | e.g. `https://your-org.atlassian.net` |
+| `JIRA_EMAIL` | Jira account email (used for Basic auth) |
+| `JIRA_API_TOKEN` | Jira API token with issue **read** scope |
+| `JIRA_PROJECT_KEY` | e.g. `BB` |
+| `config/testCaseFilter.js` | Module ↔ TC-keys mapping (already in repo) |
 
 ---
 
@@ -45,7 +46,7 @@ URL of the wireframe / UI prototype (e.g. Figma, Zeplin, live staging app). When
 - When inferring selectors from TC steps, the skill matches step text against wireframe elements semantically and uses real selectors instead of guessing from text alone
 - Improves locator accuracy and reduces brittle `text=` or positional selectors
 
-If absent, the skill **automatically prompts** via `AskUserQuestion` (Step 3b) asking whether you have a wireframe URL. This prompt is **mandatory** for direct invocations — it cannot be skipped unless the skill is called from a pipeline orchestrator (`ado-full-pipeline`).
+If absent, the skill **automatically prompts** via `AskUserQuestion` (Step 3b) asking whether you have a wireframe URL. This prompt is **mandatory** for direct invocations — it cannot be skipped unless the skill is called from a pipeline orchestrator (`jira-full-pipeline`).
 
 ---
 
@@ -73,10 +74,10 @@ src/
 
 tests/generated/
   Login/
-    tc-3871-verify-redirection-to-login-page.spec.ts   ← Layer 4
-    tc-3874-verify-login-page-displays-correctly.spec.ts
+    tc-BB-3871-verify-redirection-to-login-page.spec.ts   ← Layer 4
+    tc-BB-3874-verify-login-page-displays-correctly.spec.ts
   Reagents/
-    tc-3914-verify-reagents-page-content.spec.ts
+    tc-BB-3914-verify-reagents-page-content.spec.ts
     ...
 ```
 
@@ -84,9 +85,9 @@ tests/generated/
 
 ## Spec file naming
 
-Format: `tc-<id>-<title-slug>.spec.ts` — both tokens are always present.
+Format: `tc-<key>-<title-slug>.spec.ts` — both tokens are always present.
 
-`<id>` is the numeric ADO work item ID.
+`<key>` is the Jira issue key (e.g. `BB-1234`).
 `<title-slug>` is the TC title lowercased, non-alphanumeric characters replaced with `-`, max 80 chars.
 
 **Existing file handling (stale detection is MANDATORY before every write):**
@@ -94,7 +95,7 @@ Format: `tc-<id>-<title-slug>.spec.ts` — both tokens are always present.
 | Situation | Action |
 | --------- | ------ |
 | Different filename matches the same `<title-slug>` | `git mv` stale file → `<stale-base>_old.spec.ts`; write fresh spec |
-| Exact filename already exists | `git mv` existing → `tc-<id>-<title-slug>_old.spec.ts`; write fresh spec |
+| Exact filename already exists | `git mv` existing → `tc-<key>-<title-slug>_old.spec.ts`; write fresh spec |
 | No existing file | Write directly |
 
 The `_old` copy is kept in git history so no work is ever silently lost.
@@ -103,18 +104,18 @@ The `_old` copy is kept in git history so no work is ever silently lost.
 
 ## Usage Examples
 
-### 1. Generate scripts from ADO test cases (no wireframe)
+### 1. Generate scripts from Jira test cases (no wireframe)
 
 ```bash
-/ado-tcs-to-plscript
+/jira-tcs-to-plscript
 ```
 
-Fetches all active modules' test cases from ADO and generates Playwright scripts. The skill will prompt via `AskUserQuestion` asking if you have a wireframe URL to provide; you can skip it or provide a URL.
+Fetches all active modules' test cases from Jira and generates Playwright scripts. The skill will prompt via `AskUserQuestion` asking if you have a wireframe URL to provide; you can skip it or provide a URL.
 
 ### 2. With wireframe URL for accurate locator selection
 
 ```bash
-/ado-tcs-to-plscript Login,Reagents --wireframe-url=https://figma.com/file/abc123/app-ui
+/jira-tcs-to-plscript Login,Reagents --wireframe-url=https://figma.com/file/abc123/app-ui
 ```
 
 When a wireframe URL is provided:
@@ -126,7 +127,7 @@ When a wireframe URL is provided:
 ### 3. Single module with wireframe + test execution
 
 ```bash
-/ado-tcs-to-plscript Reagents --wireframe-url=https://staging.example.com/reagents --execute-tests=true
+/jira-tcs-to-plscript Reagents --wireframe-url=https://staging.example.com/reagents --execute-tests=true
 ```
 
 Generates scripts with wireframe-enhanced selectors, runs tests (up to 2 rounds with fixes), and chains to Polish if pass rate meets the gate.
@@ -134,19 +135,19 @@ Generates scripts with wireframe-enhanced selectors, runs tests (up to 2 rounds 
 ### 4. All modules with wireframe
 
 ```bash
-/ado-tcs-to-plscript --wireframe-url=https://figma.com/design/full-app
+/jira-tcs-to-plscript --wireframe-url=https://figma.com/design/full-app
 ```
 
 Processes all active modules defined in `config/testCaseFilter.js`, using wireframe context for locator selection across all modules.
 
-### 5. Full workflow: ADO USs → ADO TCs → Playwright scripts with wireframe
+### 5. Full workflow: Jira USs → Jira TCs → Playwright scripts with wireframe
 
 ```bash
-# Step 1: Generate TCs from ADO User Stories + wireframe
-/ado-uss-to-tcs reagents-upload --wireframe-url=https://figma.com/design/reagents
+# Step 1: Generate TCs from Jira User Stories + wireframe
+/jira-uss-to-tcs reagents-upload --wireframe-url=https://figma.com/design/reagents
 
-# Step 2: Generate Playwright scripts from ADO TCs (config/testCaseFilter.js auto-patched)
-/ado-tcs-to-plscript Reagents --wireframe-url=https://figma.com/design/reagents --execute-tests=true
+# Step 2: Generate Playwright scripts from Jira TCs (config/testCaseFilter.js auto-patched)
+/jira-tcs-to-plscript Reagents --wireframe-url=https://figma.com/design/reagents --execute-tests=true
 ```
 
 ---
@@ -155,19 +156,19 @@ Processes all active modules defined in `config/testCaseFilter.js`, using wirefr
 
 ```bash
 # All active modules — no test run (default)
-/ado-tcs-to-plscript
+/jira-tcs-to-plscript
 
 # Single module, no test run
-/ado-tcs-to-plscript Login
+/jira-tcs-to-plscript Login
 
 # Multiple specific modules, no test run
-/ado-tcs-to-plscript Login,Reagents,Products
+/jira-tcs-to-plscript Login,Reagents,Products
 
 # All modules + run generated tests after
-/ado-tcs-to-plscript --execute-tests=true
+/jira-tcs-to-plscript --execute-tests=true
 
 # Single module + run tests
-/ado-tcs-to-plscript Login --execute-tests=true
+/jira-tcs-to-plscript Login --execute-tests=true
 ```
 
 ---
@@ -178,9 +179,8 @@ Only TCs that satisfy **all** of the following are scripted:
 
 | Condition | Check |
 |-----------|-------|
-| Has `@automation` tag | `System.Tags` split on `;`, normalised to lowercase, must contain `@automation` |
-| Not Closed | `System.State` ≠ `Closed` |
-| Not Removed/Deleted | `System.State` ≠ `Removed` / `Deleted` |
+| Has `automated` label | `fields.labels` array (lowercased) must contain `automated` |
+| Not Done/Closed | `fields.status.name` ≠ `Done` / `Closed` / `Cancelled` |
 
 TCs that fail any check are **skipped** with a summary printed after each module.
 
@@ -188,16 +188,16 @@ TCs that fail any check are **skipped** with a summary printed after each module
 
 ## Tags Propagated to Specs
 
-The following tags are automatically extracted from ADO and added to every generated spec:
+The following tags are automatically extracted from Jira and added to every generated spec:
 
 | Tag | Source | Example |
 |-----|--------|---------|
-| `@automation` | `System.Tags` contains `@automation` (case-insensitive, with `@` prefix) | `@automation` |
-| `@regression` | `System.Tags` contains `@regression` (case-insensitive, with `@` prefix) | `@regression` |
-| `@smoke` | `System.Tags` contains `@smoke` (case-insensitive, with `@` prefix) | `@smoke` |
-| `@US-<id>` | `Microsoft.VSTS.Common.TestedBy-Reverse` relation links | `@US-1234` |
+| `@automation` | `fields.labels` contains `automated` (case-insensitive) | `@automation` |
+| `@regression` | `fields.labels` contains `regression` (case-insensitive) | `@regression` |
+| `@smoke` | `fields.labels` contains `smoke` (case-insensitive) | `@smoke` |
+| `@US-<key>` | Issue links of type `Tests` (`outwardIssue.key`) | `@US-BB-1234` |
 
-These appear in the **test title** (enabling `--grep @regression`, `--grep @US-1234`) and in the JSDoc block (`@tags`, `@UserStory`, `@ado_tc`).
+These appear in the **test title** (enabling `--grep @regression`, `--grep @US-BB-1234`) and in the JSDoc block (`@tags`, `@UserStory`, `@jira_tc`).
 
 ---
 
@@ -239,10 +239,10 @@ await pomSelfHealing.reactionClassPage.fillClassName(testData.className);
 ## Pipeline position
 
 ```
-ADO (config/testCaseFilter.js)
+Jira (config/testCaseFilter.js)
         │  fetches TCs
         ▼
-[ado-tcs-to-plscript]          ← this skill
+[jira-tcs-to-plscript]          ← this skill
         ↓
 [--execute-tests=true]  Run tests (up to 2 rounds) → Final Report
 [--execute-tests=false] "Test execution skipped."
@@ -254,28 +254,25 @@ polish-generated-code <ModuleName>  ← auto-chains (scoped to this run only)
 > files created or modified during this execution — not every file in the project.
 
 This skill is a standalone alternative to `/tcs-to-plscript` when test cases already exist
-in Azure DevOps and you want to regenerate Playwright scripts directly from them without
+in Jira and you want to regenerate Playwright scripts directly from them without
 manually pasting TC markdown.
 
 ---
 
-## Going from ADO User Stories → Playwright scripts
+## Going from Jira User Stories → Playwright scripts
 
-No manual steps required. `ado-uss-to-tcs` Step 5.5 automatically patches
-`config/testCaseFilter.js` after creating the TC work items:
+No manual steps required. `jira-uss-to-tcs` Step 5.5 automatically patches
+`config/testCaseFilter.js` after creating the TC issues:
 
 ```text
-1.  /ado-uss-to-tcs <feature-tag-or-ids>
-         └─ Creates TC work items in ADO
-         └─ Saves test_cases/<FeatureName>_ADO_TCs.json
-         └─ Step 5.5: appends new TC IDs to config/testCaseFilter.js (append-only)
+1.  /jira-uss-to-tcs <feature-tag-or-keys>
+         └─ Creates TC issues in Jira
+         └─ Saves test_cases/<FeatureName>_Jira_TCs.json
+         └─ Step 5.5: appends new TC keys to config/testCaseFilter.js (append-only)
 
-2.  /ado-tcs-to-plscript <ModuleName>
-         └─ Fetches TCs from ADO → generates 4-layer Playwright scripts → Polish
+2.  /jira-tcs-to-plscript <ModuleName>
+         └─ Fetches TCs from Jira → generates 4-layer Playwright scripts → Polish
 ```
-
-> A single-command `/ado-uss-to-plscript` skill (OPT-1) is still planned for a true
-> one-liner experience. See `docs/skills-review-2026-03-16.md`.
 
 ---
 
@@ -283,8 +280,8 @@ No manual steps required. `ado-uss-to-tcs` Step 5.5 automatically patches
 
 | Scenario | Use |
 | -------- | --- |
-| TC IDs already in `config/testCaseFilter.js`, want Playwright scripts | `ado-tcs-to-plscript` |
-| Have local TC markdown, want Playwright scripts (no ADO needed) | `tcs-to-plscript` |
-| Have ADO User Stories, want to derive TCs and push to ADO | `ado-uss-to-tcs` |
-| Have ADO User Stories, want Playwright scripts | `ado-uss-to-tcs` + manual filter update + `ado-tcs-to-plscript` |
-| Full BRD → ADO + Playwright in one command | `ado-full-pipeline` |
+| TC keys already in `config/testCaseFilter.js`, want Playwright scripts | `jira-tcs-to-plscript` |
+| Have local TC markdown, want Playwright scripts (no Jira needed) | `tcs-to-plscript` |
+| Have Jira User Stories, want to derive TCs and push to Jira | `jira-uss-to-tcs` |
+| Have Jira User Stories, want Playwright scripts | `jira-uss-to-tcs` + manual filter update + `jira-tcs-to-plscript` |
+| Full BRD → Jira + Playwright in one command | `jira-full-pipeline` |

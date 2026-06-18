@@ -1,7 +1,7 @@
 {
   "name": "qa-automation-agent",
   "version": "1.0.0",
-  "description": "Automated QA agent for Azure Test Plans to Playwright TypeScript conversion",
+  "description": "Automated QA agent for Jira to Playwright TypeScript conversion",
   "main": "src/index.ts",
   "scripts": {
     "start": "tsx src/index.ts",
@@ -22,7 +22,7 @@
     "qa",
     "automation",
     "playwright",
-    "azure-devops",
+    "jira",
     "openai",
     "typescript"
   ],
@@ -34,7 +34,7 @@
     "@modelcontextprotocol/sdk": "^1.27.1",
     "@playwright/mcp": "^0.0.68",
     "@types/pg": "^8.20.0",
-    "azure-devops-node-api": "^14.1.0",
+    "jira.js": "^3.0.0",
     "csv-parser": "^3.2.0",
     "dotenv": "^16.6.1",
     "node-cron": "^3.0.3",
