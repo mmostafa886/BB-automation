@@ -1,6 +1,9 @@
 import { type Page } from '@playwright/test';
 import { LoginPageSelfHealing } from './login-page-self-healing';
 import { HomePageSelfHealing } from './home-page-self-healing';
+import { FinancialDashboardSelfHealing } from './financial-dashboard-page-self-healing';
+import { RevenuesPageSelfHealing } from './revenues-page-self-healing';
+import { SignUpPageSelfHealing } from './signup-page-self-healing';
 import { type AIHealingProvider } from '../utils/self-healing-locator';
 
 /**
@@ -30,6 +33,9 @@ export class POMLazySelfHealing {
 
     private _loginPage?: LoginPageSelfHealing;
     private _homePage?:  HomePageSelfHealing;
+    private _financialDashboard?: FinancialDashboardSelfHealing;
+    private _revenuesPage?: RevenuesPageSelfHealing;
+    private _signUpPage?: SignUpPageSelfHealing;
 
     constructor(page: Page, testName?: string, aiProvider?: AIHealingProvider) {
         this.page = page;
@@ -63,6 +69,42 @@ export class POMLazySelfHealing {
         return this._homePage;
     }
 
+    /** Returns the FinancialDashboardSelfHealing instance, creating it on first access */
+    get financialDashboard(): FinancialDashboardSelfHealing {
+        if (!this._financialDashboard) {
+            this._financialDashboard = new FinancialDashboardSelfHealing(
+                this.page,
+                this._testName ?? '',
+                this._aiProvider,
+            );
+        }
+        return this._financialDashboard;
+    }
+
+    /** Returns the RevenuesPageSelfHealing instance, creating it on first access */
+    get revenuesPage(): RevenuesPageSelfHealing {
+        if (!this._revenuesPage) {
+            this._revenuesPage = new RevenuesPageSelfHealing(
+                this.page,
+                this._testName ?? '',
+                this._aiProvider,
+            );
+        }
+        return this._revenuesPage;
+    }
+
+    /** Returns the SignUpPageSelfHealing instance, creating it on first access */
+    get signUpPage(): SignUpPageSelfHealing {
+        if (!this._signUpPage) {
+            this._signUpPage = new SignUpPageSelfHealing(
+                this.page,
+                this._testName ?? '',
+                this._aiProvider,
+            );
+        }
+        return this._signUpPage;
+    }
+
     // ===================== Healing Report =====================
 
     /**
@@ -73,6 +115,9 @@ export class POMLazySelfHealing {
         const pages = [
             this._loginPage,
             this._homePage,
+            this._financialDashboard,
+            this._revenuesPage,
+            this._signUpPage,
         ];
 
         const sections = pages

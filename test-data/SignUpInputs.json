@@ -1,0 +1,136 @@
+[ 
+  {
+    "test":"Verify user cannot signUp with old mail",
+    "email":"d@getnada.com",
+    "password":"12345678",
+    "flag":"oldmail",
+    "firstName":"test",
+    "lastName":"1"
+  },
+  {
+    
+    "test":"Verify user cannot signUp with empty mail",
+    "email":" ",
+    "password":"12345678",
+    "firstName":"test",
+    "lastName":"2",
+    "flag":"empty"
+  },
+  {
+    "test":"Verify the user can cancel the signup pop-up",
+    "email":"@a.com",
+    "password":"12345678",
+    "firstName":"test",
+    "lastName":"3",
+    "flag":"cancel"
+  },
+  {
+    "test":"Verify user can signUp with special char in the email ",
+    "email":"a_b.e-e@b.com",
+    "password":"12345678",
+    "firstName":"test",
+    "lastName":"4",
+    "flag":"valid"  
+  },
+  {
+    "test":"Verify user can change the language on the signup page",
+    "email":" ",
+    "password":" ",
+    "firstName":"test",
+    "lastName":"5",
+    "flag":"lang"
+  },
+  {
+    "test":"Verify user can signUp with special char in password ",
+    "email":"a@b.com",
+    "password":"12345678**!",
+    "flag":"valid",
+    "firstName":"test",
+    "lastName":"6"       
+  },
+  {
+    "test":"Verify user can signUp with valid data ",
+    "email":"a@x.com",
+    "password":"12345678",
+    "flag":"valid",
+    "firstName":"test",
+    "lastName":"7"       
+  },
+   {
+    "test":"Verify user cannot signUp with invalid email format (without @)",
+    "email":"am.com",
+    "password":"12345678",
+    "flag":"invalidmail",
+    "firstName":"test",
+    "lastName":"8"       
+  },
+  {
+    "test":"Verify user cannot signUp with invalid email format (without .)",
+    "email":"a@mcom",
+    "password":"12345678",
+    "flag":"invalidmail",
+    "firstName":"test",
+    "lastName":"9"       
+  },
+  {
+    "bug":"https://bznsbuildertool.atlassian.net/browse/BB-2449",
+    "test":"Verify user cannot signUp with invalid email format (many characters after .)",
+    "email":"am@x.commmm",
+    "password":"12345678",
+    "flag":"invalidmail",
+    "firstName":"test",
+    "lastName":"10"       
+  },
+  {  
+    "test":"Verify user cannot signUp with empty password",
+    "email":"d@getnada.com",
+    "password":" ",
+    "flag":"empty",
+    "firstName":"test",
+    "lastName":"11"       
+  },
+  {
+    "test":"Verify the placeholders are correct",
+    "email":" ",
+    "password":" ",
+    "flag":"placeholders",
+    "emailPlaceholder":"Email",
+    "firstName":"test",
+    "lastName":"12",
+    "passwordPlaceholder":"Password"
+  },
+  {
+    "test":"Verify user cannot signUp with invalid password(less than 8 characters)",
+    "email":"dinv@getnada.com",
+    "password":"123",
+    "flag":"invalidpassword",
+    "firstName":"test",
+    "lastName":"13"       
+  },
+   {
+    "test":"Verify user can signUp with the same email of the invalid password but this time with valid password",
+    "email":"dinv@getnada.com",
+    "password":"12345678",
+    "flag":"valid",
+    "firstName":"test",
+    "lastName":"14"       
+  },
+  {
+    "test":"Verify the buttons of the social media are exist in the signup page",
+    "email":" ",
+    "password":" ",
+    "firstName":"test",
+    "lastName":"15"    
+    }
+]
+
+  
+  
+  
+  
+  
+ 
+  
+  
+  
+    
