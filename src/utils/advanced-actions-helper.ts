@@ -223,8 +223,18 @@ export class AdvancedActionsHelper {
                 // Read pre-click attributes for reliable tab-trigger detection.
                 // Both are read BEFORE click because reading them after races with React's
                 // async DOM update and can return stale values.
-                const preClickDataState    = await locator.getAttribute('data-state').catch(() => null);
-                const preClickAriaSelected = await locator.getAttribute('aria-selected').catch(() => null);
+                //
+                // PROBE_TIMEOUT bounds every "is this element a special trigger?" attribute
+                // read below. These probes are diagnostics, not assertions: a present element
+                // answers instantly, so the only way the read blocks is if the locator matches
+                // nothing actionable (e.g. a `.filter({ visible: true })` button that hides or
+                // detaches once the click opens a form/overlay). Without an explicit timeout the
+                // read auto-waits up to the whole TEST timeout, and `.catch(() => null)` never
+                // fires — the test burns its entire budget here, then dies with the misleading
+                // "Target page, context or browser has been closed" on the *next* step.
+                const PROBE_TIMEOUT = 2000;
+                const preClickDataState    = await locator.getAttribute('data-state',    { timeout: PROBE_TIMEOUT }).catch(() => null);
+                const preClickAriaSelected = await locator.getAttribute('aria-selected', { timeout: PROBE_TIMEOUT }).catch(() => null);
 
                 // Drain any in-progress Radix close animations before clicking.
                 // Prevents a click on a Radix trigger from silently misfiring while
@@ -264,7 +274,7 @@ export class AdvancedActionsHelper {
                 // Dropdown triggers use data-state="closed" → "open". The transition is fast
                 // enough that reading post-click is reliable (unlike the tab cases above).
                 else {
-                    const postClickDataState = await locator.getAttribute('data-state').catch(() => null);
+                    const postClickDataState = await locator.getAttribute('data-state', { timeout: PROBE_TIMEOUT }).catch(() => null);
                     if (postClickDataState !== null) {
                         await this.waitForRadixSettled();
                         if (postClickDataState === 'open') {
@@ -280,7 +290,7 @@ export class AdvancedActionsHelper {
                 // Radix Select triggers use role="combobox" + aria-expanded instead of data-state.
                 // If the click expanded such a trigger, wait for the open animation to settle
                 // so that the caller's next clickOption() starts from a geometrically stable DOM.
-                const postClickAriaExpanded = await locator.getAttribute('aria-expanded').catch(() => null);
+                const postClickAriaExpanded = await locator.getAttribute('aria-expanded', { timeout: PROBE_TIMEOUT }).catch(() => null);
                 if (postClickAriaExpanded === 'true') {
                     await this.waitForRadixOpenSettled();
                     this.logger.debug(`Radix combobox trigger detected (aria-expanded="true") — open animation settled`);

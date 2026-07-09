@@ -10,7 +10,7 @@ export const homeLocators = {
 
     welcomeHeading: {
         // Single h2 on the home dashboard — always present after login
-        selector: 'h2 > p',
+        selector: 'h2 > b',
         metadata: {
             role:        'heading',
             name:        'Welcome!',
@@ -44,10 +44,14 @@ export const homeLocators = {
     },
 
     forecastTab: {
-        // forecasts tab in the side menu; 
-        selector: '[routerlink="/financial/overview"]',
+        // Top-nav "Forecast" link that navigates to the financial overview page.
+        // NOTE: `[routerlink="/financial/overview"]` matches 3 elements on some pages (top nav +
+        // sub-nav Overview link), causing a strict-mode violation. The nav link carries a unique
+        // data-automation-test — verified live — so target that instead.
+        selector: '[data-automation-test="auto-sidebar-financialPlan"]',
         metadata: {
-            description: 'forecasts tab in the side menu thaat is navigating to the financial overview page',
+            testId: 'auto-sidebar-financialPlan',
+            description: 'forecasts/Forecast tab in the top nav that navigates to the financial overview page',
         },
     },
     

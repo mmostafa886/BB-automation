@@ -43,7 +43,7 @@ export const signupLocators = {
     // ─── Social login options ────────────────────────────────────────────────
     googleButton: {
         // "Continue With Gmail" social-login option — exact text
-        selector: '.button',
+        selector: '.dummy',
         metadata: {
             text: 'Continue With Gmail',
             description: 'Continue With Gmail social-login option in the auth modal',
@@ -52,7 +52,7 @@ export const signupLocators = {
 
     facebookButton: {
         // "Continue With Facebook" social-login option — exact text
-        selector: (page) => page.getByText('Continue With Facebook', { exact: true }),
+        selector: '.dummy',
         metadata: {
             text: 'Continue With Facebook',
             description: 'Continue With Facebook social-login option in the auth modal',
@@ -61,7 +61,7 @@ export const signupLocators = {
 
     linkedinButton: {
         // "Continue With Linkedin" social-login option — exact text
-        selector: (page) => page.getByText('Continue With Linkedin', { exact: true }),
+        selector: '.dummy',
         metadata: {
             text: 'Continue With Linkedin',
             description: 'Continue With Linkedin social-login option in the auth modal',
@@ -108,7 +108,7 @@ export const signupLocators = {
 
     firstName: {
         // First-name input — first `auto-input-name` instance on the form
-        selector: (page) => page.locator('input[data-automation-test="auto-input-name"]').nth(0),
+        selector: 'input[data-automation-test="auto-input-name"]',
         metadata: {
             description: 'first-name input (first auto-input-name instance) on the register/sign-up form',
         },
@@ -116,7 +116,7 @@ export const signupLocators = {
 
     lastName: {
         // Last-name input — second `auto-input-name` instance on the form
-        selector: (page) => page.locator('input[data-automation-test="auto-input-name"]').nth(1),
+        selector:'input[data-automation-test="auto-input-name"]',
         metadata: {
             description: 'last-name input (second auto-input-name instance) on the register/sign-up form',
         },
@@ -125,7 +125,7 @@ export const signupLocators = {
     // ─── Validation / success messages ───────────────────────────────────────
     requiredMsg: {
         // "This field is required" inline validation — exact text
-        selector: (page) => page.getByText('This field is required', { exact: true }),
+        selector: '.dummy',
         metadata: {
             text: 'This field is required',
             description: 'required-field inline validation message on the register/sign-up form',
@@ -134,7 +134,7 @@ export const signupLocators = {
 
     invalidMailFormatMsg: {
         // "Invalid email format" inline validation — exact text
-        selector: (page) => page.getByText('Invalid email format', { exact: true }),
+        selector: '.dummy',
         metadata: {
             text: 'Invalid email format',
             description: 'invalid email format validation message on the register/sign-up form',
@@ -143,7 +143,7 @@ export const signupLocators = {
 
     existedEmailMsg: {
         // "The email has already been taken" inline validation — exact text
-        selector: (page) => page.getByText('The email has already been taken', { exact: true }),
+        selector: '.dummy',
         metadata: {
             text: 'The email has already been taken',
             description: 'duplicate-email validation message on the register/sign-up form',
@@ -152,7 +152,7 @@ export const signupLocators = {
 
     invalidPasswordFormatMsg: {
         // "Minimum length is 8" password validation — exact text
-        selector: (page) => page.getByText('Minimum length is 8', { exact: true }),
+        selector: '.dummy',
         metadata: {
             text: 'Minimum length is 8',
             description: 'minimum-password-length validation message on the register/sign-up form',
@@ -161,19 +161,12 @@ export const signupLocators = {
 
     successMsg: {
         // "Please check your email to verify your account" success message — exact text
-        selector: (page) => page.getByText('Please check your email to verify your account', { exact: true }),
+        selector: '.dummy',
         metadata: {
             text: 'Please check your email to verify your account.',
             description: 'success message shown after a successful registration',
         },
     },
-   /* successMsg: {
-        // "Welcome BznsBuilder User" success message — exact text
-        selector: (page) => page.getByText('Welcome BznsBuilder User', { exact: true }),
-        metadata: {
-            text: 'Welcome BznsBuilder User',
-            description: 'success message shown after a successful registration',
-        },
-    },*/
+   
 
 } satisfies Record<string, LocatorDefinition>;

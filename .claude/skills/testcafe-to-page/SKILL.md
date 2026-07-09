@@ -130,16 +130,50 @@ complete; it is cheap.) A concise `const make = (def) => SelfHealingLocator.from
 helper keeps the constructor readable.
 
 ### Step 4 — Convert each method, 1:1, preserving name + signature
+
+#### Step 4a — Enumerate ALL branches before writing any code (mandatory)
+
+Before translating any method that contains a `switch`, `if/else if`, or `case` block, you
+**MUST** first produce an exhaustive inventory of every branch in the source. Do this in plain
+text **before** writing a single line of TypeScript, following this format:
+
+```
+Method: <methodName>
+Legacy branches found (<N> total):
+  case 1: "<literal string>"   → <one-line description>
+  case 2: "<literal string>"   → <one-line description>
+  …
+  default / else               → <one-line description or "none">
+```
+
+Count the cases in the source (e.g. `grep -c 'case\|else if'`). Your TypeScript output MUST
+have the **same count**. If a `case` block has no explicit `break` / `return` (fall-through),
+note it — do not silently merge it with the next case.
+
+After writing the TypeScript, verify your branch count matches:
+```
+Branch count: source=<N>, output=<N>  ✅ / ❌
+```
+If the counts differ, re-read the source and add the missing branches before continuing.
+
+#### Step 4b — Translate each method body
+
 For every legacy method, in source order:
 - Keep the **exact** name and parameter list (add TypeScript types: `string`, `number`, etc.).
 - Translate the body via the conversion map. Static → `await this.<loc>.get()`; dynamic →
   `this.page.locator(...)`.
 - Use `clickOption` for clicks on options inside an open dropdown/menu; `click` otherwise.
+- **Preserve ALL branches.** Every `case` / `else if` in the legacy source must appear as a
+  corresponding `else if` block in the TypeScript output. No branch may be dropped or merged
+  even if it looks similar to another.
 - **Preserve combined behaviour.** If the legacy method did action+branch (e.g.
   `deleteEntry(name, flag)` clicks delete then confirms/cancels by `flag`), keep that exact
   flow and the `flag` parameter. If the legacy method was purely an assertion (e.g. `newChek`),
   keep it as an assertion method.
-- Provide a clear JSDoc noting the legacy origin and any reconstructed assumption.
+- Provide a clear JSDoc noting the legacy origin, the list of branches covered, and any
+  reconstructed assumption.
+- Add a `// ⚠ Branch literal preserved verbatim from legacy source. Verify against test data.`
+  comment on each branch-condition string to make currency-suffix and encoding quirks visible.
 
 ### Step 5 — Wrap every method body in one `test.step()`
 `await test.step('Human label', async () => { …body… })` for `void` methods;
@@ -174,18 +208,22 @@ Next: /register-page-in-pom   (wire <PageName>SelfHealing into the POM)
 1. **1:1 method migration.** One method per legacy method, same name (even if abbreviated/
    misspelled), same parameter list, same order. No drops, no renames, no merges, no new
    "convenience" methods unless the user asks.
-2. **Faithful behaviour.** Preserve branching, flags, and combined action+assert flows exactly
-   as the legacy method had them.
-3. **Static → repository locator; dynamic → `this.page.locator()`.** Never add a runtime,
+2. **Exhaustive branch coverage.** For every method containing a `switch`, `if/else if`, or
+   `case`, enumerate ALL branches in the source **before** writing code (Step 4a). The TypeScript
+   output must contain the **same number of branches** as the legacy source — no case may be
+   silently dropped or merged. Confirm with a branch count check (`source=N, output=N ✅`).
+3. **Faithful behaviour.** Preserve branching, flags, and combined action+assert flows exactly
+   as the legacy method had them, including fall-through notes.
+4. **Static → repository locator; dynamic → `this.page.locator()`.** Never add a runtime,
    argument-built selector to the locators file.
-4. **All actions/asserts go through `this.actions` / `this.assert`** — bare `this.page.*` only
+5. **All actions/asserts go through `this.actions` / `this.assert`** — bare `this.page.*` only
    for interactions with no helper equivalent (and flag those).
-5. **`clickOption` for open-menu option clicks**, `click` for everything else.
-6. **Every public async method wraps its whole body in a single `test.step()`.**
-7. **The locators file must already exist** — defer to `/testcafe-to-locators`; never invent
+6. **`clickOption` for open-menu option clicks**, `click` for everything else.
+7. **Every public async method wraps its whole body in a single `test.step()`.**
+8. **The locators file must already exist** — defer to `/testcafe-to-locators`; never invent
    selectors here.
-8. **Only writes `src/pages/<page>-self-healing.ts`.** POM registration is a separate step.
-9. **Type-check before finishing.**
+9. **Only writes `src/pages/<page>-self-healing.ts`.** POM registration is a separate step.
+10. **Type-check before finishing.**
 
 ---
 

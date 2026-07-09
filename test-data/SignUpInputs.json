@@ -94,26 +94,16 @@
     "email":" ",
     "password":" ",
     "flag":"placeholders",
-    "emailPlaceholder":"Email",
     "firstName":"test",
-    "lastName":"12",
-    "passwordPlaceholder":"Password"
+    "lastName":"12"
   },
   {
-    "test":"Verify user cannot signUp with invalid password(less than 8 characters)",
+    "test":"Verify user cannot signUp with invalid password(less than 8 characters) but after that he can signUp with the same email but this time with valid password",
     "email":"dinv@getnada.com",
     "password":"123",
     "flag":"invalidpassword",
     "firstName":"test",
     "lastName":"13"       
-  },
-   {
-    "test":"Verify user can signUp with the same email of the invalid password but this time with valid password",
-    "email":"dinv@getnada.com",
-    "password":"12345678",
-    "flag":"valid",
-    "firstName":"test",
-    "lastName":"14"       
   },
   {
     "test":"Verify the buttons of the social media are exist in the signup page",

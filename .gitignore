@@ -20,3 +20,4 @@ test-run-output.txt
 test_cases/
 stories/
 *.png
+legacy/

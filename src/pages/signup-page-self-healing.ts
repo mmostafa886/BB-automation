@@ -5,6 +5,7 @@ import { signupLocators } from '../locators/signup-page-locators';
 import { Logger } from '../utils/Logger';
 import { AdvancedActionsHelper } from '../utils/advanced-actions-helper';
 import { AdvancedAssertionsHelper } from '../utils/advanced-assertions-helper';
+import { RandomNumberGenerator } from '../utils/generate-random-number';
 
 /**
  * SignUpPageSelfHealing — Page Object for the BznsBuilder sign-up / registration modal.
@@ -50,13 +51,6 @@ export class SignUpPageSelfHealing extends SelfHealingPageBase {
     private readonly page:    Page;
     private readonly actions: AdvancedActionsHelper;
     private readonly assert:  AdvancedAssertionsHelper;
-
-    /**
-     * Legacy module-level `var randomNumber = Math.floor(Math.random()*1000)` — used to
-     * uniquify a "valid" sign-up email. Computed once per page instance, mirroring the
-     * once-per-run behaviour of the legacy module-scope variable.
-     */
-    private readonly randomNumber = Math.floor(Math.random() * 1000);
 
     constructor(page: Page, testName: string, aiProvider?: AIHealingProvider) {
         super();
@@ -107,15 +101,17 @@ export class SignUpPageSelfHealing extends SelfHealingPageBase {
      */
     async checkLanguage(): Promise<void> {
         await test.step('Check sign-up modal Arabic language copy', async () => {
-            const loginWithGoogle   = 'Ø§ÙØ¯Ø®ÙÙ Ø¨Ø­Ø³Ø§Ø¨ Ø¬ÙØ¬Ù';
-            const loginWithFacebook = 'Ø§ÙØ¯Ø®ÙÙ Ø¨Ø­Ø³Ø§Ø¨ Ø§ÙÙÙØ³Ø¨ÙÙ';
-            const loginWithLinkedin = 'Ø§ÙØ¯Ø®ÙÙ Ø¨Ø­Ø³Ø§Ø¨ ÙÙÙÙØ¯ Ø§Ù';
-            const signUpTab         = 'Ø§Ø´ØªØ±Ù ÙØ¹ÙØ§';
-            const signInTab         = 'ØªØ³Ø¬ÙÙ Ø§ÙØ¯Ø®ÙÙ';
-            const emailLabel        = 'Ø§Ø¯Ø®Ù Ø§ÙØ¨Ø±ÙØ¯ Ø§ÙØ§ÙÙØªØ±ÙÙÙ';
-            const passwordLabel     = 'Ø§Ø¯Ø®Ù ÙÙÙØ© Ø§ÙÙØ±ÙØ±';
-            const signUpBtnText     = 'Ø£Ø´ØªØ±Ù';
-            const signInSpanText    = 'ØªØ³Ø¬ÙÙ Ø§ÙØ¯Ø®ÙÙ';
+            const loginWithGoogle   = 'الدخول بحساب جوجل';
+            const loginWithFacebook =' الدخول بحساب الفيسبوك';
+            const loginWithLinkedin = 'الدخول بحساب لينكد ان';
+            const signUpTab         = 'اشترك معنا';
+            const signInTab         = 'تسجيل الدخول';
+            const emailLabel        = 'ادخل البريد الالكترونى';
+            const passwordLabel     = 'ادخل كلمة المرور';
+            const signUpBtnText     = 'أشترك';
+            const signInSpanText    = 'تسجيل الدخول';
+
+            await this.actions.click(await this.languageBtn.get())
 
             // Social-login option labels (span.withExactText → runtime span locator)
             await this.assert.toBeVisible(this.page.locator('span').filter({ hasText: this.exactText(loginWithGoogle) }), 'Google login label is present');
@@ -158,14 +154,14 @@ export class SignUpPageSelfHealing extends SelfHealingPageBase {
     }
 
     /**
-     * Fills the email field. When `flag === 'valid'`, prefixes the value with a per-run random
-     * number to keep the address unique (legacy `randomNumber + email`); otherwise types the
-     * raw value (used to exercise invalid / already-taken cases).
+     * Fills the email field. When `flag === 'valid'`, prefixes the value with a freshly generated
+     * unique number to keep the address unique on every call (legacy `randomNumber + email`);
+     * otherwise types the raw value (used to exercise invalid / already-taken cases).
      */
     async fillEmail(flag: string, email: string): Promise<void> {
         await test.step(`Fill email (flag: ${flag})`, async () => {
-            if (flag === 'valid') {
-                await this.actions.fill(await this.email.get(), `${this.randomNumber}${email}`, 'Fill unique valid email');
+            if (flag === 'valid' || flag=='invalidpassword') {
+                await this.actions.fill(await this.email.get(), `${RandomNumberGenerator.unique()}${email}`, 'Fill unique valid email');
             } else {
                 await this.actions.fill(await this.email.get(), email, 'Fill email');
             }
@@ -182,14 +178,14 @@ export class SignUpPageSelfHealing extends SelfHealingPageBase {
     /** Fills the first-name field. */
     async fillFirstName(name: string): Promise<void> {
         await test.step('Fill first name', async () => {
-            await this.actions.fill(await this.firstName.get(), name, 'Fill first name');
+            await this.actions.fill((await this.firstName.get()).first(), name, 'Fill first name');
         });
     }
 
     /** Fills the last-name field. */
     async fillLastName(name: string): Promise<void> {
         await test.step('Fill last name', async () => {
-            await this.actions.fill(await this.lastName.get(), name, 'Fill last name');
+            await this.actions.fill((await this.lastName.get()).last(), name, 'Fill last name');
         });
     }
 
@@ -247,12 +243,44 @@ export class SignUpPageSelfHealing extends SelfHealingPageBase {
     }
 
     /** Asserts the email and password inputs carry the expected placeholder substrings. */
-    async checkPlaceHolder(mail: string, password: string): Promise<void> {
+    async checkPlaceHolder(): Promise<void> {
         await test.step('Check email/password placeholders', async () => {
             const mailPlaceholder     = (await (await this.email.get()).getAttribute('placeholder')) ?? '';
             const passwordPlaceholder = (await (await this.password.get()).getAttribute('placeholder')) ?? '';
-            await this.assert.toContain(mailPlaceholder, mail, `Email placeholder contains "${mail}"`);
-            await this.assert.toContain(passwordPlaceholder, password, `Password placeholder contains "${password}"`);
+            await this.assert.toContain(mailPlaceholder, 'Email', `Email placeholder contains Email`);
+            await this.assert.toContain(passwordPlaceholder, 'Password', `Password placeholder contains Password`);
         });
     }
+    async Assertion(flag: string){
+        switch (flag) {
+            case 'valid':
+                await this.validSighupAssertion();
+                break;
+            case 'valid2':
+                await this.validSighupAssertion();
+                break;
+            case 'cancel':
+                await this.closeSignupPopUp();
+                break;
+            case 'empty':
+                await this.emptyFieldAssertion();
+                break;
+            case 'invalidmail':
+                await this.invalidEmailAssertion();
+                break;
+            case 'oldmail':
+                await this.oldEmailAssertion();
+                break;
+            case 'invalidpassword':
+                await this.invalidPassword();
+                await this.fillPassword('12345678');
+                await this.validSighupAssertion()
+                break;
+            case 'placeholders':
+                await this.checkPlaceHolder();
+                break;
+        }
+    }
 }
+
+

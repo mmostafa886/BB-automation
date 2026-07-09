@@ -48,8 +48,8 @@ use a `(page) => Locator` factory only when the chain has no clean CSS equivalen
 | `.withAttribute('placeholder','X')` | `'tag[placeholder="X"]'` | `placeholder: 'X'` |
 | `.withAttribute('id','X')` | `'tag#X'` or `'tag[id="X"]'` | — |
 | `.withAttribute('aria-label','X')` | `'tag[aria-label="X"]'` | `name: 'X'` |
-| `.withText('X')` (substring) | `(page) => page.getByText('X')` | `text: 'X'` |
-| `.withExactText('X')` | `(page) => page.getByText('X', { exact: true })` | `text: 'X'` |
+| `.withText('X')` (substring) | `'//<tag>[contains(text(),"X")]'` XPath string — e.g. `'//div[contains(text(),"X")]'`; use `//*` when the tag is unknown | `text: 'X'` |
+| `.withExactText('X')` | `'//<tag>[text()="X"]'` XPath string — e.g. `'//div[text()="X"]'`; use `//*` when the tag is unknown | `text: 'X'` |
 | `.filterVisible()` | append `:visible` to the CSS string (Playwright pseudo-class) | — |
 | `.nth(n)` / `.child(n)` / `.eq(n)` | `(page) => page.locator('<base-css>').nth(n)` | — |
 | `.parent()` / `.find('sel')` / `.sibling()` chains | `(page) => page.locator('<base>').locator('sel')` or an XPath string | — |
@@ -126,8 +126,11 @@ import type { LocatorDefinition } from '../utils/self-healing-locator';
  *
  * Converted from the legacy TestCafe page object `<SourceFile>.js`.
  * Conversion notes:
- *   - `.filterVisible()`           → `:visible` pseudo-class on the CSS selector.
- *   - `.nth(n)` / `.withExactText` → `(page) => Locator` factory selectors.
+ *   - `.filterVisible()`  → `:visible` pseudo-class on the CSS selector.
+ *   - `.withExactText(X)` → XPath string `'//tag[text()="X"]'`
+ *   - `.withText(X)`      → XPath string `'//tag[contains(text(),"X")]'`
+ *   - `.nth(n)` / parent/find chains → `(page) => Locator` factory selectors.
+ *   - `getByText(...)` factories are NOT used — XPath strings are preferred for text matching.
  *   - All selectors should be re-verified against https://stgapp.bznsbuilder.com/.
  */
 export const <camelCasePage>Locators = {
@@ -166,8 +169,11 @@ Type-check: PASS | FAIL (details)
    no renames, no merges.
 2. **Faithful conversion.** Never invent selectors or "improve" buggy ones — flag quirks
    per Step 4 instead.
-3. **Strings when clean, factories only when needed** (`.nth()`, exact/substring text,
-   `.parent()/.find()` chains, mixed `filterVisible + nth`).
+3. **Strings when clean, factories only when needed** (`.nth()`, `.parent()/.find()` chains,
+   mixed `filterVisible + nth`). **Never use `(page) => page.getByText(...)` factories** —
+   convert `.withText('X')` to the XPath string `'//tag[contains(text(),"X")]'` and
+   `.withExactText('X')` to `'//tag[text()="X"]'` instead. Use `//*` when the tag is unknown.
+   Only use a `(page) => Locator` factory when there is truly no XPath or CSS alternative.
 4. **`description` is mandatory** on every entry; add `role`/`name`/`placeholder`/`text`
    whenever the chain reveals them.
 5. **Pure data file.** Only the `LocatorDefinition` type import — no `Page` import, no

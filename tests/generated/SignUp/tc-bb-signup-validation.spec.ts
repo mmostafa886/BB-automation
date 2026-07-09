@@ -50,31 +50,7 @@ for (const d of inputs) {
         await pomSelfHealing.signUpPage.fillPassword(d.password);
         await pomSelfHealing.signUpPage.fillFirstName(d.firstName);
         await pomSelfHealing.signUpPage.fillLastName(d.lastName);
-
-
-        switch (d.flag) {
-            case 'valid':
-                await pomSelfHealing.signUpPage.validSighupAssertion();
-                break;
-            case 'cancel':
-                await pomSelfHealing.signUpPage.closeSignupPopUp();
-                break;
-            case 'empty':
-                await pomSelfHealing.signUpPage.emptyFieldAssertion();
-                break;
-            case 'invalidmail':
-                await pomSelfHealing.signUpPage.invalidEmailAssertion();
-                break;
-            case 'oldmail':
-                await pomSelfHealing.signUpPage.oldEmailAssertion();
-                break;
-            case 'invalidpassword':
-                await pomSelfHealing.signUpPage.invalidPassword();
-                break;
-            case 'placeholders':
-                await pomSelfHealing.signUpPage.checkPlaceHolder(d.emailPlaceholder, d.passwordPlaceholder);
-                break;
-        }
+        await pomSelfHealing.signUpPage.Assertion(d.flag)
     });
 
 }
