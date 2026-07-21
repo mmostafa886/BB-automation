@@ -7,12 +7,12 @@ on:
         description: 'Module folder under tests/generated to run (e.g. SignUp, Login, Assets, DirectCost, IndirectCost, Revenues) — required, no default'
         required: true
         type: string
-  # One-time scheduled run: fires at 2026-07-21 13:40 UTC (~20 minutes after this
+  # One-time scheduled run: fires at 2026-07-21 13:55 UTC (~20 minutes after this
   # workflow was added) to execute the SignUp module tests. Cron schedules in
   # GitHub Actions are recurring by nature — this entry is pinned to a specific
   # date, so it only matches once. Remove or update this schedule after it runs.
   schedule:
-    - cron: '40 13 21 7 *'
+    - cron: '55 13 21 7 *'
 
 permissions:
   contents: read
