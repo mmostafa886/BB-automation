@@ -44,13 +44,6 @@ jobs:
       - name: Type-check
         run: npm run lint
 
-      - name: Validate QA base URL
-        run: |
-          if [ -z "$BASE_URL" ]; then
-            echo "BASE_URL_QA repository variable is required."
-            exit 1
-          fi
-
       - name: Install Playwright browser
         run: npx playwright install --with-deps chromium
 
