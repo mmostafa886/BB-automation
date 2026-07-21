@@ -1,19 +1,19 @@
-name: Module Area Tests
+name: SignUp Scheduled Tests
 
 on:
-  workflow_dispatch:
-    inputs:
-      module:
-        description: 'Module folder under tests/generated to run (e.g. SignUp, Login, Assets, DirectCost, IndirectCost, Revenues) — required, no default'
-        required: true
-        type: string
+  # One-time scheduled run: fires at 2026-07-21 13:55 UTC to execute the SignUp
+  # module tests. Cron schedules in GitHub Actions are recurring by nature —
+  # this entry is pinned to a specific date, so it only matches once. Remove
+  # or update this schedule after it runs (or replace with a recurring cron).
+  schedule:
+    - cron: '10 14 21 7 *'
 
 permissions:
   contents: read
 
 jobs:
   test:
-    name: Module Area Tests (on-demand)
+    name: SignUp Scheduled Tests
     runs-on: ubuntu-latest
     timeout-minutes: 60
 
@@ -41,18 +41,8 @@ jobs:
       - name: Install Playwright browser
         run: npx playwright install --with-deps chromium
 
-      - name: Resolve module
-        id: resolve
-        shell: bash
-        run: |
-          if [ -z "${{ github.event.inputs.module }}" ]; then
-            echo "The 'module' input is required — re-trigger and provide a module name."
-            exit 1
-          fi
-          echo "module=${{ github.event.inputs.module }}" >> "$GITHUB_OUTPUT"
-
-      - name: Run module area tests
-        run: npm run test:area "${{ steps.resolve.outputs.module }}"
+      - name: Run SignUp module tests
+        run: npm run test:area SignUp
 
       - name: Upload Playwright HTML report
         if: always()
