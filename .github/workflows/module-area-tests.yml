@@ -4,10 +4,9 @@ on:
   workflow_dispatch:
     inputs:
       module:
-        description: 'Module folder under tests/generated to run (e.g. SignUp, Login, Assets, DirectCost, IndirectCost, Revenues)'
+        description: 'Module folder under tests/generated to run (e.g. SignUp, Login, Assets, DirectCost, IndirectCost, Revenues) — required, no default'
         required: true
         type: string
-        default: 'SignUp'
   # One-time scheduled run: fires at 2026-07-21 13:40 UTC (~20 minutes after this
   # workflow was added) to execute the SignUp module tests. Cron schedules in
   # GitHub Actions are recurring by nature — this entry is pinned to a specific
@@ -60,6 +59,10 @@ jobs:
         shell: bash
         run: |
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            if [ -z "${{ github.event.inputs.module }}" ]; then
+              echo "The 'module' input is required for manual runs — re-trigger and provide a module name."
+              exit 1
+            fi
             echo "module=${{ github.event.inputs.module }}" >> "$GITHUB_OUTPUT"
           else
             echo 'module=SignUp' >> "$GITHUB_OUTPUT"
