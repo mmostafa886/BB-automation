@@ -1,12 +1,9 @@
 name: SignUp Scheduled Tests
 
 on:
-  # One-time scheduled run: fires at 2026-07-21 13:55 UTC to execute the SignUp
-  # module tests. Cron schedules in GitHub Actions are recurring by nature —
-  # this entry is pinned to a specific date, so it only matches once. Remove
-  # or update this schedule after it runs (or replace with a recurring cron).
+  # Recurring daily run at 00:00 UTC to execute the SignUp module tests.
   schedule:
-    - cron: '10 14 21 7 *'
+    - cron: '0 0 * * *'
 
 permissions:
   contents: read
