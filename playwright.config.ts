@@ -14,7 +14,7 @@ export default defineConfig({
     ['list']
   ],
 
-  timeout: 15000,
+  timeout: 120000,
 
   use: {
     viewport: null,

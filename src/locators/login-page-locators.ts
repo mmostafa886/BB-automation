@@ -14,7 +14,7 @@ export const loginLocators = {
 
     signInTriggerButton: {
         // Main-page "Sign in" button (no type attr, empty class) — opens the modal
-        selector: 'button:not([type="submit"]):not(.mb-5)',
+        selector: 'button[data-automation-test="auto-button-loginOpen"]',
         metadata: {
             role:        'button',
             name:        'Sign in',

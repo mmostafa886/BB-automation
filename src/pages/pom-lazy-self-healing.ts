@@ -1,6 +1,12 @@
 import { type Page } from '@playwright/test';
 import { LoginPageSelfHealing } from './login-page-self-healing';
 import { HomePageSelfHealing } from './home-page-self-healing';
+import { FinancialDashboardSelfHealing } from './financial-dashboard-page-self-healing';
+import { RevenuesPageSelfHealing } from './revenues-page-self-healing';
+import { DirectCostPageSelfHealing } from './direct-cost-page-self-healing';
+import { IndirectCostPageSelfHealing } from './indirect-cost-page-self-healing';
+import { SignUpPageSelfHealing } from './signup-page-self-healing';
+import { AssetsPageSelfHealing } from './assets-page-self-healing';
 import { type AIHealingProvider } from '../utils/self-healing-locator';
 
 /**
@@ -30,6 +36,12 @@ export class POMLazySelfHealing {
 
     private _loginPage?: LoginPageSelfHealing;
     private _homePage?:  HomePageSelfHealing;
+    private _financialDashboard?: FinancialDashboardSelfHealing;
+    private _revenuesPage?: RevenuesPageSelfHealing;
+    private _directCostPage?: DirectCostPageSelfHealing;
+    private _indirectCostPage?: IndirectCostPageSelfHealing;
+    private _signUpPage?: SignUpPageSelfHealing;
+    private _assetsPage?: AssetsPageSelfHealing;
 
     constructor(page: Page, testName?: string, aiProvider?: AIHealingProvider) {
         this.page = page;
@@ -63,6 +75,78 @@ export class POMLazySelfHealing {
         return this._homePage;
     }
 
+    /** Returns the FinancialDashboardSelfHealing instance, creating it on first access */
+    get financialDashboard(): FinancialDashboardSelfHealing {
+        if (!this._financialDashboard) {
+            this._financialDashboard = new FinancialDashboardSelfHealing(
+                this.page,
+                this._testName ?? '',
+                this._aiProvider,
+            );
+        }
+        return this._financialDashboard;
+    }
+
+    /** Returns the RevenuesPageSelfHealing instance, creating it on first access */
+    get revenuesPage(): RevenuesPageSelfHealing {
+        if (!this._revenuesPage) {
+            this._revenuesPage = new RevenuesPageSelfHealing(
+                this.page,
+                this._testName ?? '',
+                this._aiProvider,
+            );
+        }
+        return this._revenuesPage;
+    }
+
+    /** Returns the DirectCostPageSelfHealing instance, creating it on first access */
+    get directCostPage(): DirectCostPageSelfHealing {
+        if (!this._directCostPage) {
+            this._directCostPage = new DirectCostPageSelfHealing(
+                this.page,
+                this._testName ?? '',
+                this._aiProvider,
+            );
+        }
+        return this._directCostPage;
+    }
+
+    /** Returns the IndirectCostPageSelfHealing instance, creating it on first access */
+    get indirectCostPage(): IndirectCostPageSelfHealing {
+        if (!this._indirectCostPage) {
+            this._indirectCostPage = new IndirectCostPageSelfHealing(
+                this.page,
+                this._testName ?? '',
+                this._aiProvider,
+            );
+        }
+        return this._indirectCostPage;
+    }
+
+    /** Returns the SignUpPageSelfHealing instance, creating it on first access */
+    get signUpPage(): SignUpPageSelfHealing {
+        if (!this._signUpPage) {
+            this._signUpPage = new SignUpPageSelfHealing(
+                this.page,
+                this._testName ?? '',
+                this._aiProvider,
+            );
+        }
+        return this._signUpPage;
+    }
+
+    /** Returns the AssetsPageSelfHealing instance, creating it on first access */
+    get assetsPage(): AssetsPageSelfHealing {
+        if (!this._assetsPage) {
+            this._assetsPage = new AssetsPageSelfHealing(
+                this.page,
+                this._testName ?? '',
+                this._aiProvider,
+            );
+        }
+        return this._assetsPage;
+    }
+
     // ===================== Healing Report =====================
 
     /**
@@ -73,6 +157,12 @@ export class POMLazySelfHealing {
         const pages = [
             this._loginPage,
             this._homePage,
+            this._financialDashboard,
+            this._revenuesPage,
+            this._directCostPage,
+            this._indirectCostPage,
+            this._signUpPage,
+            this._assetsPage,
         ];
 
         const sections = pages
