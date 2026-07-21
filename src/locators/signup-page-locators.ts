@@ -125,10 +125,12 @@ export const signupLocators = {
     // ─── Validation / success messages ───────────────────────────────────────
     requiredMsg: {
         // "This field is required" inline validation — exact text
+        // NOTE: an empty PASSWORD does not show this text — it renders the password-strength
+        // message instead (see invalidPasswordFormatMsg), since a blank value fails that check too.
         selector: '.dummy',
         metadata: {
             text: 'This field is required',
-            description: 'required-field inline validation message on the register/sign-up form',
+            description: 'required-field inline validation message on the register/sign-up form (e.g. empty email)',
         },
     },
 
@@ -151,11 +153,11 @@ export const signupLocators = {
     },
 
     invalidPasswordFormatMsg: {
-        // "Minimum length is 8" password validation — exact text
+        // Password-strength validation — exact text
         selector: '.dummy',
         metadata: {
-            text: 'Minimum length is 8',
-            description: 'minimum-password-length validation message on the register/sign-up form',
+            text: 'Password must be at least 8 characters long and include an uppercase letter, a lowercase letter, a number, and a special character.',
+            description: 'password-strength validation message on the register/sign-up form',
         },
     },
 
