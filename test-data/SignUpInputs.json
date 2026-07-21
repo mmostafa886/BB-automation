@@ -2,16 +2,16 @@
   {
     "test":"Verify user cannot signUp with old mail",
     "email":"d@getnada.com",
-    "password":"12345678",
+    "password":"Test1234!",
     "flag":"oldmail",
     "firstName":"test",
     "lastName":"1"
-  },
+  }
+  ,
   {
-    
     "test":"Verify user cannot signUp with empty mail",
     "email":" ",
-    "password":"12345678",
+    "password":"Test1234!",
     "firstName":"test",
     "lastName":"2",
     "flag":"empty"
@@ -19,7 +19,7 @@
   {
     "test":"Verify the user can cancel the signup pop-up",
     "email":"@a.com",
-    "password":"12345678",
+    "password":"Test1234!",
     "firstName":"test",
     "lastName":"3",
     "flag":"cancel"
@@ -27,7 +27,7 @@
   {
     "test":"Verify user can signUp with special char in the email ",
     "email":"a_b.e-e@b.com",
-    "password":"12345678",
+    "password":"Test1234!",
     "firstName":"test",
     "lastName":"4",
     "flag":"valid"  
@@ -43,7 +43,7 @@
   {
     "test":"Verify user can signUp with special char in password ",
     "email":"a@b.com",
-    "password":"12345678**!",
+    "password":"1Test2345678**!",
     "flag":"valid",
     "firstName":"test",
     "lastName":"6"       
@@ -51,7 +51,7 @@
   {
     "test":"Verify user can signUp with valid data ",
     "email":"a@x.com",
-    "password":"12345678",
+    "password":"Test1234!",
     "flag":"valid",
     "firstName":"test",
     "lastName":"7"       
@@ -59,7 +59,7 @@
    {
     "test":"Verify user cannot signUp with invalid email format (without @)",
     "email":"am.com",
-    "password":"12345678",
+    "password":"Test1234!",
     "flag":"invalidmail",
     "firstName":"test",
     "lastName":"8"       
@@ -67,7 +67,7 @@
   {
     "test":"Verify user cannot signUp with invalid email format (without .)",
     "email":"a@mcom",
-    "password":"12345678",
+    "password":"Test1234!",
     "flag":"invalidmail",
     "firstName":"test",
     "lastName":"9"       
@@ -76,13 +76,13 @@
     "bug":"https://bznsbuildertool.atlassian.net/browse/BB-2449",
     "test":"Verify user cannot signUp with invalid email format (many characters after .)",
     "email":"am@x.commmm",
-    "password":"12345678",
+    "password":"Test1234!",
     "flag":"invalidmail",
     "firstName":"test",
     "lastName":"10"       
   },
   {  
-    "test":"Verify user cannot signUp with empty password",
+   "test":"Verify user cannot signUp with empty password",
     "email":"d@getnada.com",
     "password":" ",
     "flag":"empty",

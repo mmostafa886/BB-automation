@@ -209,11 +209,21 @@ export class SignUpPageSelfHealing extends SelfHealingPageBase {
         });
     }
 
-    /** Submits an empty form and asserts the required-field validation message appears. */
+    /**
+     * Submits a form with a blank required field and asserts the matching validation message
+     * appears. A blank email shows the generic "This field is required" message; a blank
+     * password instead falls through to the password-strength message (blank fails that check
+     * too), so both locators are probed and whichever is actually visible is asserted.
+     */
     async emptyFieldAssertion(): Promise<void> {
         await test.step('Assert required-field validation', async () => {
             await this.actions.click(await this.signUpBtn.get(), 'Click sign-up submit button');
-            await this.assert.toBeVisible(await this.requiredMsg.get(), 'Required-field validation message is visible');
+            const requiredMsgLocator = await this.requiredMsg.get();
+            if (await requiredMsgLocator.isVisible()) {
+                await this.assert.toBeVisible(requiredMsgLocator, 'Required-field validation message is visible');
+            } else {
+                await this.assert.toBeVisible(await this.invalidPasswordFormatMsg.get(), 'Password-strength validation message is visible (blank password)');
+            }
         });
     }
 
@@ -273,7 +283,7 @@ export class SignUpPageSelfHealing extends SelfHealingPageBase {
                 break;
             case 'invalidpassword':
                 await this.invalidPassword();
-                await this.fillPassword('12345678');
+                await this.fillPassword('Test1234!');
                 await this.validSighupAssertion()
                 break;
             case 'placeholders':
