@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Scheduled Execution — Setup Guide</title>
+<style>
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d2e;
+    --card: #1f2235;
+    --border: #2d3150;
+    --accent-blue: #4f8ef7;
+    --accent-purple: #a855f7;
+    --accent-green: #22c55e;
+    --accent-amber: #f59e0b;
+    --accent-red: #ef4444;
+    --accent-cyan: #06b6d4;
+    --text: #e2e8f0;
+    --muted: #8892a4;
+    --tag-bg: #2a3045;
+    --code-bg: #12141f;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.65;
+    padding: 2rem 1.5rem 4rem;
+  }
+  header {
+    max-width: 900px;
+    margin: 0 auto 2.5rem;
+    text-align: center;
+  }
+  header h1 {
+    font-size: 2.2rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--accent-blue) 0%, var(--accent-purple) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 0.75rem;
+  }
+  header p {
+    color: var(--muted);
+    font-size: 1.02rem;
+    max-width: 680px;
+    margin: 0 auto;
+  }
+  main {
+    max-width: 900px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  .toc {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.25rem 1.5rem;
+  }
+  .toc h2 { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin-bottom: 0.75rem; }
+  .toc ol { padding-left: 1.25rem; display: grid; gap: 0.35rem; }
+  .toc a { color: var(--accent-blue); text-decoration: none; }
+  .toc a:hover { text-decoration: underline; }
+
+  section.card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 1.75rem 1.85rem;
+  }
+  section.card h2 {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    font-size: 1.3rem;
+    margin-bottom: 1rem;
+  }
+  .step-num {
+    flex: none;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #0b0d14;
+  }
+  section.card p { margin-bottom: 0.75rem; color: var(--text); }
+  section.card ul, section.card ol { padding-left: 1.4rem; margin-bottom: 0.75rem; display: grid; gap: 0.45rem; }
+  section.card code {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 0.1rem 0.4rem;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 0.88em;
+    color: var(--accent-cyan);
+  }
+  section.card pre {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.9rem 1rem;
+    overflow-x: auto;
+    margin-bottom: 0.75rem;
+  }
+  section.card pre code {
+    background: none;
+    border: none;
+    padding: 0;
+    color: var(--text);
+  }
+  .path {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    align-items: center;
+    margin: 0.5rem 0 0.9rem;
+  }
+  .path span {
+    background: var(--tag-bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0.25rem 0.6rem;
+    font-size: 0.85rem;
+  }
+  .path .arrow { color: var(--muted); }
+
+  .callout {
+    border-left: 3px solid var(--accent-amber);
+    background: rgba(245, 158, 11, 0.08);
+    border-radius: 0 8px 8px 0;
+    padding: 0.85rem 1rem;
+    margin: 0.75rem 0;
+    font-size: 0.95rem;
+  }
+  .callout.info { border-left-color: var(--accent-blue); background: rgba(79, 142, 247, 0.08); }
+  .callout.danger { border-left-color: var(--accent-red); background: rgba(239, 68, 68, 0.08); }
+  .callout strong { color: var(--accent-amber); }
+  .callout.info strong { color: var(--accent-blue); }
+  .callout.danger strong { color: var(--accent-red); }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 0.75rem;
+    font-size: 0.92rem;
+  }
+  th, td {
+    text-align: left;
+    padding: 0.55rem 0.7rem;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  th { color: var(--muted); font-weight: 600; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.04em; }
+
+  footer {
+    max-width: 900px;
+    margin: 2.5rem auto 0;
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.85rem;
+  }
+
+  @media (max-width: 600px) {
+    section.card { padding: 1.25rem 1.25rem; }
+    header h1 { font-size: 1.7rem; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Scheduled Execution — Setup Guide</h1>
+  <p>
+    One-time manual configuration required for <code>.github/workflows/scheduled-execution.yml</code>
+    to run correctly: the Slack webhook secret, GitHub Pages hosting for historical
+    reports, and workflow permissions. None of this can be done by editing files —
+    it all lives in repository settings.
+  </p>
+</header>
+
+<main>
+
+  <nav class="toc">
+    <h2>Contents</h2>
+    <ol>
+      <li><a href="#overview">Overview — what changed</a></li>
+      <li><a href="#step1">Step 1 — Create the Slack webhook secret</a></li>
+      <li><a href="#step2">Step 2 — Enable GitHub Pages</a></li>
+      <li><a href="#step3">Step 3 — Confirm workflow permissions</a></li>
+      <li><a href="#step4">Step 4 — Test it end to end</a></li>
+      <li><a href="#troubleshooting">Troubleshooting</a></li>
+    </ol>
+  </nav>
+
+  <section class="card" id="overview">
+    <h2><span class="step-num">·</span>Overview</h2>
+    <p>The scheduled workflow (renamed from <code>signup-scheduled-tests.yml</code> to
+    <code>scheduled-execution.yml</code>, since more modules will be added to it over time)
+    now does three additional things after the tests finish:</p>
+    <ul>
+      <li>Publishes the Playwright HTML report to the <code>gh-pages</code> branch under
+        <code>reports/&lt;run_number&gt;/</code>, keeping every previous run's report intact
+        (<code>keep_files: true</code>) — in addition to, not instead of, the existing
+        per-run artifact upload.</li>
+      <li>Writes the report URL to the job's step summary.</li>
+      <li>Posts a pass/fail message to Slack via an Incoming Webhook, with links to both the
+        Actions run and the published report.</li>
+    </ul>
+    <p>It also now runs weekly (Friday 00:00 UTC, was daily) and can be triggered manually
+    via <code>workflow_dispatch</code> instead of only on the cron schedule.</p>
+    <div class="callout info">
+      <strong>Why an Incoming Webhook, not a Slack Bot/API?</strong> A webhook needs exactly
+      one repository secret and a single <code>curl</code> call. The bot/API route
+      (<code>slackapi/slack-github-action</code>, a bot token, app installation, OAuth
+      scopes, channel ID lookup) is built for rich, interactive messages — nothing this
+      pass/fail ping needs. It would add setup steps without adding capability actually used
+      here.
+    </div>
+  </section>
+
+  <section class="card" id="step1">
+    <h2><span class="step-num">1</span>Create the Slack webhook secret</h2>
+    <p>In Slack:</p>
+    <ol>
+      <li>Go to <code>api.slack.com/apps</code> → <strong>Create New App</strong> →
+        <strong>From scratch</strong>. Name it (e.g. "BB Automation Notifier") and pick the
+        workspace.</li>
+      <li>In the app's settings, open <strong>Incoming Webhooks</strong> and toggle it
+        <strong>On</strong>.</li>
+      <li>Click <strong>Add New Webhook to Workspace</strong>, choose the channel that should
+        receive scheduled-run notifications, and authorize.</li>
+      <li>Copy the generated webhook URL
+        (<code>https://hooks.slack.com/services/…</code>) — it's shown once and can be
+        regenerated later if lost.</li>
+    </ol>
+    <p>In GitHub:</p>
+    <div class="path">
+      <span>Repo</span><span class="arrow">→</span><span>Settings</span><span class="arrow">→</span>
+      <span>Secrets and variables</span><span class="arrow">→</span><span>Actions</span><span class="arrow">→</span>
+      <span>New repository secret</span>
+    </div>
+    <ol>
+      <li>Name: <code>SLACK_WEBHOOK_URL</code></li>
+      <li>Value: the webhook URL copied above.</li>
+      <li>Save.</li>
+    </ol>
+  </section>
+
+  <section class="card" id="step2">
+    <h2><span class="step-num">2</span>Enable GitHub Pages</h2>
+    <div class="path">
+      <span>Repo</span><span class="arrow">→</span><span>Settings</span><span class="arrow">→</span>
+      <span>Pages</span>
+    </div>
+    <ol>
+      <li>Under <strong>Build and deployment</strong>, set <strong>Source</strong> to
+        <strong>Deploy from a branch</strong>.</li>
+      <li>Set <strong>Branch</strong> to <code>gh-pages</code> / <code>/(root)</code>.</li>
+      <li>Save.</li>
+    </ol>
+    <div class="callout info">
+      <strong>The <code>gh-pages</code> branch doesn't need to exist yet.</strong> The
+      <code>peaceiris/actions-gh-pages</code> action creates it automatically on the first
+      successful run. If the branch selector doesn't show <code>gh-pages</code> yet, run the
+      workflow once first (see Step 4), then come back and finish this step.
+    </div>
+    <div class="callout danger">
+      <strong>Private repos:</strong> GitHub Pages hosting for a private repository requires
+      GitHub Pro, Team, or Enterprise. Public repositories get Pages for free. Check
+      <strong>Settings → Pages</strong> — if the option is greyed out, this is why.
+    </div>
+    <p>Once enabled, published reports will be reachable at:</p>
+    <pre><code>https://&lt;owner&gt;.github.io/&lt;repo&gt;/reports/&lt;run_number&gt;/</code></pre>
+  </section>
+
+  <section class="card" id="step3">
+    <h2><span class="step-num">3</span>Confirm workflow permissions</h2>
+    <p>The workflow file itself declares <code>permissions: contents: write</code>, which is
+    normally sufficient on its own regardless of the repository-wide default. This step is
+    only relevant if an organization-level policy hard-restricts what workflows are allowed
+    to request.</p>
+    <div class="path">
+      <span>Repo</span><span class="arrow">→</span><span>Settings</span><span class="arrow">→</span>
+      <span>Actions</span><span class="arrow">→</span><span>General</span><span class="arrow">→</span>
+      <span>Workflow permissions</span>
+    </div>
+    <p>Confirm this is not locked to a read-only default that an org policy prevents
+    workflows from overriding. If the gh-pages push step fails with a permissions error
+    despite the YAML declaration, this is the first place to check.</p>
+  </section>
+
+  <section class="card" id="step4">
+    <h2><span class="step-num">4</span>Test it end to end</h2>
+    <ol>
+      <li>Actions tab → <strong>Scheduled Execution</strong> → <strong>Run workflow</strong>
+        (uses the new <code>workflow_dispatch</code> trigger — no need to wait for Friday).</li>
+      <li>Watch the run: tests execute, both artifacts upload, the
+        <strong>Publish report to GitHub Pages</strong> step succeeds.</li>
+      <li>Open the run's <strong>Summary</strong> tab — it should show a "Playwright report"
+        link.</li>
+      <li>Follow that link; it should render the Playwright HTML report.</li>
+      <li>Check the Slack channel — a message with a pass/fail status, a "View run" link, and
+        a "View report" link should have arrived.</li>
+      <li>Run the workflow a second time and confirm the <em>first</em> run's
+        <code>reports/&lt;run_number&gt;/</code> report is still reachable — this is what
+        proves history isn't being wiped on each publish.</li>
+    </ol>
+  </section>
+
+  <section class="card" id="troubleshooting">
+    <h2><span class="step-num">?</span>Troubleshooting</h2>
+    <table>
+      <thead><tr><th>Symptom</th><th>Likely cause</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>Report URL 404s right after a run finishes</td>
+          <td>GitHub Pages takes roughly a minute to rebuild after a push to
+            <code>gh-pages</code>. Wait and retry.</td>
+        </tr>
+        <tr>
+          <td>Pages branch selector doesn't list <code>gh-pages</code></td>
+          <td>The branch is created by the first successful workflow run, not before. Run
+            the workflow once, then revisit Settings → Pages.</td>
+        </tr>
+        <tr>
+          <td>Slack step fails (curl exits non-zero)</td>
+          <td><code>SLACK_WEBHOOK_URL</code> is missing, mistyped, or the webhook was
+            revoked/regenerated in Slack. Re-check the secret value.</td>
+        </tr>
+        <tr>
+          <td><code>Publish report to GitHub Pages</code> step fails with a permission/push
+            error</td>
+          <td>See Step 3 — an org-level policy may be preventing the workflow's
+            <code>contents: write</code> permission from taking effect.</td>
+        </tr>
+        <tr>
+          <td>Pages shows a 404 for the whole site, not just one report</td>
+          <td>GitHub Pages isn't enabled yet, or the repo is private without a plan that
+            supports Pages. See Step 2.</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+</main>
+
+<footer>
+  BB-Automation · docs/scheduled-execution-setup-guide.html
+</footer>
+
+</body>
+</html>

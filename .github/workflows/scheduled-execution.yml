@@ -1,0 +1,98 @@
+name: Scheduled Execution
+
+on:
+  # Recurring weekly run every Friday at 00:00 UTC.
+  # Runs the SignUp module today; additional modules will be added to this
+  # job as they come online.
+  schedule:
+    - cron: '0 0 * * 5'
+  # Manual trigger so the run doesn't have to wait for the next Friday.
+  workflow_dispatch:
+
+permissions:
+  contents: write  # required so the "Publish report to GitHub Pages" step can push to gh-pages
+
+jobs:
+  test:
+    name: Scheduled Execution
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    env:
+      BASE_URL: ${{ vars.BASE_URL_QA }}
+      TEST_USER_EMAIL: ${{ secrets.TEST_USER_EMAIL }}
+      TEST_USER_PASSWORD: ${{ secrets.TEST_USER_PASSWORD }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Type-check
+        run: npm run lint
+
+      - name: Install Playwright browser
+        run: npx playwright install --with-deps chromium
+
+      - name: Run SignUp module tests
+        run: npm run test:area SignUp
+
+      - name: Upload Playwright HTML report
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: playwright-report-${{ github.run_number }}-${{ github.run_attempt }}
+          path: playwright-report/
+          retention-days: 30
+          if-no-files-found: ignore
+
+      - name: Upload Playwright test results
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: playwright-test-results-${{ github.run_number }}-${{ github.run_attempt }}
+          path: test-results/
+          retention-days: 14
+          if-no-files-found: ignore
+
+      - name: Publish report to GitHub Pages
+        if: always()
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: playwright-report
+          destination_dir: reports/${{ github.run_number }}
+          keep_files: true
+
+      - name: Write report link to job summary
+        if: always()
+        run: |
+          echo "### Playwright report" >> "$GITHUB_STEP_SUMMARY"
+          echo "https://${{ github.repository_owner }}.github.io/$(basename ${{ github.repository }})/reports/${{ github.run_number }}/" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Slack notification
+        if: always()
+        # Incoming Webhook (single SLACK_WEBHOOK_URL secret + curl) chosen over the Slack
+        # Bot Token/API approach — no app install, OAuth scopes, or channel-ID lookup needed
+        # for a plain pass/fail ping.
+        run: |
+          if [ "${{ job.status }}" = "success" ]; then
+            STATUS_EMOJI="✅"
+            STATUS_TEXT="Passed"
+          else
+            STATUS_EMOJI="❌"
+            STATUS_TEXT="Failed"
+          fi
+          REPORT_URL="https://${{ github.repository_owner }}.github.io/$(basename ${{ github.repository }})/reports/${{ github.run_number }}/"
+          RUN_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          curl -sS -f -X POST -H 'Content-type: application/json' \
+            --data "{\"text\":\"${STATUS_EMOJI} *Scheduled Execution* ${STATUS_TEXT} — SignUp module\n<${RUN_URL}|View run> | <${REPORT_URL}|View report>\"}" \
+            "${{ secrets.SLACK_WEBHOOK_URL }}"
