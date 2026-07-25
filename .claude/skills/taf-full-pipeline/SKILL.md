@@ -17,6 +17,20 @@ point — never re-running work that is already done.
 
 ---
 
+## EXECUTION CHECKLIST
+
+Copy and track progress:
+
+```
+- [ ] Step 1: State detection
+- [ ] Step 2: Pre-flight checks
+- [ ] Step 3: Invoke the pipeline from the first incomplete step
+- [ ] Step 4: Print final status
+- [ ] Step 5: Create feature branch & commit
+```
+
+---
+
 ## THE PIPELINE
 
 ```text

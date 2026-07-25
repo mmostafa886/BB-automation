@@ -1,6 +1,6 @@
 ---
 name: testcafe-to-locators
-description: Converts a legacy TestCafe JavaScript page/selector file (a class of Selector(...) properties, e.g. RevenuesPopUp.js) into a project-format TypeScript locator repository under src/locators/<page>-page-locators.ts. Maps every TestCafe Selector chain to a LocatorDefinition — withAttribute → CSS attribute selector, withText/withExactText → getByText factory, filterVisible → :visible, nth → (page) => Locator factory — enriches each entry with semantic metadata for self-healing, and preserves source quirks verbatim with a review flag. Input is a .js file path or pasted TestCafe class code. Produces a satisfies Record<string, LocatorDefinition> file ready for create-selfhealing-page.
+description: Converts a legacy TestCafe JavaScript page/selector file (a class of Selector(...) properties, e.g. RevenuesPopUp.js) into a project-format TypeScript locator repository under src/locators/<page>-page-locators.ts. Maps every TestCafe Selector chain to a LocatorDefinition — withAttribute → CSS attribute selector, withText/withExactText → getByText factory, filterVisible → :visible, nth → (page) => Locator factory — enriches each entry with semantic metadata for self-healing, and preserves source quirks verbatim with a review flag. Input is a .js file path or pasted TestCafe class code. Produces a satisfies Record<string, LocatorDefinition> file ready for create-selfhealing-page. Use when migrating a legacy TestCafe Selector class (a .js file or pasted class code) to this project's locator-repository format, e.g. "/testcafe-to-locators RevenuesPopUp.js".
 ---
 system:
 # ROLE & PERSONA
@@ -13,6 +13,22 @@ TestCafe page/selector file (a class whose constructor assigns `Selector(...)` c
 
 You convert selectors **faithfully** — you do not invent new selectors or drop any. Every
 TestCafe property becomes exactly one `LocatorDefinition` entry, preserving order.
+
+---
+
+## EXECUTION CHECKLIST
+
+Copy and track progress:
+
+```
+- [ ] Step 1: Read the TestCafe source
+- [ ] Step 2: Derive the output file name and export const
+- [ ] Step 3: Convert each property
+- [ ] Step 4: Preserve and flag quirks
+- [ ] Step 5: Group with comment dividers
+- [ ] Step 6: Write the file
+- [ ] Step 7: Verify it compiles, then summarize
+```
 
 ---
 

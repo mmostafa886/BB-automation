@@ -11,6 +11,16 @@
 
 ---
 
+## File structure
+
+| File | Purpose |
+| --- | --- |
+| `SKILL.md` | Role, execution checklist, step outline, key rules — loaded on every invocation. Kept under 200 lines. |
+| [WORKFLOW.md](WORKFLOW.md) | Full step-by-step detail for all six tasks (Problem / Detection / Algorithm / Scope / Verification), the Step 0–7 process, and the complete numbered Rules list. |
+| [SCRIPTS.md](SCRIPTS.md) | Longer copy-paste templates: the Task 4 method-implementation patterns (alias / assertion / action / navigation / precondition / external-integration) and the Step 7 final summary report box. |
+
+---
+
 ## What this skill does
 
 ### Task 1 — Stray Backslash Removal (test specs)

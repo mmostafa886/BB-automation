@@ -9,6 +9,16 @@ Automation Engineer, producing code that integrates directly with `SelfHealingPa
 
 ---
 
+## File structure
+
+| File | Purpose |
+|---|---|
+| `SKILL.md` | Overview — role/persona, execution checklist, step outline with links to full detail. Loaded on every invocation, kept under 200 lines. |
+| `WORKFLOW.md` | Full step-by-step execution detail — input resolution, wireframe discovery, all 4 architecture layers, output format, save output, coverage comparison, execute & fix, polish, create PR. Loaded on demand. |
+| `SCRIPTS.md` | Code templates — locator repository, self-healing page class, spec file, and the git commit / `gh pr create` commands. Loaded on demand. |
+
+---
+
 ## Input
 
 `{{test_cases}}` is resolved in priority order (flag tokens are stripped first):

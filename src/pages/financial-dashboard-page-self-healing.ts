@@ -283,9 +283,16 @@ export class FinancialDashboardSelfHealing extends SelfHealingPageBase {
     /** Close the instructions modal shown when opening an empty chapter */
     async dismissInstructionsModal(): Promise<void> {
         await test.step('Close instructions modal', async () => {
+            // The modal only renders for a chapter with no entries yet (e.g. re-running
+            // this test against a shared environment that already has data from a prior
+            // run) — skip the click instead of waiting out the full locator timeout.
+            const closeButton = await this.closeInstructionsModal.get();
+            if (!(await closeButton.isVisible({ timeout: 3000 }).catch(() => false))) {
+                return;
+            }
             // Close button detaches on click — skip the post-click Radix guards
             // (otherwise the helper reads data-state off the removed node and hangs).
-            await this.actions.click(await this.closeInstructionsModal.get(), 'Close instructions modal', true);
+            await this.actions.click(closeButton, 'Close instructions modal', true);
         });
     }
 

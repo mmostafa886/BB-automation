@@ -223,6 +223,7 @@ Jira User Stories
 | **analyze-trace** | `/analyze-trace [trace path or TC-ID]` | A test is failing and you have a `trace.zip` in `test-results/`. Parses the binary `.trace` event stream, reconstructs the step timeline, classifies the root cause into one of 9 failure categories, and applies the minimal fix. | Failure report + targeted fix applied to `src/locators/` or `src/pages/` file |
 | **execute-and-fix-tests** | `/execute-and-fix-tests [path or pattern]` | A test (or set of tests) is failing and you want to run, inspect, fix, and re-run in one command. | Fixed `src/locators/`, `src/pages/`, and/or `tests/generated/` files + final pass/fail report |
 | **merge-tc-sets** | `/merge-tc-sets <FeatureName> [FileA] [FileB] [--keep-both]` | Two TC markdown files exist for the same feature (e.g. one from Claude, one from OpenAI). Deduplicates by TC ID and title similarity (≥ 0.80 Levenshtein). | Merged `test_cases/<FeatureName>_TestCases.md` + updated `test_cases/<FeatureName>_Jira_TCs.json` |
+| **describe-and-flatten-json-data** | `/describe-and-flatten-json-data [file, glob, or module]` | A data-driven spec is missing a `test.describe` wrapper, or loops over a `test-data/*.json` file that turns out to hold only one row. Adds the wrapper unconditionally; flattens the loop to direct indexed access only when the JSON provably represents a single case — multi-row JSON that drives multiple distinct test cases is left untouched so coverage never shrinks. | Restructured spec file(s) + per-file summary of what changed vs. what was skipped and why |
 
 ---
 
@@ -258,6 +259,7 @@ Jira User Stories
 | Register new page objects in the POM | `/register-page-in-pom` |
 | Migrate existing tests to the self-healing pattern | `/migrate-test-to-selfhealing` |
 | Add test.step() to all page object methods | `/add-teststep-hooks` |
+| Add a test.describe wrapper and flatten single-case JSON data access | `/describe-and-flatten-json-data` |
 | Add a new method to an existing page object | `/add-method-to-page` |
 | Clean up / fix issues in generated code | `/polish-generated-code` |
 | Run failing tests, live-fix them, and re-run until green | `/execute-and-fix-tests` |

@@ -4,13 +4,32 @@ description: >
   Extracts a Playwright trace.zip produced by a failing test, parses its event stream, identifies
   the root-cause action, classifies the failure category, and applies a targeted fix to the relevant
   page-object or spec file. Works with any test in this project that uses the self-healing or
-  POMLazy fixture pattern.
+  POMLazy fixture pattern. Use when the user has a failing test with a trace.zip and wants root-cause
+  analysis and a fix, or says "analyze this trace" / "why did this test fail" with a trace available.
 ---
 system:
 # ROLE & PERSONA
 You are an expert Playwright QA Debugging Engineer. Given a `trace.zip` from a failing test, you
 extract it, parse the binary `.trace` files, reconstruct the step timeline, identify the exact
 failure point, classify the root cause, and apply the minimal fix to the source files.
+
+---
+
+## EXECUTION CHECKLIST
+
+Copy and track progress:
+
+```
+- [ ] Step 1: Locate the trace file
+- [ ] Step 2: Extract
+- [ ] Step 3: Parse the trace
+- [ ] Step 4: Identify the failure
+- [ ] Step 5: Classify root cause
+- [ ] Step 6: Report findings
+- [ ] Step 7: Apply fix
+- [ ] Step 8: Update docs
+- [ ] Step 9: Cleanup extracted trace files
+```
 
 ---
 
@@ -34,7 +53,7 @@ python - <<'PY'
 import zipfile, os, pathlib, sys
 
 zip_path = "<PATH_TO_TRACE_ZIP>"   # filled in at runtime
-out_dir  = "d:/temp/pw-trace-analysis"
+out_dir  = "test-results/.pw-trace-analysis"
 pathlib.Path(out_dir).mkdir(parents=True, exist_ok=True)
 
 with zipfile.ZipFile(zip_path) as z:
@@ -62,7 +81,7 @@ Playwright trace files are **newline-delimited JSON** (NDJSON). Parse both trace
 python - <<'PY'
 import json, pathlib
 
-out_dir = pathlib.Path("d:/temp/pw-trace-analysis")
+out_dir = pathlib.Path("test-results/.pw-trace-analysis")
 
 def parse_ndjson(path):
     events = []
@@ -218,6 +237,17 @@ After applying the fix, confirm the changed file and line numbers.
 
 If the fix reveals a new pattern not yet documented in `docs/playwright-download-pattern.md`
 (or the relevant docs file), append a concise entry to that file.
+
+---
+
+## STEP 9 — CLEANUP
+
+Remove the extracted trace directory created in Step 2 — it is a temp artifact, not a
+project output:
+
+```bash
+rm -rf test-results/.pw-trace-analysis
+```
 
 ---
 

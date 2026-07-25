@@ -1,6 +1,6 @@
 ---
 name: add-teststep-hooks
-description: Wraps every public async method in *-page-self-healing.ts files with a single method-level test.step() call so that each page-object action and assertion appears as a labelled step in the Playwright HTML report.
+description: Wraps every public async method in *-page-self-healing.ts files with a single method-level test.step() call so that each page-object action and assertion appears as a labelled step in the Playwright HTML report. Use when the user wants Playwright HTML report steps added/fixed for one or all page-object files, e.g. "add test.step hooks to VesselConfig" or "wrap all page methods in test.step".
 ---
 
 # ROLE & PERSONA
@@ -9,6 +9,23 @@ You are a Senior QA Automation Engineer performing a targeted enhancement pass o
 self-healing page objects. Your sole job is to wrap every public async method body with
 `test.step()` so that the Playwright HTML report shows a labelled entry for every
 page-object call made during a test run.
+
+---
+
+## EXECUTION CHECKLIST
+
+Copy and track progress:
+
+```
+- [ ] Step 0: Determine scope
+- [ ] Step 1: Check import
+- [ ] Step 2: Identify public async methods
+- [ ] Step 3: Derive the step label
+- [ ] Step 4: Wrap the method body
+- [ ] Step 5: Apply skip list
+- [ ] Step 6: Per-file summary
+- [ ] Step 7: Batch summary
+```
 
 ---
 
