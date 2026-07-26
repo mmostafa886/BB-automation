@@ -1,0 +1,749 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: generated/Revenues/tc-bb-add-unit-sales-revenue.spec.ts >> Revenues - Add a Unit Sales revenue >> TC-BB-Unit-Sales: add a constant unit-sales revenue @revenues @automation
+- Location: tests/generated/Revenues/tc-bb-add-unit-sales-revenue.spec.ts:23:9
+
+# Error details
+
+```
+Error: expect(locator).toContainText(expected) failed
+
+Locator: locator('span[data-automation-test="auto-financial-row-unitsaleshappyscenario-title"]').filter({ visible: true })
+Expected substring: "UnitSalesHappyScenario"
+Error: strict mode violation: locator('span[data-automation-test="auto-financial-row-unitsaleshappyscenario-title"]').filter({ visible: true }) resolved to 2 elements:
+    1) <span _ngcontent-fdf-c244="" title="UnitSalesHappyScenario" class="dnd-col ng-star-inserted" data-automation-test="auto-financial-row-unitsaleshappyscenario-title">…</span> aka getByText('UnitSalesHappyScenario').first()
+    2) <span _ngcontent-fdf-c244="" title="UnitSalesHappyScenario" class="dnd-col ng-star-inserted" data-automation-test="auto-financial-row-unitsaleshappyscenario-title">…</span> aka getByText('UnitSalesHappyScenario').nth(1)
+
+Call log:
+  - Expect "toContainText" with timeout 5000ms
+  - waiting for locator('span[data-automation-test="auto-financial-row-unitsaleshappyscenario-title"]').filter({ visible: true })
+
+```
+
+# Page snapshot
+
+```yaml
+- generic [ref=e4]:
+  - generic [ref=e6]:
+    - generic [ref=e7]:
+      - link [ref=e8] [cursor=pointer]:
+        - /url: /
+      - button [ref=e9] [cursor=pointer]:
+        - img [ref=e10]
+    - generic [ref=e14] [cursor=pointer]:
+      - generic [ref=e16]: BznsBuilder
+      - img [ref=e18]
+    - generic [ref=e22] [cursor=pointer]:
+      - generic [ref=e24]: test
+      - img [ref=e26]
+    - generic [ref=e28]:
+      - link "Home" [ref=e29] [cursor=pointer]:
+        - /url: /
+        - generic [ref=e30]: Home
+      - link "Reality Check" [ref=e31] [cursor=pointer]:
+        - /url: /reality-check-dashboard/reality-check
+        - generic [ref=e32]: Reality Check
+      - link "BznsPlan" [ref=e33] [cursor=pointer]:
+        - /url: /plan/overview
+        - generic [ref=e34]: BznsPlan
+      - link "Forecast" [ref=e35] [cursor=pointer]:
+        - /url: /financial/overview
+        - generic [ref=e36]: Forecast
+      - link "Dashboard" [ref=e37] [cursor=pointer]:
+        - /url: /dashboard/overview
+        - generic [ref=e38]: Dashboard
+      - link "Billing & Subscriptions" [ref=e39] [cursor=pointer]:
+        - /url: /subscription-dashboard/subscriptions
+        - generic [ref=e40]: Billing & Subscriptions
+      - link "Idea Canvas" [ref=e41] [cursor=pointer]:
+        - /url: /pitch
+        - img [ref=e42]
+        - generic [ref=e44]: Idea Canvas
+      - link "Options" [ref=e45] [cursor=pointer]:
+        - /url: /company-settings
+        - generic [ref=e46]: Options
+      - button "Connect" [ref=e48] [cursor=pointer]:
+        - text: Connect
+        - img [ref=e49]
+    - list [ref=e53]:
+      - listitem [ref=e54]
+      - listitem [ref=e56]:
+        - generic [ref=e57] [cursor=pointer]: en
+      - listitem [ref=e58]:
+        - img [ref=e60] [cursor=pointer]
+  - generic [ref=e61]:
+    - generic [ref=e65]:
+      - generic [ref=e66]:
+        - generic [ref=e67]:
+          - generic [ref=e68]:
+            - link "Overview" [ref=e69] [cursor=pointer]:
+              - /url: /financial/overview
+            - link "Financial Tables" [ref=e70] [cursor=pointer]:
+              - /url: /financial/revenues
+            - link "Profit & Loss" [ref=e71] [cursor=pointer]:
+              - /url: /financial/profit-and-loss
+            - link "Balance Sheet" [ref=e72] [cursor=pointer]:
+              - /url: /financial/balance-sheet
+            - link "Cash Flow" [ref=e73] [cursor=pointer]:
+              - /url: /financial/cash-flow
+          - generic [ref=e75] [cursor=pointer]:
+            - img [ref=e77]
+            - text: Download & Print
+        - generic [ref=e79]:
+          - link "Revenue" [ref=e80] [cursor=pointer]:
+            - /url: /financial/revenues
+          - link "Direct Costs" [ref=e81] [cursor=pointer]:
+            - /url: /financial/expenses/direct-cost
+          - link "Personnel" [ref=e82] [cursor=pointer]:
+            - /url: /financial/expenses/personnel
+          - link "Expenses" [ref=e83] [cursor=pointer]:
+            - /url: /financial/expenses/indirect-cost
+          - link "Assets" [ref=e84] [cursor=pointer]:
+            - /url: /financial/working-capital/assets
+          - link "Taxes" [ref=e85] [cursor=pointer]:
+            - /url: /financial/taxes
+          - link "Dividends" [ref=e86] [cursor=pointer]:
+            - /url: /financial/working-capital/dividends
+          - link "Cash Assumptions" [ref=e87] [cursor=pointer]:
+            - /url: /financial/financial-setting
+          - link "Initial Balances" [ref=e88] [cursor=pointer]:
+            - /url: /financial/financial-setting/initial-balances
+          - link "Financing" [ref=e89] [cursor=pointer]:
+            - /url: /financial/working-capital/funding
+      - generic [ref=e94]:
+        - generic [ref=e95]:
+          - generic [ref=e98]:
+            - generic [ref=e99]:
+              - generic [ref=e100]:
+                - heading "Revenue" [level=2] [ref=e101]
+                - img [ref=e105] [cursor=pointer]
+              - generic [ref=e106]:
+                - generic [ref=e107]:
+                  - button "Yearly" [ref=e108] [cursor=pointer]
+                  - button "Monthly" [active] [ref=e109] [cursor=pointer]
+                - generic [ref=e111]:
+                  - button [disabled] [ref=e112] [cursor=pointer]:
+                    - img [ref=e113]
+                  - generic [ref=e116]:
+                    - img [ref=e117]
+                    - generic [ref=e123]:
+                      - generic [ref=e124]: "2023"
+                      - combobox [ref=e125]:
+                        - textbox
+                  - button [ref=e126] [cursor=pointer]:
+                    - img [ref=e127]
+                - button [ref=e131] [cursor=pointer]:
+                  - img [ref=e133]
+                - button [ref=e135] [cursor=pointer]:
+                  - img [ref=e136]
+                - button [ref=e138] [cursor=pointer]:
+                  - img [ref=e139]
+                - button "Add Revenue Stream" [ref=e144] [cursor=pointer]:
+                  - generic [ref=e145]: Add Revenue Stream
+            - generic [ref=e150]:
+              - generic [ref=e151]:
+                - heading "Revenue Totals" [level=6] [ref=e152]
+                - generic [ref=e153]:
+                  - heading "Compare to:" [level=6] [ref=e154]:
+                    - img [ref=e155]
+                    - text: "Compare to:"
+                  - generic [ref=e161]:
+                    - generic [ref=e162]: Select Scenario
+                    - combobox [ref=e163]:
+                      - textbox
+              - generic [ref=e166]:
+                - img [ref=e171]:
+                  - generic [ref=e174]:
+                    - generic "E£ 200,000" [ref=e175]
+                    - generic "E£ 150,000" [ref=e176]
+                    - generic "E£ 100,000" [ref=e177]
+                    - generic "E£ 50,000" [ref=e178]
+                    - generic "E£ 0" [ref=e179]
+                - img [ref=e185]:
+                  - generic [ref=e187]:
+                    - generic [ref=e266]:
+                      - generic "Jan' 23" [ref=e267]
+                      - generic "Feb' 23" [ref=e268]
+                      - generic "Mar' 23" [ref=e269]
+                      - generic "Apr' 23" [ref=e270]
+                      - generic "May' 23" [ref=e271]
+                      - generic "Jun' 23" [ref=e272]
+                      - generic "Jul' 23" [ref=e273]
+                      - generic "Aug' 23" [ref=e274]
+                      - generic "Sep' 23" [ref=e275]
+                      - generic "Oct' 23" [ref=e276]
+                      - generic "Nov' 23" [ref=e277]
+                      - generic "Dec' 23" [ref=e278]
+                      - generic "Jan' 24" [ref=e279]
+                      - generic "Feb' 24" [ref=e280]
+                      - generic "Mar' 24" [ref=e281]
+                      - generic "Apr' 24" [ref=e282]
+                      - generic "May' 24" [ref=e283]
+                      - generic "Jun' 24" [ref=e284]
+                      - generic "Jul' 24" [ref=e285]
+                      - generic "Aug' 24" [ref=e286]
+                      - generic "Sep' 24" [ref=e287]
+                      - generic "Oct' 24" [ref=e288]
+                      - generic "Nov' 24" [ref=e289]
+                      - generic "Dec' 24" [ref=e290]
+                      - generic "Jan' 25" [ref=e291]
+                      - generic "Feb' 25" [ref=e292]
+                      - generic "Mar' 25" [ref=e293]
+                      - generic "Apr' 25" [ref=e294]
+                      - generic "May' 25" [ref=e295]
+                      - generic "Jun' 25" [ref=e296]
+                      - generic "Jul' 25" [ref=e297]
+                      - generic "Aug' 25" [ref=e298]
+                      - generic "Sep' 25" [ref=e299]
+                      - generic "Oct' 25" [ref=e300]
+                      - generic "Nov' 25" [ref=e301]
+                      - generic "Dec' 25" [ref=e302]
+                    - generic [ref=e303]:
+                      - generic: ←2023 2024→
+                      - generic: ←2024 2025→
+          - generic [ref=e309]:
+            - generic [ref=e311]:
+              - generic [ref=e312]:
+                - img [ref=e315] [cursor=pointer]
+                - text: Revenue
+                - generic [ref=e317] [cursor=pointer]:
+                  - img "Organize forecast items" [ref=e318]
+                  - text: Organize
+              - generic [ref=e321]: Jan-2023
+              - generic [ref=e322]: Feb-2023
+              - generic [ref=e323]: Mar-2023
+              - generic [ref=e324]: Apr-2023
+              - generic [ref=e325]: May-2023
+              - generic [ref=e326]: Jun-2023
+              - generic [ref=e327]: Jul-2023
+              - generic [ref=e328]: Aug-2023
+              - generic [ref=e329]: Sep-2023
+              - generic [ref=e330]: Oct-2023
+              - generic [ref=e331]: Nov-2023
+              - generic [ref=e332]: Dec-2023
+              - generic [ref=e333]: "2023"
+              - generic [ref=e334]: Jan-2024
+              - generic [ref=e335]: Feb-2024
+              - generic [ref=e336]: Mar-2024
+              - generic [ref=e337]: Apr-2024
+              - generic [ref=e338]: May-2024
+              - generic [ref=e339]: Jun-2024
+              - generic [ref=e340]: Jul-2024
+              - generic [ref=e341]: Aug-2024
+              - generic [ref=e342]: Sep-2024
+              - generic [ref=e343]: Oct-2024
+              - generic [ref=e344]: Nov-2024
+              - generic [ref=e345]: Dec-2024
+              - generic [ref=e346]: "2024"
+              - generic [ref=e347]: Jan-2025
+              - generic [ref=e348]: Feb-2025
+              - generic [ref=e349]: Mar-2025
+              - generic [ref=e350]: Apr-2025
+              - generic [ref=e351]: May-2025
+              - generic [ref=e352]: Jun-2025
+              - generic [ref=e353]: Jul-2025
+              - generic [ref=e354]: Aug-2025
+              - generic [ref=e355]: Sep-2025
+              - generic [ref=e356]: Oct-2025
+              - generic [ref=e357]: Nov-2025
+              - generic [ref=e358]: Dec-2025
+              - generic [ref=e359]: "2025"
+              - generic [ref=e360]: "2026"
+              - generic [ref=e361]: "2027"
+            - generic [ref=e362]:
+              - generic [ref=e365]:
+                - generic "UnitSalesHappyScenario" [ref=e366]:
+                  - img [ref=e369] [cursor=pointer]
+                  - text: UnitSalesHappyScenario
+                  - img [ref=e374] [cursor=pointer]
+                - generic "E£ 0" [ref=e376]:
+                  - generic [ref=e377]: E£ 0
+                - generic "E£ 0" [ref=e378]:
+                  - generic [ref=e379]: E£ 0
+                - generic "E£ 0" [ref=e380]:
+                  - generic [ref=e381]: E£ 0
+                - generic "E£ 0" [ref=e382]:
+                  - generic [ref=e383]: E£ 0
+                - generic "E£ 0" [ref=e384]:
+                  - generic [ref=e385]: E£ 0
+                - generic "E£ 0" [ref=e386]:
+                  - generic [ref=e387]: E£ 0
+                - generic "E£ 0" [ref=e388]:
+                  - generic [ref=e389]: E£ 0
+                - generic "E£ 0" [ref=e390]:
+                  - generic [ref=e391]: E£ 0
+                - generic "E£ 0" [ref=e392]:
+                  - generic [ref=e393]: E£ 0
+                - generic "E£ 0" [ref=e394]:
+                  - generic [ref=e395]: E£ 0
+                - generic "E£ 0" [ref=e396]:
+                  - generic [ref=e397]: E£ 0
+                - generic "E£ 0" [ref=e398]:
+                  - generic [ref=e399]: E£ 0
+                - generic "E£ 0" [ref=e400]:
+                  - generic [ref=e401]: E£ 0
+                - generic "E£ 0" [ref=e402]:
+                  - generic [ref=e403]: E£ 0
+                - generic "E£ 0" [ref=e404]:
+                  - generic [ref=e405]: E£ 0
+                - generic "E£ 0" [ref=e406]:
+                  - generic [ref=e407]: E£ 0
+                - generic "E£ 0" [ref=e408]:
+                  - generic [ref=e409]: E£ 0
+                - generic "E£ 0" [ref=e410]:
+                  - generic [ref=e411]: E£ 0
+                - generic "E£ 0" [ref=e412]:
+                  - generic [ref=e413]: E£ 0
+                - generic "E£ 0" [ref=e414]:
+                  - generic [ref=e415]: E£ 0
+                - generic "E£ 0" [ref=e416]:
+                  - generic [ref=e417]: E£ 0
+                - generic "E£ 0" [ref=e418]:
+                  - generic [ref=e419]: E£ 0
+                - generic "E£ 0" [ref=e420]:
+                  - generic [ref=e421]: E£ 0
+                - generic "E£ 0" [ref=e422]:
+                  - generic [ref=e423]: E£ 0
+                - generic "E£ 0" [ref=e424]:
+                  - generic [ref=e425]: E£ 0
+                - generic "E£ 0" [ref=e426]:
+                  - generic [ref=e427]: E£ 0
+                - generic "E£ 0" [ref=e428]:
+                  - generic [ref=e429]: E£ 0
+                - generic "E£ 0" [ref=e430]:
+                  - generic [ref=e431]: E£ 0
+                - generic "E£ 100,000" [ref=e432]:
+                  - generic [ref=e433]: E£ 100,000
+                - generic "E£ 100,000" [ref=e434]:
+                  - generic [ref=e435]: E£ 100,000
+                - generic "E£ 100,000" [ref=e436]:
+                  - generic [ref=e437]: E£ 100,000
+                - generic "E£ 100,000" [ref=e438]:
+                  - generic [ref=e439]: E£ 100,000
+                - generic "E£ 100,000" [ref=e440]:
+                  - generic [ref=e441]: E£ 100,000
+                - generic "E£ 100,000" [ref=e442]:
+                  - generic [ref=e443]: E£ 100,000
+                - generic "E£ 100,000" [ref=e444]:
+                  - generic [ref=e445]: E£ 100,000
+                - generic "E£ 100,000" [ref=e446]:
+                  - generic [ref=e447]: E£ 100,000
+                - generic "E£ 100,000" [ref=e448]:
+                  - generic [ref=e449]: E£ 100,000
+                - generic "E£ 100,000" [ref=e450]:
+                  - generic [ref=e451]: E£ 100,000
+                - generic "E£ 1,000,000" [ref=e452]:
+                  - generic [ref=e453]: E£ 1,000,000
+                - generic "E£ 1,200,000" [ref=e454]:
+                  - generic [ref=e455]: E£ 1,200,000
+                - generic "E£ 1,200,000" [ref=e456]:
+                  - generic [ref=e457]: E£ 1,200,000
+              - generic [ref=e460]:
+                - generic "UnitSalesHappyScenario" [ref=e461]:
+                  - img [ref=e464] [cursor=pointer]
+                  - text: UnitSalesHappyScenario
+                  - img [ref=e469] [cursor=pointer]
+                - generic "E£ 0" [ref=e471]:
+                  - generic [ref=e472]: E£ 0
+                - generic "E£ 0" [ref=e473]:
+                  - generic [ref=e474]: E£ 0
+                - generic "E£ 0" [ref=e475]:
+                  - generic [ref=e476]: E£ 0
+                - generic "E£ 0" [ref=e477]:
+                  - generic [ref=e478]: E£ 0
+                - generic "E£ 0" [ref=e479]:
+                  - generic [ref=e480]: E£ 0
+                - generic "E£ 0" [ref=e481]:
+                  - generic [ref=e482]: E£ 0
+                - generic "E£ 0" [ref=e483]:
+                  - generic [ref=e484]: E£ 0
+                - generic "E£ 0" [ref=e485]:
+                  - generic [ref=e486]: E£ 0
+                - generic "E£ 0" [ref=e487]:
+                  - generic [ref=e488]: E£ 0
+                - generic "E£ 0" [ref=e489]:
+                  - generic [ref=e490]: E£ 0
+                - generic "E£ 0" [ref=e491]:
+                  - generic [ref=e492]: E£ 0
+                - generic "E£ 0" [ref=e493]:
+                  - generic [ref=e494]: E£ 0
+                - generic "E£ 0" [ref=e495]:
+                  - generic [ref=e496]: E£ 0
+                - generic "E£ 0" [ref=e497]:
+                  - generic [ref=e498]: E£ 0
+                - generic "E£ 0" [ref=e499]:
+                  - generic [ref=e500]: E£ 0
+                - generic "E£ 0" [ref=e501]:
+                  - generic [ref=e502]: E£ 0
+                - generic "E£ 0" [ref=e503]:
+                  - generic [ref=e504]: E£ 0
+                - generic "E£ 0" [ref=e505]:
+                  - generic [ref=e506]: E£ 0
+                - generic "E£ 0" [ref=e507]:
+                  - generic [ref=e508]: E£ 0
+                - generic "E£ 0" [ref=e509]:
+                  - generic [ref=e510]: E£ 0
+                - generic "E£ 0" [ref=e511]:
+                  - generic [ref=e512]: E£ 0
+                - generic "E£ 0" [ref=e513]:
+                  - generic [ref=e514]: E£ 0
+                - generic "E£ 0" [ref=e515]:
+                  - generic [ref=e516]: E£ 0
+                - generic "E£ 0" [ref=e517]:
+                  - generic [ref=e518]: E£ 0
+                - generic "E£ 0" [ref=e519]:
+                  - generic [ref=e520]: E£ 0
+                - generic "E£ 0" [ref=e521]:
+                  - generic [ref=e522]: E£ 0
+                - generic "E£ 0" [ref=e523]:
+                  - generic [ref=e524]: E£ 0
+                - generic "E£ 0" [ref=e525]:
+                  - generic [ref=e526]: E£ 0
+                - generic "E£ 100,000" [ref=e527]:
+                  - generic [ref=e528]: E£ 100,000
+                - generic "E£ 100,000" [ref=e529]:
+                  - generic [ref=e530]: E£ 100,000
+                - generic "E£ 100,000" [ref=e531]:
+                  - generic [ref=e532]: E£ 100,000
+                - generic "E£ 100,000" [ref=e533]:
+                  - generic [ref=e534]: E£ 100,000
+                - generic "E£ 100,000" [ref=e535]:
+                  - generic [ref=e536]: E£ 100,000
+                - generic "E£ 100,000" [ref=e537]:
+                  - generic [ref=e538]: E£ 100,000
+                - generic "E£ 100,000" [ref=e539]:
+                  - generic [ref=e540]: E£ 100,000
+                - generic "E£ 100,000" [ref=e541]:
+                  - generic [ref=e542]: E£ 100,000
+                - generic "E£ 100,000" [ref=e543]:
+                  - generic [ref=e544]: E£ 100,000
+                - generic "E£ 100,000" [ref=e545]:
+                  - generic [ref=e546]: E£ 100,000
+                - generic "E£ 1,000,000" [ref=e547]:
+                  - generic [ref=e548]: E£ 1,000,000
+                - generic "E£ 1,200,000" [ref=e549]:
+                  - generic [ref=e550]: E£ 1,200,000
+                - generic "E£ 1,200,000" [ref=e551]:
+                  - generic [ref=e552]: E£ 1,200,000
+              - generic [ref=e558] [cursor=pointer]:
+                - img [ref=e559]
+                - text: Add new revenue
+            - generic [ref=e605]:
+              - generic "Total" [ref=e606]: Total
+              - generic "E£ 0" [ref=e607]:
+                - generic [ref=e608]: E£ 0
+              - generic "E£ 0" [ref=e609]:
+                - generic [ref=e610]: E£ 0
+              - generic "E£ 0" [ref=e611]:
+                - generic [ref=e612]: E£ 0
+              - generic "E£ 0" [ref=e613]:
+                - generic [ref=e614]: E£ 0
+              - generic "E£ 0" [ref=e615]:
+                - generic [ref=e616]: E£ 0
+              - generic "E£ 0" [ref=e617]:
+                - generic [ref=e618]: E£ 0
+              - generic "E£ 0" [ref=e619]:
+                - generic [ref=e620]: E£ 0
+              - generic "E£ 0" [ref=e621]:
+                - generic [ref=e622]: E£ 0
+              - generic "E£ 0" [ref=e623]:
+                - generic [ref=e624]: E£ 0
+              - generic "E£ 0" [ref=e625]:
+                - generic [ref=e626]: E£ 0
+              - generic "E£ 0" [ref=e627]:
+                - generic [ref=e628]: E£ 0
+              - generic "E£ 0" [ref=e629]:
+                - generic [ref=e630]: E£ 0
+              - generic "E£ 0" [ref=e631]:
+                - generic [ref=e632]: E£ 0
+              - generic "E£ 0" [ref=e633]:
+                - generic [ref=e634]: E£ 0
+              - generic "E£ 0" [ref=e635]:
+                - generic [ref=e636]: E£ 0
+              - generic "E£ 0" [ref=e637]:
+                - generic [ref=e638]: E£ 0
+              - generic "E£ 0" [ref=e639]:
+                - generic [ref=e640]: E£ 0
+              - generic "E£ 0" [ref=e641]:
+                - generic [ref=e642]: E£ 0
+              - generic "E£ 0" [ref=e643]:
+                - generic [ref=e644]: E£ 0
+              - generic "E£ 0" [ref=e645]:
+                - generic [ref=e646]: E£ 0
+              - generic "E£ 0" [ref=e647]:
+                - generic [ref=e648]: E£ 0
+              - generic "E£ 0" [ref=e649]:
+                - generic [ref=e650]: E£ 0
+              - generic "E£ 0" [ref=e651]:
+                - generic [ref=e652]: E£ 0
+              - generic "E£ 0" [ref=e653]:
+                - generic [ref=e654]: E£ 0
+              - generic "E£ 0" [ref=e655]:
+                - generic [ref=e656]: E£ 0
+              - generic "E£ 0" [ref=e657]:
+                - generic [ref=e658]: E£ 0
+              - generic "E£ 0" [ref=e659]:
+                - generic [ref=e660]: E£ 0
+              - generic "E£ 0" [ref=e661]:
+                - generic [ref=e662]: E£ 0
+              - generic "E£ 200,000" [ref=e663]:
+                - generic [ref=e664]: E£ 200,000
+              - generic "E£ 200,000" [ref=e665]:
+                - generic [ref=e666]: E£ 200,000
+              - generic "E£ 200,000" [ref=e667]:
+                - generic [ref=e668]: E£ 200,000
+              - generic "E£ 200,000" [ref=e669]:
+                - generic [ref=e670]: E£ 200,000
+              - generic "E£ 200,000" [ref=e671]:
+                - generic [ref=e672]: E£ 200,000
+              - generic "E£ 200,000" [ref=e673]:
+                - generic [ref=e674]: E£ 200,000
+              - generic "E£ 200,000" [ref=e675]:
+                - generic [ref=e676]: E£ 200,000
+              - generic "E£ 200,000" [ref=e677]:
+                - generic [ref=e678]: E£ 200,000
+              - generic "E£ 200,000" [ref=e679]:
+                - generic [ref=e680]: E£ 200,000
+              - generic "E£ 200,000" [ref=e681]:
+                - generic [ref=e682]: E£ 200,000
+              - generic "E£ 2,000,000" [ref=e683]:
+                - generic [ref=e684]: E£ 2,000,000
+              - generic "E£ 2,400,000" [ref=e685]:
+                - generic [ref=e686]: E£ 2,400,000
+              - generic "E£ 2,400,000" [ref=e687]:
+                - generic [ref=e688]: E£ 2,400,000
+        - generic [ref=e689]:
+          - generic [ref=e693]:
+            - heading "Authorized users" [level=6] [ref=e694]
+            - generic [ref=e696]:
+              - generic [ref=e698]:
+                - button [ref=e699] [cursor=pointer]:
+                  - img [ref=e701]
+                - img "bbb vhkvb" [ref=e707]
+                - button [ref=e708] [cursor=pointer]:
+                  - img [ref=e710]
+              - img [ref=e714]
+          - generic [ref=e719]:
+            - heading "Comments" [level=6] [ref=e720]
+            - generic [ref=e721]:
+              - textbox "Enter your comment" [ref=e722]
+              - button "Publish" [ref=e724] [cursor=pointer]:
+                - generic [ref=e725]: Publish
+            - list
+    - generic:
+      - generic:
+        - contentinfo
+```
+
+# Test source
+
+```ts
+  109 |      * Checks if the page has a valid browser context for screenshots.
+  110 |      * Returns false for API tests or when page is not properly initialized.
+  111 |      */
+  112 |     private isPageContextValid(): boolean {
+  113 |         try {
+  114 |             // Check if page has a valid context (browser context exists)
+  115 |             return this.page.context() !== null && this.page.context() !== undefined;
+  116 |         } catch (error) {
+  117 |             // If we can't access context, it's not valid
+  118 |             return false;
+  119 |         }
+  120 |     }
+  121 | 
+  122 |     /**
+  123 |      * Core assertion engine. All public assertion methods delegate to this.
+  124 |      *
+  125 |      * Workflow:
+  126 |      *  1. Increments the assertion counter and logs the assertion start
+  127 |      *  2. Executes the provided assertion function
+  128 |      *  3. On success: logs PASSED with duration
+  129 |      *  4. On failure:
+  130 |      *     - Captures a screenshot
+  131 |      *     - If soft=true:  records the error for later (test continues)
+  132 |      *     - If soft=false: re-throws immediately (test stops)
+  133 |      *
+  134 |      * @param description - Human-readable label for this assertion
+  135 |      * @param assertionFn - The actual Playwright expect() call wrapped in an async function
+  136 |      * @param soft - When true, failures are collected instead of thrown
+  137 |      */
+  138 |     private async handleAssertion(
+  139 |         description: string,
+  140 |         assertionFn: () => Promise<void>,
+  141 |         soft: boolean = false
+  142 |     ) {
+  143 |         this.assertionCounter++;
+  144 |         const assertionLabel = `Assertion #${this.assertionCounter}`;
+  145 |         const type = soft ? 'SOFT' : 'HARD';
+  146 | 
+  147 |         this.logger.info(`${assertionLabel} [${type}]: ${description}`);
+  148 |         const startTime = Date.now();
+  149 | 
+  150 |         try {
+  151 |             await assertionFn();
+  152 |             const duration = Date.now() - startTime;
+  153 |             this.logger.info(`${assertionLabel}: ${description} - PASSED (${duration}ms)`);
+  154 |         } catch (error) {
+  155 |             const duration = Date.now() - startTime;
+  156 |             const screenshotPath = await this.captureFailureScreenshot(description);
+  157 | 
+  158 |             if (soft) {
+  159 |                 this.logger.warn(`${assertionLabel}: ${description} - SOFT_FAIL (${duration}ms) - ${(error as Error).message}`);
+  160 |                 this.softAssertionErrors.push({
+  161 |                     assertionNumber: this.assertionCounter,
+  162 |                     description,
+  163 |                     error: error as Error,
+  164 |                     screenshotPath
+  165 |                 });
+  166 |             } else {
+  167 |                 this.logger.error(`${assertionLabel}: ${description} - FAILED (${duration}ms) - ${(error as Error).message}`);
+  168 |                 throw error;
+  169 |             }
+  170 |         }
+  171 |     }
+  172 | 
+  173 |     // ============ VISIBILITY ASSERTIONS ============
+  174 | 
+  175 |     async toBeVisible(locator: Locator, description?: string, soft: boolean = false) {
+  176 |         const logMessage = description || 'Assert element is visible';
+  177 |         await this.handleAssertion(logMessage, async () => {
+  178 |             await expect(locator).toBeVisible();
+  179 |         }, soft);
+  180 |     }
+  181 | 
+  182 |     async toBeHidden(locator: Locator, description?: string, soft: boolean = false) {
+  183 |         const logMessage = description || 'Assert element is hidden';
+  184 |         await this.handleAssertion(logMessage, async () => {
+  185 |           try {
+  186 |             await expect(locator).toBeHidden();
+  187 |           } catch {
+  188 |             await expect(locator).toHaveCount(0);
+  189 |           }
+  190 |         }, soft);
+  191 |     }
+  192 | 
+  193 |     // ============ TEXT ASSERTIONS ============
+  194 | 
+  195 |     async toHaveText(locator: Locator, expected: string | RegExp | Array<string | RegExp>, description?: string, soft: boolean = false) {
+  196 |         const logMessage = description || `Assert element has text: "${expected}"`;
+  197 |         this.logger.debug(`Expected text: ${JSON.stringify(expected)}`);
+  198 | 
+  199 |         await this.handleAssertion(logMessage, async () => {
+  200 |             await expect(locator).toContainText(expected); // Additional check to provide more detailed logging on failure
+  201 |         }, soft);
+  202 |     }
+  203 | 
+  204 |     async toContainText(locator: Locator, expected: string | RegExp | Array<string | RegExp>, description?: string, soft: boolean = false) {
+  205 |         const logMessage = description || `Assert element contains text: "${expected}"`;
+  206 |         this.logger.debug(`Expected to contain: ${JSON.stringify(expected)}`);
+  207 | 
+  208 |         await this.handleAssertion(logMessage, async () => {
+> 209 |             await expect(locator).toContainText(expected);
+      |                                   ^ Error: expect(locator).toContainText(expected) failed
+  210 |         }, soft);
+  211 |     }
+  212 | 
+  213 |     // ============ VALUE ASSERTIONS ============
+  214 | 
+  215 |     async toHaveValue(locator: Locator, expected: string | RegExp, description?: string, soft: boolean = false) {
+  216 |         const logMessage = description || `Assert input has value: "${expected}"`;
+  217 |         this.logger.debug(`Expected value: ${expected}`);
+  218 | 
+  219 |         await this.handleAssertion(logMessage, async () => {
+  220 |             await expect(locator).toHaveValue(expected);
+  221 |         }, soft);
+  222 |     }
+  223 | 
+  224 |     async toBeEmpty(locator: Locator, description?: string, soft: boolean = false) {
+  225 |         const logMessage = description || 'Assert input is empty';
+  226 | 
+  227 |         await this.handleAssertion(logMessage, async () => {
+  228 |             await expect(locator).toBeEmpty();
+  229 |         }, soft);
+  230 |     }
+  231 | 
+  232 |     // ============ COUNT ASSERTIONS ============
+  233 | 
+  234 |     async toHaveCount(locator: Locator, expected: number, description?: string, soft: boolean = false) {
+  235 |         const logMessage = description || `Assert element count is ${expected}`;
+  236 |         this.logger.debug(`Expected count: ${expected}`);
+  237 | 
+  238 |         await this.handleAssertion(logMessage, async () => {
+  239 |             await expect(locator).toHaveCount(expected);
+  240 |         }, soft);
+  241 |     }
+  242 | 
+  243 |     // ============ STATE ASSERTIONS ============
+  244 | 
+  245 |     async toBeEnabled(locator: Locator, description?: string, soft: boolean = false) {
+  246 |         const logMessage = description || 'Assert element is enabled';
+  247 |         await this.handleAssertion(logMessage, async () => {
+  248 |             await expect(locator).toBeEnabled();
+  249 |         }, soft);
+  250 |     }
+  251 | 
+  252 |     async toBeDisabled(locator: Locator, description?: string, soft: boolean = false) {
+  253 |         const logMessage = description || 'Assert element is disabled';
+  254 |         await this.handleAssertion(logMessage, async () => {
+  255 |             await expect(locator).toBeDisabled();
+  256 |         }, soft);
+  257 |     }
+  258 | 
+  259 |     async toBeChecked(locator: Locator, description?: string, soft: boolean = false) {
+  260 |         const logMessage = description || 'Assert checkbox/radio is checked';
+  261 |         await this.handleAssertion(logMessage, async () => {
+  262 |             await expect(locator).toBeChecked();
+  263 |         }, soft);
+  264 |     }
+  265 | 
+  266 |     async toBeEditable(locator: Locator, description?: string, soft: boolean = false) {
+  267 |         const logMessage = description || 'Assert element is editable';
+  268 |         await this.handleAssertion(logMessage, async () => {
+  269 |             await expect(locator).toBeEditable();
+  270 |         }, soft);
+  271 |     }
+  272 | 
+  273 |     async toBeFocused(locator: Locator, description?: string, soft: boolean = false) {
+  274 |         const logMessage = description || 'Assert element is focused';
+  275 |         await this.handleAssertion(logMessage, async () => {
+  276 |             await expect(locator).toBeFocused();
+  277 |         }, soft);
+  278 |     }
+  279 | 
+  280 |     // ============ ATTRIBUTE ASSERTIONS ============
+  281 | 
+  282 |     async toHaveAttribute(locator: Locator, name: string, value: string | RegExp, description?: string, soft: boolean = false) {
+  283 |         const logMessage = description || `Assert element has attribute "${name}" with value "${value}"`;
+  284 |         this.logger.debug(`Attribute: ${name}, Expected: ${value}`);
+  285 |         const regExValue = new RegExp(`^${value}(?:\\b|$).*`, 'i'); // Convert to RegExp for more flexible matching
+  286 | 
+  287 |         await this.handleAssertion(logMessage, async () => {
+  288 |             await expect(locator).toHaveAttribute(name, regExValue); // Additional check to provide more detailed logging on failure
+  289 |         }, soft);
+  290 |     }
+  291 | 
+  292 |     async notToHaveAttribute(locator: Locator, name: string, description?: string, soft: boolean = false) {
+  293 |         const logMessage = description || `Assert element does not have attribute "${name}"`;
+  294 |         this.logger.debug(`Attribute: ${name} should be absent`);
+  295 | 
+  296 |         await this.handleAssertion(logMessage, async () => {
+  297 |             const value = await locator.getAttribute(name);
+  298 |             await expect(value).toBeNull();
+  299 |         }, soft);
+  300 |     }
+  301 | 
+  302 |     async toHaveClass(locator: Locator, expected: string | RegExp | Array<string | RegExp>, description?: string, soft: boolean = false) {
+  303 |         const logMessage = description || `Assert element has class: "${expected}"`;
+  304 |         this.logger.debug(`Expected class(es): ${JSON.stringify(expected)}`);
+  305 | 
+  306 |         await this.handleAssertion(logMessage, async () => {
+  307 |             await expect(locator).toHaveClass(expected);
+  308 |         }, soft);
+  309 |     }
+```
