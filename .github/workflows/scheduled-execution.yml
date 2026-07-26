@@ -43,9 +43,11 @@ jobs:
         run: npx playwright install --with-deps chromium
 
       - name: Run SignUp module tests
+        if: always()
         run: npm run test:area SignUp
 
       - name: Run Revenues module tests
+        if: always()
         run: npm run test:area Revenues
 
       - name: Upload Playwright HTML report
