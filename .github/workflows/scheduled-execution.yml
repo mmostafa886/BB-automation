@@ -47,12 +47,21 @@ jobs:
 
       - name: Run module tests
         run: |
+          # Each module runs Playwright in a fresh process. The blob reporter
+          # wipes its own outputDir at the start of every run, so each module
+          # writes to a private scratch dir first — otherwise the next module
+          # would delete the previous module's blob report before it's merged.
           IFS=',' read -ra MODULE_LIST <<< "$MODULES"
           FAILED=0
+          mkdir -p blob-report
           for module in "${MODULE_LIST[@]}"; do
             echo "::group::Running $module module tests"
-            PLAYWRIGHT_REPORTER=blob PLAYWRIGHT_BLOB_OUTPUT_NAME="${module}.zip" \
+            rm -rf blob-report-scratch
+            PLAYWRIGHT_REPORTER=blob PLAYWRIGHT_BLOB_OUTPUT_DIR=blob-report-scratch \
               npm run test:area "$module" || FAILED=1
+            if [ -d blob-report-scratch ]; then
+              cp blob-report-scratch/*.zip "blob-report/${module}.zip"
+            fi
             echo "::endgroup::"
           done
           exit $FAILED
