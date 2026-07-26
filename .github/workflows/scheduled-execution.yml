@@ -2,8 +2,8 @@ name: Scheduled Execution
 
 on:
   # Recurring weekly run every Friday at 00:00 UTC.
-  # Runs the SignUp module today; additional modules will be added to this
-  # job as they come online.
+  # Modules run are listed in the job's MODULES env var below; add a module
+  # there (no other workflow changes needed) as it comes online.
   schedule:
     - cron: '0 0 * * 5'
   # Manual trigger so the run doesn't have to wait for the next Friday.
@@ -22,6 +22,9 @@ jobs:
       BASE_URL: ${{ vars.BASE_URL_QA }}
       TEST_USER_EMAIL: ${{ secrets.TEST_USER_EMAIL }}
       TEST_USER_PASSWORD: ${{ secrets.TEST_USER_PASSWORD }}
+      # Comma-separated list of tests/generated module folders to run each week.
+      # Add a module here (no other workflow changes needed) as it comes online.
+      MODULES: "SignUp,Revenues"
 
     steps:
       - name: Checkout
@@ -42,11 +45,30 @@ jobs:
       - name: Install Playwright browser
         run: npx playwright install --with-deps chromium
 
-      - name: Run SignUp module tests
-        run: npm run test:area SignUp
+      - name: Run module tests
+        run: |
+          IFS=',' read -ra MODULE_LIST <<< "$MODULES"
+          FAILED=0
+          for module in "${MODULE_LIST[@]}"; do
+            echo "::group::Running $module module tests"
+            PLAYWRIGHT_REPORTER=blob PLAYWRIGHT_BLOB_OUTPUT_NAME="${module}.zip" \
+              npm run test:area "$module" || FAILED=1
+            echo "::endgroup::"
+          done
+          exit $FAILED
 
-      - name: Run Revenues module tests
-        run: npm run test:area Revenues
+      - name: Merge module reports
+        if: always()
+        run: npx playwright merge-reports --reporter=html,list ./blob-report
+
+      - name: Upload raw blob reports
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: blob-report-${{ github.run_number }}-${{ github.run_attempt }}
+          path: blob-report/
+          retention-days: 7
+          if-no-files-found: ignore
 
       - name: Upload Playwright HTML report
         if: always()
@@ -97,5 +119,5 @@ jobs:
           REPORT_URL="https://${{ github.repository_owner }}.github.io/$(basename ${{ github.repository }})/reports/${{ github.run_number }}/"
           RUN_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
           curl -sS -f -X POST -H 'Content-type: application/json' \
-            --data "{\"text\":\"${STATUS_EMOJI} *Scheduled Execution* ${STATUS_TEXT} — SignUp module\n<${RUN_URL}|View run> | <${REPORT_URL}|View report>\"}" \
+            --data "{\"text\":\"${STATUS_EMOJI} *Scheduled Execution* ${STATUS_TEXT} — modules: ${MODULES}\n<${RUN_URL}|View run> | <${REPORT_URL}|View report>\"}" \
             "${{ secrets.SLACK_WEBHOOK_URL }}"

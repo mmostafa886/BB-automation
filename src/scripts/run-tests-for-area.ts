@@ -12,7 +12,9 @@ if (!area) {
 try {
   tcGenerateLogger.info(`Running tests for area: ${area}`);
 
-  execSync(`npx playwright test tests/generated/${area} --reporter=html,list`, {
+  const reporter = process.env.PLAYWRIGHT_REPORTER || 'html,list';
+
+  execSync(`npx playwright test tests/generated/${area} --reporter=${reporter}`, {
     stdio: 'inherit',
   });
 

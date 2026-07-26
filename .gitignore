@@ -9,6 +9,7 @@ reports/*.html
 logs/*.log
 test-results/
 playwright-report/
+blob-report/
 /test-logs/
 .DS_Store
 *.log.claude/settings.local.json
