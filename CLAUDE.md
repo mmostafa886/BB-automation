@@ -105,6 +105,7 @@ Invoke with `/<skill-name>`. Full pipeline diagrams: `docs/skills-index.md`.
 | Skill | Use when |
 | --- | --- |
 | `/add-teststep-hooks` | Wrap all page-object methods with `test.step()` labels |
+| `/describe-and-flatten-json-data` | Add `test.describe` wrapper + flatten single-case JSON data access |
 | `/polish-generated-code` | Post-pipeline cleanup (escapes, grouping, imports) |
 | `/merge-tc-sets` | Merge + deduplicate two TC sets |
 | `/execute-and-fix-tests` | Run → inspect failures via MCP browser → fix → re-run |

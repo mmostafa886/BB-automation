@@ -45,6 +45,9 @@ jobs:
       - name: Run SignUp module tests
         run: npm run test:area SignUp
 
+      - name: Run Revenues module tests
+        run: npm run test:area Revenues
+
       - name: Upload Playwright HTML report
         if: always()
         uses: actions/upload-artifact@v7

@@ -17,6 +17,21 @@ No local markdown files are read as input — all content flows from Jira to Jir
 
 ---
 
+## File structure
+
+The skill definition is split across three files for progressive disclosure (Claude loads
+`SKILL.md` on every invocation, then pulls in the other two only when it needs step-level
+detail):
+
+| File | Contents |
+| --- | --- |
+| `SKILL.md` | Role & persona, script execution pattern, execution checklist, and a step outline (2–3 line summary per step) with links into `WORKFLOW.md` / `SCRIPTS.md`. |
+| `WORKFLOW.md` | Full step-by-step execution detail for every STEP (1, 1e, 2/2b/2c/2d, 3, 3.5, coverage comparison, 4, 5, 5.5) plus the complete RULES list. Linked from `SKILL.md`. |
+| `SCRIPTS.md` | Full Node.js script templates (Jira fetch, existing-TC fetch, local markdown save, TC issue creation, local-only mapping, testCaseFilter.js patch) referenced from `WORKFLOW.md`. Does not link back to `WORKFLOW.md` or `SKILL.md`. |
+| `README.md` | This file — human-facing usage guide, examples, and error handling reference. |
+
+---
+
 ## Input
 
 | Variable | Description |

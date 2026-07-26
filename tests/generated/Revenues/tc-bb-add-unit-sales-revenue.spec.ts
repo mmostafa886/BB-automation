@@ -19,61 +19,65 @@ import revenuesInputs from '../../../test-data/RevenuesInputs.json';
  *     values, and the 42-entry expected-value arrays before running.
  */
 
-// Loosely typed: the inputs JSON is data, not a contract.
-const inputs = revenuesInputs as any[];
+test.describe('Revenues - Add a Unit Sales revenue', () => {
+    test(
+        `${revenuesInputs[0].test} @revenues @automation`,
+        async ({ selfHealingFixture: { pomSelfHealing } }) => {
+            // ── Sign in ────────────────────────────────────────────────────────────
+            await pomSelfHealing.loginPage.navigateToLogin();
+            await pomSelfHealing.loginPage.openSignInModal();
+            await pomSelfHealing.loginPage.fillAndSubmitSignInForm(
+                revenuesInputs[0].mail,
+                revenuesInputs[0].password,
+            );
+            await pomSelfHealing.homePage.assertPageLoaded();
 
-for (const input of inputs) {
-    test(`${input.test} @revenues @automation`, async ({ selfHealingFixture: { pomSelfHealing } }) => {
-        // ── Sign in ────────────────────────────────────────────────────────────
-        await pomSelfHealing.loginPage.navigateToLogin();
-        await pomSelfHealing.loginPage.openSignInModal();
-        await pomSelfHealing.loginPage.fillAndSubmitSignInForm(input.mail, input.password);
-        await pomSelfHealing.homePage.assertPageLoaded();
+            // ── Pick company & forecast, open the Financial Plan ─────────────────────
+            await pomSelfHealing.homePage.openCompaniesMenu();
+            await pomSelfHealing.homePage.selectFromMenu(revenuesInputs[0].company);
+            await pomSelfHealing.homePage.openFoecastsMenu();
+            await pomSelfHealing.homePage.selectFromMenu(revenuesInputs[0].forecast);
+            await pomSelfHealing.homePage.openFinancialPlan();
 
-        // ── Pick company & forecast, open the Financial Plan ─────────────────────
-        await pomSelfHealing.homePage.openCompaniesMenu();
-        await pomSelfHealing.homePage.selectFromMenu(input.company);
-        await pomSelfHealing.homePage.openFoecastsMenu();
-        await pomSelfHealing.homePage.selectFromMenu(input.forecast);
-        await pomSelfHealing.homePage.openFinancialPlan();
+            // ── Open the Revenues chapter ────────────────────────────────────────────
+            await pomSelfHealing.financialDashboard.openFinancialTables();
+            await pomSelfHealing.financialDashboard.goToRevenues();
+            await pomSelfHealing.financialDashboard.dismissInstructionsModal();
 
-        // ── Open the Revenues chapter ────────────────────────────────────────────
-        await pomSelfHealing.financialDashboard.openFinancialTables();
-        await pomSelfHealing.financialDashboard.goToRevenues();
-        await pomSelfHealing.financialDashboard.dismissInstructionsModal();
-
-        // ── Add a Unit Sales revenue ─────────────────────────────────────────────
-        await pomSelfHealing.revenuesPage.clickAddRevenue();
-        await pomSelfHealing.revenuesPage.fillNameAndGroupFields(
-            input.nameOfRevenue,
-            input.grouping,
-            input.groupName,
-        );
-        await pomSelfHealing.revenuesPage.addUnitSalesRevenue({
-            unitType:          input.unitType,
-            noOfUnits:         input.NoOfUnits,
-            per:               input.per,
-            startYear:         input.startYear,
-            startMonth:        input.startMonth,
-            endYear:           input.endYear,
-            endMonth:          input.endMonth,
-            unitGrowthFlag:    input.unitGrowthFlag,
-            unitGrowth:        input.unitGrowth,
-            unitGrowthType:    input.unitGrowthType,
-            unitGrowthPeriod:  input.unitGrowthPeriod,
-            unitTypeChoice:    input.unitTypeChoice,
-            priceType:         input.priceType,
-            priceOfEachUnit:   input.priceOfEachUnit,
-            priceGrowthOrNot:  input.priceGrowthOrNot,
-            priceGrowth:       input.priceGrowth,
-            priceGrowthType:   input.priceGrowthType,
-            priceGrowthPeriod: input.priceGrowthPeriod,
-            priceTypeChoice:   input.priceTypeChoice,
-            nameOfAttribute:   input.nameOfAttribute,
-            results:           input.res,
-            total:             input.Total,
-            unitsSales:        input.unitsSales,
-            price:             input.price,
-        });
-    });
-}
+            // ── Add a Unit Sales revenue ─────────────────────────────────────────────
+            await pomSelfHealing.revenuesPage.clickAddRevenue();
+            await pomSelfHealing.revenuesPage.fillNameAndGroupFields(
+                revenuesInputs[0].nameOfRevenue,
+                revenuesInputs[0].grouping,
+                revenuesInputs[0].groupName,
+            );
+            // Loosely typed: the inputs JSON is data, not a contract.
+            await pomSelfHealing.revenuesPage.addUnitSalesRevenue({
+                unitType:          revenuesInputs[0].unitType,
+                noOfUnits:         revenuesInputs[0].NoOfUnits,
+                per:               revenuesInputs[0].per,
+                startYear:         revenuesInputs[0].startYear,
+                startMonth:        revenuesInputs[0].startMonth,
+                endYear:           revenuesInputs[0].endYear,
+                endMonth:          revenuesInputs[0].endMonth,
+                unitGrowthFlag:    revenuesInputs[0].unitGrowthFlag,
+                unitGrowth:        revenuesInputs[0].unitGrowth,
+                unitGrowthType:    revenuesInputs[0].unitGrowthType,
+                unitGrowthPeriod:  revenuesInputs[0].unitGrowthPeriod,
+                unitTypeChoice:    revenuesInputs[0].unitTypeChoice,
+                priceType:         revenuesInputs[0].priceType,
+                priceOfEachUnit:   revenuesInputs[0].priceOfEachUnit,
+                priceGrowthOrNot:  revenuesInputs[0].priceGrowthOrNot,
+                priceGrowth:       revenuesInputs[0].priceGrowth,
+                priceGrowthType:   revenuesInputs[0].priceGrowthType,
+                priceGrowthPeriod: revenuesInputs[0].priceGrowthPeriod,
+                priceTypeChoice:   revenuesInputs[0].priceTypeChoice,
+                nameOfAttribute:   revenuesInputs[0].nameOfAttribute,
+                results:           revenuesInputs[0].res,
+                total:             revenuesInputs[0].Total,
+                unitsSales:        revenuesInputs[0].unitsSales,
+                price:             revenuesInputs[0].price,
+            } as any);
+        },
+    );
+});

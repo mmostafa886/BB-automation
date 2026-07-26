@@ -19,6 +19,18 @@ Chains automatically into `/polish-generated-code` when complete, scoped to only
 
 ---
 
+## Skill file structure
+
+The skill definition is split via progressive disclosure so only the overview loads by default:
+
+| File | Purpose |
+|------|---------|
+| `SKILL.md` | Role/persona, execution checklist, step outline, architecture summary, rules, and the entry-point input resolution. |
+| `WORKFLOW.md` | Full step-by-step execution detail for Steps 1–7 and the complete 4-layer architecture rules. |
+| `SCRIPTS.md` | Embedded script/code templates — the Jira TC fetch script and the Layer 1/2/4 file templates. |
+
+---
+
 ## Prerequisites
 
 | Variable | Description |

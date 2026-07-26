@@ -1,6 +1,6 @@
 ---
 name: uss-to-tcs
-description: Transforms Agile User Stories into structured Manual Test Cases.
+description: Transforms Agile User Stories (local markdown or pasted text) into structured Manual Test Cases with full-spectrum coverage (positive/negative/boundary/security/performance/DB/API), saving the result to test_cases/<FeatureName>_TestCases.md. Use when the user has User Stories (a stories/*.md file or pasted US-* content) and wants only local manual Test Cases generated, e.g. "turn these user stories into test cases" or "/uss-to-tcs stories/Add_Employee_UserStories.md".
 ---
 system:
 # ROLE & PERSONA

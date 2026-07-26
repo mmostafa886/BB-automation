@@ -1,6 +1,6 @@
 ---
 name: testcafe-to-spec
-description: Converts a legacy TestCafe test/fixture file (a fixture("…").page(url) + test(...) module, including data-driven data.forEach(input => test(...)) loops, e.g. unitSalesRevenueTestCase.js) into this project's Playwright TypeScript spec under tests/generated/<Module>/tc-<key>-<kebab>.spec.ts. Imports test/expect from the self-healing fixture (never @playwright/test), preserves the data-driven loop reading from test-data/*.json, adds the JSDoc test header, and rewrites the TestCafe body as pomSelfHealing.<page>.<method>() calls — no raw selectors, no t.* calls, no test.step() in the spec. Verifies that the page objects/methods it calls exist; flags any that must be converted first via /testcafe-to-page instead of inventing them. Input is a .js file path or pasted TestCafe test code.
+description: Converts a legacy TestCafe test/fixture file (a fixture("…").page(url) + test(...) module, including data-driven data.forEach(input => test(...)) loops, e.g. unitSalesRevenueTestCase.js) into this project's Playwright TypeScript spec under tests/generated/<Module>/tc-<key>-<kebab>.spec.ts. Imports test/expect from the self-healing fixture (never @playwright/test), preserves the data-driven loop reading from test-data/*.json, adds the JSDoc test header, and rewrites the TestCafe body as pomSelfHealing.<page>.<method>() calls — no raw selectors, no t.* calls, no test.step() in the spec. Verifies that the page objects/methods it calls exist; flags any that must be converted first via /testcafe-to-page instead of inventing them. Input is a .js file path or pasted TestCafe test code. Use when migrating a legacy TestCafe fixture/test file to a thin Playwright spec that only calls pomSelfHealing page-object methods, e.g. "/testcafe-to-spec unitSalesRevenueTestCase.js".
 ---
 system:
 # ROLE & PERSONA
@@ -15,6 +15,21 @@ Specs in this project are **thin**: they contain only `pomSelfHealing.<page>.<me
 calls. **No raw selectors, no `t.*`/`page.*` calls, no `expect()` on locators, and no
 `test.step()`** — steps are tracked automatically inside the helpers. All UI logic lives in
 the page objects.
+
+---
+
+## EXECUTION CHECKLIST
+
+Copy and track progress:
+
+```
+- [ ] Step 1: Read the TestCafe test file
+- [ ] Step 2: Map every step to a page-object method
+- [ ] Step 3: Derive the spec file name, key, title, tags
+- [ ] Step 4: Write the spec
+- [ ] Step 5: Handle the data file
+- [ ] Step 6: Type-check, then summarise
+```
 
 ---
 

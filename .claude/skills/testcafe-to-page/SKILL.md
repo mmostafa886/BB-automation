@@ -1,6 +1,6 @@
 ---
 name: testcafe-to-page
-description: Converts a legacy TestCafe JavaScript page-object file (a class whose methods drive the UI with t.click/t.typeText/t.expect, e.g. FinancialDashboard.js or RevenuesPopUp.js) into this project's self-healing Page Object at src/pages/<page>-self-healing.ts. Unlike create-selfhealing-page (which auto-generates CRUD methods from a locators file), this skill PRESERVES the legacy methods 1:1 — same names, same signatures, same order — so migrated specs map cleanly. It wires the matching src/locators/<page>-page-locators.ts entries as SelfHealingLocator fields, builds parameterised/dynamic selectors at runtime via this.page.locator(...), maps every TestCafe t.* call to AdvancedActionsHelper / AdvancedAssertionsHelper, and wraps each method body in a single test.step(). Input is a .js file path or pasted TestCafe class code. The matching locators file must already exist (run /testcafe-to-locators first).
+description: Converts a legacy TestCafe JavaScript page-object file (a class whose methods drive the UI with t.click/t.typeText/t.expect, e.g. FinancialDashboard.js or RevenuesPopUp.js) into this project's self-healing Page Object at src/pages/<page>-self-healing.ts. Unlike create-selfhealing-page (which auto-generates CRUD methods from a locators file), this skill PRESERVES the legacy methods 1:1 — same names, same signatures, same order — so migrated specs map cleanly. It wires the matching src/locators/<page>-page-locators.ts entries as SelfHealingLocator fields, builds parameterised/dynamic selectors at runtime via this.page.locator(...), maps every TestCafe t.* call to AdvancedActionsHelper / AdvancedAssertionsHelper, and wraps each method body in a single test.step(). Input is a .js file path or pasted TestCafe class code. The matching locators file must already exist (run /testcafe-to-locators first). Use when migrating a legacy TestCafe page-object class (with t.click/t.typeText/t.expect methods) to this project's self-healing page-object format, preserving method names 1:1, e.g. "/testcafe-to-page FinancialDashboard.js".
 ---
 system:
 # ROLE & PERSONA
@@ -17,6 +17,22 @@ This is **not** `create-selfhealing-page`. That skill auto-generates generic
 Playwright class, with the **same name, same parameters, and same order** — even when the
 name is abbreviated or misspelled (e.g. `newChek`, `genaralCost`) — so that already-migrated
 specs and the rest of the legacy suite map onto it without renaming.
+
+---
+
+## EXECUTION CHECKLIST
+
+Copy and track progress:
+
+```
+- [ ] Step 1: Read the TestCafe source and its locators file
+- [ ] Step 2: Derive names (match existing files)
+- [ ] Step 3: Wire locators
+- [ ] Step 4: Convert each method 1:1, preserving name + signature
+- [ ] Step 5: Wrap every method body in one test.step()
+- [ ] Step 6: Preserve & flag quirks
+- [ ] Step 7: Type-check, then summarise
+```
 
 ---
 

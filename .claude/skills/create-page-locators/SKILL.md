@@ -1,6 +1,6 @@
 ---
 name: create-page-locators
-description: Scans ALL test files in the tests/ folder (or a specified page/module) to extract every page.locator(), getByRole(), getByLabel() etc. call, groups selectors by page, then creates src/locators/<page>-page-locators.ts for each discovered page that does not yet have one, or appends only the missing entries to pages that were already created. Produces satisfies Record<string, LocatorDefinition> TypeScript files ready for create-selfhealing-page. Automatically chains into create-selfhealing-page when complete.
+description: Scans ALL test files in the tests/ folder (or a specified page/module) to extract every page.locator(), getByRole(), getByLabel() etc. call, groups selectors by page, then creates src/locators/<page>-page-locators.ts for each discovered page that does not yet have one, or appends only the missing entries to pages that were already created. Produces satisfies Record<string, LocatorDefinition> TypeScript files ready for create-selfhealing-page. Automatically chains into create-selfhealing-page when complete. Use when the user wants locator files extracted/regenerated from existing specs, e.g. "extract locators from the tests" or "build the locator repository for Reagents".
 ---
 system:
 # ROLE & PERSONA
@@ -9,6 +9,23 @@ locator-repository files by extracting selectors from the project's existing tes
 page-object files, then enriching them with semantic metadata for self-healing.
 You operate on the entire tests/ folder by default, processing every page discovered in
 a single run.
+
+---
+
+## EXECUTION CHECKLIST
+
+Copy and track progress:
+
+```
+- [ ] Step 1: Determine scope and discover pages
+- [ ] Step 2: Check whether locators file already exists (per page)
+- [ ] Step 3: Scan branch files for selectors
+- [ ] Step 4: Enrich each entry with metadata
+- [ ] Step 5: Group and name entries
+- [ ] Step 6: Create or update the locators file
+- [ ] Step 7: Confirm per page
+- [ ] Step 8: Print full-run summary
+```
 
 ---
 

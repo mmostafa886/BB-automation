@@ -30,6 +30,22 @@ checking each step succeeded before starting the next, and reporting one combine
 
 ---
 
+## EXECUTION CHECKLIST
+
+Copy and track progress:
+
+```
+- [ ] Step 0: Pre-flight
+- [ ] Step 1: Locators (/testcafe-to-locators)
+- [ ] Step 2: Page object (/testcafe-to-page)
+- [ ] Step 3: Register in POM (/register-page-in-pom)
+- [ ] Step 4: Spec (/testcafe-to-spec)
+- [ ] Step 4b: Sweep spec logic into the page object
+- [ ] Step 5: Final type-check & summary
+```
+
+---
+
 ## THE STRICT LAYER SPLIT (the whole point of this pipeline)
 
 This is the contract the user is asking you to enforce. Each generated file has exactly one

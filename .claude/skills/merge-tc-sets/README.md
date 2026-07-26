@@ -1,5 +1,13 @@
 # merge-tc-sets
 
+## File structure
+
+| File | Purpose |
+| --- | --- |
+| `SKILL.md` | Overview loaded on every invocation — role, execution checklist, step outline, key rules, links to the files below. |
+| `WORKFLOW.md` | Full step-by-step execution detail for Steps 1–7 (validation, Jira fetch, wireframe discovery, parsing, dedup/merge, gap analysis, tagging, reporting). |
+| `SCRIPTS.md` | Script templates referenced from WORKFLOW.md — the Jira "fetch existing TCs" script, the Jira "fetch US comments" script, and the merged-markdown serializer. |
+
 ## What it does
 
 Merges two locally saved Test Case sets (markdown + optional JSON mapping) for the same

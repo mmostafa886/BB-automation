@@ -1,5 +1,16 @@
 # tcs-to-jira
 
+## File structure
+
+| File | Purpose |
+| --- | --- |
+| `SKILL.md` | Overview, role/persona, safety rule, execution checklist, step outline with links |
+| `WORKFLOW.md` | Full step-by-step execution detail for Steps 1, 1e, 2, 2.5, 3, 4 |
+| `SCRIPTS.md` | Full Node.js script templates (`tcs_epic_search.js`, `<F>_fetch_existing_tcs.js`, `tcs_to_jira_run.js`) |
+| `README.md` | This file — human-facing overview |
+
+---
+
 ## What it does
 
 Reads one or more locally saved `test_cases/<FeatureName>_TestCases.md` files and the

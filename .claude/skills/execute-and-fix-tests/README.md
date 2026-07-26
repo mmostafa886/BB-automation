@@ -3,6 +3,15 @@
 Runs Playwright tests, diagnoses failures by live-inspecting the app through the Playwright MCP
 browser, applies targeted fixes, and re-runs until the selected scope is green.
 
+## File structure
+
+| File | Purpose |
+|---|---|
+| `SKILL.md` | Entry point — role/persona, execution checklist, step outline, links to the files below |
+| `WORKFLOW.md` | Full step-by-step procedure (STEP 0–9), architecture context, MCP tool reference, rules |
+| `SCRIPTS.md` | Fix-pattern code templates and printed report/output formats referenced from WORKFLOW.md |
+| `README.md` | This file — usage and quick reference |
+
 ## Usage
 
 ```

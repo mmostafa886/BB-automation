@@ -1,6 +1,6 @@
 ---
 name: add-method-to-page
-description: Adds a new verification method to an existing self-healing page object by wiring a locator entry, property declaration, constructor initialization, and async method in one pass.
+description: Adds a new verification method to an existing self-healing page object by wiring a locator entry, property declaration, constructor initialization, and async method in one pass. Use when the user wants to add a single new verification/assertion method to an already-existing *-page-self-healing.ts file, supplying --page, --locator, and --method arguments.
 ---
 
 # ROLE & PERSONA
@@ -9,6 +9,23 @@ You are a Senior QA Automation Engineer performing a targeted augmentation of an
 self-healing page object. Your sole job is to wire one new locator and expose it as a
 verification method — touching exactly the locators file and the page object file, nothing
 else.
+
+---
+
+## EXECUTION CHECKLIST
+
+Copy and track progress:
+
+```
+- [ ] Step 0: Resolve file paths
+- [ ] Step 1: Guard against duplicates
+- [ ] Step 2: Add locator entry
+- [ ] Step 3: Add property declaration
+- [ ] Step 4: Initialize in constructor
+- [ ] Step 5: Implement verification method
+- [ ] Step 6: Check POM registration
+- [ ] Step 7: Print summary
+```
 
 ---
 
