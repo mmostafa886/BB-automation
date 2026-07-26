@@ -24,7 +24,7 @@ jobs:
       TEST_USER_PASSWORD: ${{ secrets.TEST_USER_PASSWORD }}
       # Comma-separated list of tests/generated module folders to run each week.
       # Add a module here (no other workflow changes needed) as it comes online.
-      MODULES: "SignUp,Revenues,DirectCost,IndirectCost"
+      MODULES: "SignUp,Revenues,DirectCost,IndirectCost,Assets"
 
     steps:
       - name: Checkout
