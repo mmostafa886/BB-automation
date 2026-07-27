@@ -5,6 +5,7 @@ import { type AIHealingProvider } from '../../src/utils/self-healing-locator';
 import winston from 'winston';
 import { Logger } from '../../src/utils/Logger';
 import * as dotenv from 'dotenv';
+import { readRunContext, type SeedRunContext } from '../../src/utils/seed-run-context';
 
 // Ensure .env vars are available inside the worker process.
 // playwright.config.ts runs in the main/config-loader process; env changes
@@ -14,6 +15,19 @@ dotenv.config();
 type SelfHealingFixture = {
     logger: winston.Logger;
     pomSelfHealing: POMLazySelfHealing;
+};
+
+type TestFixtures = {
+    selfHealingFixture: SelfHealingFixture;
+};
+
+type WorkerFixtures = {
+    /**
+     * The forecast seeded via `npm run seed:forecast` before the suite ran (see
+     * `src/scripts/seed-forecast.ts` and `src/utils/seed-run-context.ts`). Worker-scoped since the
+     * run context is created once, outside Playwright entirely, and is the same for every test.
+     */
+    seededForecast: SeedRunContext;
 };
 
 /**
@@ -53,7 +67,18 @@ type SelfHealingFixture = {
  * });
  * ```
  */
-export const test = base.extend<{ selfHealingFixture: SelfHealingFixture }>({
+export const test = base.extend<TestFixtures, WorkerFixtures>({
+    seededForecast: [async ({}, use) => {
+        const context = readRunContext();
+        if (!context) {
+            throw new Error(
+                'Seeded forecast not found — run "npm run seed:forecast" before the suite ' +
+                '(and "npm run seed:forecast:delete" once all modules have finished).',
+            );
+        }
+        await use(context);
+    }, { scope: 'worker' }],
+
     selfHealingFixture: async ({ page }, use, testInfo) => {
         const logger = Logger.getLogger(
             `Fixture-SelfHealing-${testInfo.title.replace(/\s+/g, '_')}`

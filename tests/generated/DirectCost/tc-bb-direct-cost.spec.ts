@@ -22,6 +22,9 @@
  * @notes
  *   - Migrated from the legacy TestCafe spec `BRD-108_DirectCostTestCases.js` (+ the
  *     `DirectCostPopUp.js` selector class).
+ *   - The forecast selected is not built through the UI — it's seeded once over the API by
+ *     `npm run seed:forecast` before the suite runs, and read here via the `seededForecast`
+ *     fixture. Run `npm run seed:forecast:delete` once all modules have finished.
  *   - `test-data/DirectCostInputs.json` is a TEMPLATE — populate it with real credentials,
  *     navigation values, branch literals (incl. the `(E£)` currency suffixes), and the
  *     42-entry expected-value arrays before running.
@@ -36,7 +39,7 @@ test.describe('DirectCost - Add / edit / duplicate / delete a direct cost', () =
 
     test(
         `TC-BB-Direct-Cost: ${directCostInputs[0].test} @directcost @automation`,
-        async ({ selfHealingFixture: { pomSelfHealing } }) => {
+        async ({ selfHealingFixture: { pomSelfHealing }, seededForecast }) => {
             const directCost = pomSelfHealing.directCostPage;
 
             await pomSelfHealing.loginPage.navigateToLogin();
@@ -50,7 +53,8 @@ test.describe('DirectCost - Add / edit / duplicate / delete a direct cost', () =
             await pomSelfHealing.homePage.openCompaniesMenu();
             await pomSelfHealing.homePage.selectFromMenu(directCostInputs[0].company);
             await pomSelfHealing.homePage.openFoecastsMenu();
-            await pomSelfHealing.homePage.selectFromMenu(directCostInputs[0].forecast);
+            // Selects the forecast seeded through the API before the suite ran.
+            await pomSelfHealing.homePage.selectFromMenu(seededForecast.forecastName);
             await pomSelfHealing.homePage.openFinancialPlan();
 
             await pomSelfHealing.financialDashboard.openFinancialTables();

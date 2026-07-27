@@ -16,6 +16,10 @@ import assetsInputs from '../../../test-data/AssetsInputs.json';
  *   login → pick company & forecast → open Financial Plan → Financial Tables →
  *   Assets chapter → add / edit / duplicate / delete an asset → assert rendered rows.
  *
+ * The forecast selected is not built through the UI — it's seeded once over the API by
+ * `npm run seed:forecast` before the suite runs, and read here via the `seededForecast`
+ * fixture. Run `npm run seed:forecast:delete` once all modules have finished.
+ *
  * The branch taken is selected by `input.howWillEnter`:
  *   - `"One-Time amount (EÂ£)"`         → one-time amount panel (long-term or current)
  *   - `"Constant amount (EÂ£)"`         → constant amount panel (long-term or current)
@@ -54,7 +58,7 @@ import assetsInputs from '../../../test-data/AssetsInputs.json';
 const inputs = assetsInputs as any[];
 
 for (const input of inputs) {
-    test(`${input.test} @assets @automation`, async ({ selfHealingFixture: { pomSelfHealing } }) => {
+    test(`${input.test} @assets @automation`, async ({ selfHealingFixture: { pomSelfHealing }, seededForecast }) => {
         // ── Sign in ──────────────────────────────────────────────────────────────
         await pomSelfHealing.loginPage.navigateToLogin();
         await pomSelfHealing.loginPage.openSignInModal();
@@ -65,7 +69,8 @@ for (const input of inputs) {
         await pomSelfHealing.homePage.openCompaniesMenu();
         await pomSelfHealing.homePage.selectFromMenu(input.company);
         await pomSelfHealing.homePage.openFoecastsMenu();
-        await pomSelfHealing.homePage.selectFromMenu(input.forecast);
+        // Selects the forecast seeded through the API before the suite ran.
+        await pomSelfHealing.homePage.selectFromMenu(seededForecast.forecastName);
         await pomSelfHealing.homePage.openFinancialPlan();
 
         // ── Open the Assets chapter ──────────────────────────────────────────────

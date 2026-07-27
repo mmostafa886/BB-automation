@@ -21,7 +21,19 @@ npm run sync                          # Sync issues from Jira
 npm run locators:extract              # Extract locators from existing specs
 npm run codegen                       # Launch Playwright codegen
 npm run install:browsers              # Install Playwright browsers + deps
+npm run seed:forecast                 # Create the shared forecast used by API-seeded specs
+npm run seed:forecast:delete          # Delete it once all modules have finished
 ```
+
+Specs that consume the `seededForecast` fixture (e.g. Revenues) require the forecast to already
+exist, so bracket any run that includes them:
+
+```bash
+npm run seed:forecast && npm run test:module MODULE=Revenues; npm run seed:forecast:delete
+```
+
+The same bracket covers multiple modules — seed once, run as many `test:area`/`test:module`
+invocations as needed, delete once at the end (see `.github/workflows/scheduled-execution.yml`).
 
 ---
 

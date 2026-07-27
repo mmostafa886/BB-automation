@@ -10,6 +10,8 @@
     "test:changed": "tsx src/executeTests.ts",
     "test:area": "tsx src/scripts/run-tests-for-area.ts",
     "test:module": "playwright test tests/generated/${MODULE}",
+    "seed:forecast": "tsx src/scripts/seed-forecast.ts create",
+    "seed:forecast:delete": "tsx src/scripts/seed-forecast.ts delete",
     "modules:list": "tsx src/scripts/list-modules.ts",
     "report": "playwright show-report",
     "auth:reset": "node -e \"['playwright-auth.json','session-storage.json'].forEach(f=>{try{require('fs').rmSync(f);console.log('Deleted '+f);}catch{}});try{require('fs').rmSync('.playwright-profile',{recursive:true});console.log('Deleted .playwright-profile/');}catch{} console.log('\\nAuth state cleared. Run: npm test');\"",

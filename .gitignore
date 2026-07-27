@@ -4,6 +4,7 @@ db.env
 .playwright-profile/
 playwright-auth.json
 session-storage.json
+.seed/
 reports/*.json
 reports/*.html
 logs/*.log

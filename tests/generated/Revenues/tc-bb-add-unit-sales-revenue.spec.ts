@@ -10,6 +10,11 @@ import revenuesInputs from '../../../test-data/RevenuesInputs.json';
  *   login → pick company & forecast → open Financial Plan → Financial Tables →
  *   Revenues chapter → add a Unit Sales revenue → assert the rendered rows.
  *
+ * The forecast selected below is not built through the UI — it's seeded once over the API
+ * by `npm run seed:forecast` (see `src/scripts/seed-forecast.ts`) before the suite runs, and
+ * read here via the `seededForecast` fixture. Run `npm run seed:forecast:delete` once all
+ * modules have finished. See `CLAUDE.md` → Commands for the full bracket.
+ *
  * Notes:
  *   - `maximizeWindow()` is dropped — viewport is controlled by `playwright.config.ts`.
  *   - All selectors live in page objects; this spec only orchestrates page-object methods.
@@ -22,7 +27,7 @@ import revenuesInputs from '../../../test-data/RevenuesInputs.json';
 test.describe('Revenues - Add a Unit Sales revenue', () => {
     test(
         `${revenuesInputs[0].test} @revenues @automation`,
-        async ({ selfHealingFixture: { pomSelfHealing } }) => {
+        async ({ selfHealingFixture: { pomSelfHealing }, seededForecast }) => {
             // ── Sign in ────────────────────────────────────────────────────────────
             await pomSelfHealing.loginPage.navigateToLogin();
             await pomSelfHealing.loginPage.openSignInModal();
@@ -36,7 +41,8 @@ test.describe('Revenues - Add a Unit Sales revenue', () => {
             await pomSelfHealing.homePage.openCompaniesMenu();
             await pomSelfHealing.homePage.selectFromMenu(revenuesInputs[0].company);
             await pomSelfHealing.homePage.openFoecastsMenu();
-            await pomSelfHealing.homePage.selectFromMenu(revenuesInputs[0].forecast);
+            // Selects the forecast seeded through the API before the suite ran.
+            await pomSelfHealing.homePage.selectFromMenu(seededForecast.forecastName);
             await pomSelfHealing.homePage.openFinancialPlan();
 
             // ── Open the Revenues chapter ────────────────────────────────────────────
