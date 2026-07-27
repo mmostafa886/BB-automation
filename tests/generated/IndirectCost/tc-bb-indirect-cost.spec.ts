@@ -11,6 +11,10 @@ import indirectCostInputs from '../../../test-data/IndirectCostInputs.json';
  *   login → pick company & forecast → open Financial Plan → Financial Tables →
  *   Expenses chapter → add / edit / duplicate / delete an indirect cost → assert rendered rows.
  *
+ * The forecast selected is not built through the UI — it's seeded once over the API by
+ * `npm run seed:forecast` before the suite runs, and read here via the `seededForecast`
+ * fixture. Run `npm run seed:forecast:delete` once all modules have finished.
+ *
  * The branch taken is selected by `input.type`:
  *   - `GeneralCost`       → General Cost (constant amount or varying amounts over time)
  *   - `cost of revenues`  → Cost of Revenue (constant / varying, amount or %)
@@ -32,7 +36,7 @@ import indirectCostInputs from '../../../test-data/IndirectCostInputs.json';
 const inputs = indirectCostInputs as any[];
 
 for (const input of inputs) {
-    test(`${input.test} @indirectcost @automation`, async ({ selfHealingFixture: { pomSelfHealing } }) => {
+    test(`${input.test} @indirectcost @automation`, async ({ selfHealingFixture: { pomSelfHealing }, seededForecast }) => {
         const indirectCost = pomSelfHealing.indirectCostPage;
 
         // ── Sign in ────────────────────────────────────────────────────────────
@@ -45,7 +49,8 @@ for (const input of inputs) {
         await pomSelfHealing.homePage.openCompaniesMenu();
         await pomSelfHealing.homePage.selectFromMenu(input.company);
         await pomSelfHealing.homePage.openFoecastsMenu();
-        await pomSelfHealing.homePage.selectFromMenu(input.forecast);
+        // Selects the forecast seeded through the API before the suite ran.
+        await pomSelfHealing.homePage.selectFromMenu(seededForecast.forecastName);
         await pomSelfHealing.homePage.openFinancialPlan();
 
         // ── Open the Expenses (Indirect Costs) chapter ────────────────────────
