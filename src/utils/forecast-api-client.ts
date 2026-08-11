@@ -26,6 +26,24 @@ export interface CreatedForecast {
     companyId: number | string;
 }
 
+export interface CreatedRevenueStream {
+    id: number | string;
+    name: string;
+    financialPlanId: number | string;
+}
+
+/**
+ * Static frontend-bundle API client credentials sent by the BznsBuilder SPA on every
+ * `/api/revenue_streams` request, regardless of which user is logged in — observed live
+ * (identical on two separate requests from the same page load) via
+ * `mcp__playwright__browser_network_request` against stgapp.bznsbuilder.com. Not a
+ * per-user secret; the SPA ships it in its JS bundle. See docs/personnel-revenue-seeding.md.
+ */
+const REVENUE_STREAM_APP_CLIENT = {
+    client_id: 1,
+    client_secret: 'MzxVN6ujeTo1cACH0RB66oI0MTxslMFSzCqMd7O0',
+};
+
 /** A forecast as returned inside `GET /api/companies/{id}` → `data.financial_plans[]`. */
 export interface ForecastSummary {
     id: number | string;
@@ -170,6 +188,54 @@ export class ForecastApiClient {
     async deleteForecast(forecastId: number | string): Promise<void> {
         const api = this.requireAuth();
         await api.delete(`/api/financial_plans/${forecastId}`, `Delete forecast ${forecastId}`);
+    }
+
+    /**
+     * Creates a fixed-revenue revenue stream on a forecast (financial_plan) — e.g. so a
+     * salary-method dropdown that only renders "% of revenue" once a revenue stream exists
+     * has something to reference. Mirrors the payload the app's own UI sends to
+     * `POST /api/revenue_streams` (captured live — see docs/personnel-revenue-seeding.md).
+     * @param name revenue stream name (must match whatever a dependent UI flow expects)
+     * @param financialPlanId the forecast to attach it to
+     * @param amount revenue_amount, as a string (defaults to "1000")
+     */
+    async createRevenueStream(name: string,
+                              financialPlanId: number | string,
+                              amount = '1000'): Promise<CreatedRevenueStream> {
+        const api = this.requireAuth();
+
+        const response = await api.post(
+            '/api/revenue_streams',
+            {
+                financial_plan_id: financialPlanId,
+                name,
+                cost_call_id: null,
+                tax_id: null,
+                has_tax: 'no',
+                type: 'revenue_only',
+                revenueOnly: {
+                    revenue_amount: amount,
+                    period: 1,
+                    start: { type: 'specific', date: '2023-01-01' },
+                    end: { type: 'specific', date: '2027-12-01' },
+                    gross: { gross_type: 'percentage', period: 1, value: null },
+                    existing_clients: null,
+                },
+                is_varying_amount: false,
+                gross: { gross_type: 'percentage', period: 1, value: null },
+                draftId: null,
+                ...REVENUE_STREAM_APP_CLIENT,
+            },
+            `Create revenue stream "${name}"`,
+        );
+        const body = await this.readJson(response.status(), await response.text(), 'create revenue stream');
+
+        const id = body?.data?.id ?? body?.id;
+        if (!id) {
+            throw new Error(`Revenue stream creation failed (${response.status()}): ${body?.message ?? 'no id returned'}`);
+        }
+
+        return { id, name, financialPlanId };
     }
 
     /**

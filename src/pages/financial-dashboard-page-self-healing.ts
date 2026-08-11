@@ -286,7 +286,10 @@ export class FinancialDashboardSelfHealing extends SelfHealingPageBase {
             // The modal only renders for a chapter with no entries yet (e.g. re-running
             // this test against a shared environment that already has data from a prior
             // run) — skip the click instead of waiting out the full locator timeout.
-            const closeButton = await this.closeInstructionsModal.get();
+            // The app can leave a stale prior modal instance in the DOM alongside the
+            // current one (confirmed live: closeModal resolved to 2 stacked dialogs).
+            // Scope to the last visible instance — the one actually on top.
+            const closeButton = (await this.closeInstructionsModal.get()).filter({ visible: true }).last();
             if (!(await closeButton.isVisible({ timeout: 3000 }).catch(() => false))) {
                 return;
             }
