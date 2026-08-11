@@ -23,7 +23,7 @@ export default defineConfig({
     screenshot: 'only-on-failure',
     // video: 'retain-on-failure',
     headless: true,
-    // headless: !!process.env.CI,
+  // headless: !!process.env.CI,
     acceptDownloads: true,
     launchOptions: {
       args: ['--start-maximized'],
