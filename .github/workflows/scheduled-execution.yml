@@ -26,7 +26,14 @@ jobs:
       API_BASE_URL: ${{ vars.API_BASE_URL_QA }}
       # Comma-separated list of tests/generated module folders to run each week.
       # Add a module here (no other workflow changes needed) as it comes online.
-      MODULES: "SignUp,Revenues,DirectCost,IndirectCost,Assets"
+      #
+      # Personnel MUST stay LAST in this list. Its spec's test.beforeAll reuses the shared "test"
+      # forecast created below and adds a "Sales" revenue stream to it for its own "% of revenue"
+      # scenario. That revenue stream stays on the forecast for the rest of this job. Running
+      # Personnel last means no other module sees it — placing Personnel earlier would silently
+      # change dashboard totals for every module that runs after it. See
+      # docs/personnel-revenue-seeding.md.
+      MODULES: "SignUp,Revenues,DirectCost,IndirectCost,Assets,Personnel"
 
     steps:
       - name: Checkout

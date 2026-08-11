@@ -7,6 +7,7 @@ import { DirectCostPageSelfHealing } from './direct-cost-page-self-healing';
 import { IndirectCostPageSelfHealing } from './indirect-cost-page-self-healing';
 import { SignUpPageSelfHealing } from './signup-page-self-healing';
 import { AssetsPageSelfHealing } from './assets-page-self-healing';
+import { PersonnelPageSelfHealing } from './personnel-page-self-healing';
 import { type AIHealingProvider } from '../utils/self-healing-locator';
 
 /**
@@ -42,6 +43,7 @@ export class POMLazySelfHealing {
     private _indirectCostPage?: IndirectCostPageSelfHealing;
     private _signUpPage?: SignUpPageSelfHealing;
     private _assetsPage?: AssetsPageSelfHealing;
+    private _personnelPage?: PersonnelPageSelfHealing;
 
     constructor(page: Page, testName?: string, aiProvider?: AIHealingProvider) {
         this.page = page;
@@ -147,6 +149,18 @@ export class POMLazySelfHealing {
         return this._assetsPage;
     }
 
+    /** Returns the PersonnelPageSelfHealing instance, creating it on first access */
+    get personnelPage(): PersonnelPageSelfHealing {
+        if (!this._personnelPage) {
+            this._personnelPage = new PersonnelPageSelfHealing(
+                this.page,
+                this._testName ?? '',
+                this._aiProvider,
+            );
+        }
+        return this._personnelPage;
+    }
+
     // ===================== Healing Report =====================
 
     /**
@@ -163,6 +177,7 @@ export class POMLazySelfHealing {
             this._indirectCostPage,
             this._signUpPage,
             this._assetsPage,
+            this._personnelPage,
         ];
 
         const sections = pages

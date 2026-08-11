@@ -35,6 +35,12 @@ const EMAIL = process.env.TEST_USER_EMAIL || revenuesInputs[0].mail;
 const PASSWORD = process.env.TEST_USER_PASSWORD || revenuesInputs[0].password;
 const COMPANY_NAME = process.env.SEED_COMPANY_NAME || revenuesInputs[0].company;
 const FORECAST_NAME = process.env.SEED_FORECAST_NAME || 'test';
+// Optional: when set, one revenue stream is created on the forecast after it's created —
+// e.g. Personnel's "% of revenue" salary method needs a revenue named "Sales" to already
+// exist. Unset by default so every other module's baseline (empty forecast) is unaffected.
+// See docs/personnel-revenue-seeding.md.
+const REVENUE_NAME = process.env.SEED_REVENUE_NAME;
+const REVENUE_AMOUNT = process.env.SEED_REVENUE_AMOUNT || '1000';
 
 async function create(): Promise<void> {
     const client = new ForecastApiClient();
@@ -65,6 +71,11 @@ async function create(): Promise<void> {
         }
 
         const forecast = await client.createForecast(FORECAST_NAME, companyId);
+
+        if (REVENUE_NAME) {
+            const revenue = await client.createRevenueStream(REVENUE_NAME, forecast.id, REVENUE_AMOUNT);
+            console.log(`[seed-forecast] Created revenue stream "${revenue.name}" (id ${revenue.id}) on forecast ${forecast.id}.`);
+        }
 
         writeRunContext({
             forecastId: forecast.id,

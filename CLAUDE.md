@@ -35,6 +35,10 @@ npm run seed:forecast && npm run test:module MODULE=Revenues; npm run seed:forec
 The same bracket covers multiple modules — seed once, run as many `test:area`/`test:module`
 invocations as needed, delete once at the end (see `.github/workflows/scheduled-execution.yml`).
 
+Personnel is self-contained: `npm run test:module MODULE=Personnel` seeds and tears down its own
+forecast (with a `Sales` revenue stream) internally via `test.beforeAll`/`test.afterAll` — no
+bracket needed. See `docs/personnel-revenue-seeding.md`.
+
 ---
 
 ## Architecture: 4-Layer Pattern
