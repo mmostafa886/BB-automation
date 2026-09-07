@@ -7,6 +7,10 @@
     "email": "invalid@example.com",
     "password": "wrongpassword"
   },
+  "caseSensitiveUser": {
+    "email": "SMOKE@drmail.in",
+    "password": "12345678@Bb"
+  },
   "authPagePath": "/auth",
   "signInModalTitle": "Sign in",
   "emailPlaceholder": "Email",

@@ -127,7 +127,7 @@ export const signupLocators = {
         // "This field is required" inline validation — exact text
         // NOTE: an empty PASSWORD does not show this text — it renders the password-strength
         // message instead (see invalidPasswordFormatMsg), since a blank value fails that check too.
-        selector: '.dummy',
+        selector: 'span[class="error ng-star-inserted"]',
         metadata: {
             text: 'This field is required',
             description: 'required-field inline validation message on the register/sign-up form (e.g. empty email)',
@@ -145,7 +145,7 @@ export const signupLocators = {
 
     existedEmailMsg: {
         // "The email has already been taken" inline validation — exact text
-        selector: '.dummy',
+        selector: 'span[class="error ng-star-inserted"]',
         metadata: {
             text: 'The email has already been taken',
             description: 'duplicate-email validation message on the register/sign-up form',
@@ -154,7 +154,7 @@ export const signupLocators = {
 
     invalidPasswordFormatMsg: {
         // Password-strength validation — exact text
-        selector: '.dummy',
+        selector: 'span[class="error ng-star-inserted"]',
         metadata: {
             text: 'Password must be at least 8 characters long and include an uppercase letter, a lowercase letter, a number, and a special character.',
             description: 'password-strength validation message on the register/sign-up form',
