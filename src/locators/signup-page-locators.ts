@@ -25,7 +25,7 @@ export const signupLocators = {
     },
 
     socialMediaButtons: {
-        // Social-login button group (Gmail / Facebook / Linkedin)
+        // Social-login button group (Gmail / Linkedin)
         selector: '.btn-social',
         metadata: {
             description: 'social media login button(s) on the auth modal',
@@ -49,16 +49,6 @@ export const signupLocators = {
             description: 'Continue With Gmail social-login option in the auth modal',
         },
     },
-
-    facebookButton: {
-        // "Continue With Facebook" social-login option — exact text
-        selector: '.dummy',
-        metadata: {
-            text: 'Continue With Facebook',
-            description: 'Continue With Facebook social-login option in the auth modal',
-        },
-    },
-
     linkedinButton: {
         // "Continue With Linkedin" social-login option — exact text
         selector: '.dummy',

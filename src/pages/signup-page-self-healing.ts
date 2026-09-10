@@ -30,7 +30,6 @@ export class SignUpPageSelfHealing extends SelfHealingPageBase {
     readonly socialMediaButtons:  SelfHealingLocator;
     readonly signUpPopUp:         SelfHealingLocator;
     readonly googleButton:        SelfHealingLocator;
-    readonly facebookButton:      SelfHealingLocator;
     readonly linkedinButton:      SelfHealingLocator;
     readonly closeBtn:            SelfHealingLocator;
 
@@ -66,7 +65,6 @@ export class SignUpPageSelfHealing extends SelfHealingPageBase {
         this.socialMediaButtons      = make(signupLocators.socialMediaButtons);
         this.signUpPopUp             = make(signupLocators.signUpPopUp);
         this.googleButton            = make(signupLocators.googleButton);
-        this.facebookButton          = make(signupLocators.facebookButton);
         this.linkedinButton          = make(signupLocators.linkedinButton);
         this.closeBtn                = make(signupLocators.closeBtn);
         this.email                   = make(signupLocators.email);
@@ -102,7 +100,6 @@ export class SignUpPageSelfHealing extends SelfHealingPageBase {
     async checkLanguage(): Promise<void> {
         await test.step('Check sign-up modal Arabic language copy', async () => {
             const loginWithGoogle   = 'الدخول بحساب جوجل';
-            const loginWithFacebook =' الدخول بحساب الفيسبوك';
             const loginWithLinkedin = 'الدخول بحساب لينكد ان';
             const signUpTab         = 'اشترك معنا';
             const signInTab         = 'تسجيل الدخول';
@@ -115,7 +112,6 @@ export class SignUpPageSelfHealing extends SelfHealingPageBase {
 
             // Social-login option labels (span.withExactText → runtime span locator)
             await this.assert.toBeVisible(this.page.locator('span').filter({ hasText: this.exactText(loginWithGoogle) }), 'Google login label is present');
-            await this.assert.toBeVisible(this.page.locator('span').filter({ hasText: this.exactText(loginWithFacebook) }), 'Facebook login label is present');
             await this.assert.toBeVisible(this.page.locator('span').filter({ hasText: this.exactText(loginWithLinkedin) }), 'Linkedin login label is present');
 
             // Sign-up / sign-in tab copy
@@ -138,7 +134,6 @@ export class SignUpPageSelfHealing extends SelfHealingPageBase {
             const buttons: Array<[SelfHealingLocator, string]> = [
                 [this.googleButton,   'Gmail'],
                 [this.linkedinButton, 'Linkedin'],
-                // [this.facebookButton, 'Facebook'],
             ];
             for (const [button, label] of buttons) {
                 await this.assert.toBeVisible((await button.get()).filter({visible:true}), `${label} social-login button exists`);
