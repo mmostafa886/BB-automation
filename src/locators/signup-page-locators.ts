@@ -42,17 +42,21 @@ export const signupLocators = {
     },
     // ─── Social login options ────────────────────────────────────────────────
     googleButton: {
-        // "Continue With Gmail" social-login option — exact text
-        selector: '.dummy',
+        // "Continue With Gmail" social-login option — .btn-social filtered by its own text,
+        // since both social buttons share identical markup/classes otherwise
+        selector: (page) => page.locator('.btn-social').filter({ hasText: 'Continue With Gmail' }),
         metadata: {
+            role: 'button',
             text: 'Continue With Gmail',
             description: 'Continue With Gmail social-login option in the auth modal',
         },
     },
     linkedinButton: {
-        // "Continue With Linkedin" social-login option — exact text
-        selector: '.dummy',
+        // "Continue With Linkedin" social-login option — .btn-social filtered by its own text,
+        // since both social buttons share identical markup/classes otherwise
+        selector: (page) => page.locator('.btn-social').filter({ hasText: 'Continue With Linkedin' }),
         metadata: {
+            role: 'button',
             text: 'Continue With Linkedin',
             description: 'Continue With Linkedin social-login option in the auth modal',
         },
@@ -126,7 +130,7 @@ export const signupLocators = {
 
     invalidMailFormatMsg: {
         // "Invalid email format" inline validation — exact text
-        selector: '.dummy',
+        selector: 'span[class="error ng-star-inserted"]',
         metadata: {
             text: 'Invalid email format',
             description: 'invalid email format validation message on the register/sign-up form',
@@ -153,7 +157,7 @@ export const signupLocators = {
 
     successMsg: {
         // "Please check your email to verify your account" success message — exact text
-        selector: '.dummy',
+        selector: 'div[class="info snackbar-container"]',
         metadata: {
             text: 'Please check your email to verify your account.',
             description: 'success message shown after a successful registration',
