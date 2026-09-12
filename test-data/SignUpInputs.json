@@ -6,8 +6,7 @@
     "flag":"oldmail",
     "firstName":"test",
     "lastName":"1"
-  }
-  ,
+  },
   {
     "test":"Verify user cannot signUp with empty mail",
     "email":" ",
@@ -110,8 +109,64 @@
     "email":" ",
     "password":" ",
     "firstName":"test",
-    "lastName":"15"    
-    }
+    "lastName":"15"
+    },
+  {
+    "test":"Verify user cannot signUp with empty first and last name",
+    "email":"emptyname@getnada.com",
+    "password":"Test1234!",
+    "flag":"emptynames",
+    "firstName":"",
+    "lastName":""
+  },
+  {
+    "test":"Verify user cannot signUp with a password shorter than 8 characters",
+    "email":"pwshort@getnada.com",
+    "password":"Test12!",
+    "flag":"passwordcriteria",
+    "firstName":"test",
+    "lastName":"16"
+  },
+  {
+    "test":"Verify user cannot signUp with a password missing an uppercase letter",
+    "email":"pwnoupper@getnada.com",
+    "password":"test1234!",
+    "flag":"passwordcriteria",
+    "firstName":"test",
+    "lastName":"17"
+  },
+  {
+    "test":"Verify user cannot signUp with a password missing a lowercase letter",
+    "email":"pwnolower@getnada.com",
+    "password":"TEST1234!",
+    "flag":"passwordcriteria",
+    "firstName":"test",
+    "lastName":"18"
+  },
+  {
+    "test":"Verify user cannot signUp with a password missing a number",
+    "email":"pwnonumber@getnada.com",
+    "password":"TestTest!",
+    "flag":"passwordcriteria",
+    "firstName":"test",
+    "lastName":"19"
+  },
+  {
+    "test":"Verify user cannot signUp with a password missing a special character",
+    "email":"pwnospecial@getnada.com",
+    "password":"Test12345",
+    "flag":"passwordcriteria",
+    "firstName":"test",
+    "lastName":"20"
+  },
+  {
+    "test":"Verify user cannot signUp with an existing email in different letter casing",
+    "email":"D@GETNADA.COM",
+    "password":"Test1234!",
+    "flag":"oldmail",
+    "firstName":"test",
+    "lastName":"21"
+  }
 ]
 
   

@@ -25,7 +25,7 @@ export const signupLocators = {
     },
 
     socialMediaButtons: {
-        // Social-login button group (Gmail / Facebook / Linkedin)
+        // Social-login button group (Gmail / Linkedin)
         selector: '.btn-social',
         metadata: {
             description: 'social media login button(s) on the auth modal',
@@ -42,27 +42,21 @@ export const signupLocators = {
     },
     // ─── Social login options ────────────────────────────────────────────────
     googleButton: {
-        // "Continue With Gmail" social-login option — exact text
-        selector: '.dummy',
+        // "Continue With Gmail" social-login option — .btn-social filtered by its own text,
+        // since both social buttons share identical markup/classes otherwise
+        selector: (page) => page.locator('.btn-social').filter({ hasText: 'Continue With Gmail' }),
         metadata: {
+            role: 'button',
             text: 'Continue With Gmail',
             description: 'Continue With Gmail social-login option in the auth modal',
         },
     },
-
-    facebookButton: {
-        // "Continue With Facebook" social-login option — exact text
-        selector: '.dummy',
-        metadata: {
-            text: 'Continue With Facebook',
-            description: 'Continue With Facebook social-login option in the auth modal',
-        },
-    },
-
     linkedinButton: {
-        // "Continue With Linkedin" social-login option — exact text
-        selector: '.dummy',
+        // "Continue With Linkedin" social-login option — .btn-social filtered by its own text,
+        // since both social buttons share identical markup/classes otherwise
+        selector: (page) => page.locator('.btn-social').filter({ hasText: 'Continue With Linkedin' }),
         metadata: {
+            role: 'button',
             text: 'Continue With Linkedin',
             description: 'Continue With Linkedin social-login option in the auth modal',
         },
@@ -127,7 +121,7 @@ export const signupLocators = {
         // "This field is required" inline validation — exact text
         // NOTE: an empty PASSWORD does not show this text — it renders the password-strength
         // message instead (see invalidPasswordFormatMsg), since a blank value fails that check too.
-        selector: '.dummy',
+        selector: 'span[class="error ng-star-inserted"]',
         metadata: {
             text: 'This field is required',
             description: 'required-field inline validation message on the register/sign-up form (e.g. empty email)',
@@ -136,7 +130,7 @@ export const signupLocators = {
 
     invalidMailFormatMsg: {
         // "Invalid email format" inline validation — exact text
-        selector: '.dummy',
+        selector: 'span[class="error ng-star-inserted"]',
         metadata: {
             text: 'Invalid email format',
             description: 'invalid email format validation message on the register/sign-up form',
@@ -145,7 +139,7 @@ export const signupLocators = {
 
     existedEmailMsg: {
         // "The email has already been taken" inline validation — exact text
-        selector: '.dummy',
+        selector: 'span[class="error ng-star-inserted"]',
         metadata: {
             text: 'The email has already been taken',
             description: 'duplicate-email validation message on the register/sign-up form',
@@ -154,7 +148,7 @@ export const signupLocators = {
 
     invalidPasswordFormatMsg: {
         // Password-strength validation — exact text
-        selector: '.dummy',
+        selector: 'span[class="error ng-star-inserted"]',
         metadata: {
             text: 'Password must be at least 8 characters long and include an uppercase letter, a lowercase letter, a number, and a special character.',
             description: 'password-strength validation message on the register/sign-up form',
@@ -163,7 +157,7 @@ export const signupLocators = {
 
     successMsg: {
         // "Please check your email to verify your account" success message — exact text
-        selector: '.dummy',
+        selector: 'div[class="info snackbar-container"]',
         metadata: {
             text: 'Please check your email to verify your account.',
             description: 'success message shown after a successful registration',
