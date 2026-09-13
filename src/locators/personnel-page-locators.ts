@@ -12,7 +12,7 @@ import type { LocatorDefinition } from '../utils/self-healing-locator';
  *   - `.filterVisible()`  → `:visible` pseudo-class appended to the CSS selector.
  *   - `.withExactText(X)` → XPath `text()="X"` treated as an attribute-style string per
  *     the existing `direct-cost-page-locators.ts` convention in this repo.
- *   - All selectors should be re-verified against https://stgapp.bznsbuilder.com/.
+ *   - All selectors should be re-verified against https://uat-app.bznsbuilder.com/.
  */
 export const personnelLocators = {
 

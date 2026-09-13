@@ -1,0 +1,77 @@
+[
+  {
+    "test": "TC0-BB-Dividends-Constant-Amount-Quarter-Year: add a constant-amount dividend charged per quarter year",
+
+    "mail": "bznsplan@gmail.com",
+    "password": "12345678",
+
+    "company":"Start Up",
+    "forecast":"Original forecast",
+
+    "name": "dividends-constant amount-quarterly",
+    "currentType": "One time amount (E£)",
+    "entryType": "Constant amount (E£)",
+    "amount": "1000",
+    "period": "Quarter year",
+
+    "attributeName": "dividends-constant_amount-quarterly",
+    "years": ["2026", "2027", "2028", "2029", "2030"],
+    "expectedValue": "E£ 4,000"
+  }
+
+  ,{
+    "test": "TC1-BB-Dividends-Constant-Amount-Half-Year: add a constant-amount dividend charged per half year",
+
+    "mail": "bznsplan@gmail.com",
+    "password": "12345678",
+
+    "company":"Start Up",
+    "forecast":"Original forecast",
+
+    "name": "dividends-constant amount-half-yearly",
+    "currentType": "One time amount (E£)",
+    "entryType": "Constant amount (E£)",
+    "amount": "1000",
+    "period": "Half year",
+
+    "attributeName": "dividends-constant_amount-half-yearly",
+    "years": ["2026", "2027", "2028", "2029", "2030"],
+    "expectedValue": "E£ 2,000"
+  }
+  
+  ,{
+    "test": "TC2-BB-Dividends-Constant-Amount-Yearly: add a constant-amount dividend charged per year",
+
+    "mail": "bznsplan@gmail.com",
+    "password": "12345678",
+
+    "company":"Start Up",
+    "forecast":"Original forecast",
+
+    "name": "dividends-constant amount-yearly",
+    "currentType": "One time amount (E£)",
+    "entryType": "Constant amount (E£)",
+    "amount": "1000",
+    "period": "Year",
+
+    "attributeName": "dividends-constant_amount-yearly",
+    "years": ["2026", "2027", "2028", "2029", "2030"],
+    "expectedValue": "E£ 1,000"
+  }
+
+  ,{
+    "test": "TC3-BB-Dividends-Input-Field-Rejects-Invalid-Format: the amount field refuses every invalid value",
+
+    "mail": "bznsplan@gmail.com",
+    "password": "12345678",
+
+    "company":"Start Up",
+    "forecast":"Original forecast",
+
+    "name": "dividends-invalid amount",
+    "currentType": "One time amount (E£)",
+
+    "invalidAmounts": ["dummydata", "-100", "12.3.4", "1,000", "!@#"],
+    "expectedError": "Invalid format"
+  }
+]

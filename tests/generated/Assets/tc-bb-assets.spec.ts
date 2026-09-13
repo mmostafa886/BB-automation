@@ -46,7 +46,7 @@ import assetsInputs from '../../../test-data/AssetsInputs.json';
  * Notes:
  *   - `maximizeWindow()` dropped — viewport is controlled by `playwright.config.ts`.
  *   - All selectors live in page objects; this spec only orchestrates page-object methods.
- *   - Original fixture `.page("https://stgapp.bznsbuilder.com/auth")` — base URL is in config.
+ *   - Original fixture `.page("https://uat-app.bznsbuilder.com/auth")` — base URL is in config.
  *   - ⚠ `AssetsInputs.json` is an empty TEMPLATE — populate it before running.
  *   - ⚠ Branch literals containing `"(EÂ£)"` (mojibake currency suffix) must match the
  *     live app exactly; verify against the running staging environment.

@@ -22,7 +22,7 @@ is no longer wired into the test runner.
 | `globalSetup` ran before every suite, opened a persistent Chrome profile, handled MFA | No `globalSetup` — removed from `playwright.config.ts` |
 | `storageState: playwright-auth.json` injected pre-auth cookies into every test | No `storageState` — tests start from a fresh context |
 | `self-healing-fixture.ts` injected `session-storage.json` (MSAL tokens) via `addInitScript` | Session storage injection removed from fixture |
-| App URL was `https://az-chem-synth.vercel.app/` | `baseURL` is `https://stgapp.bznsbuilder.com/` |
+| App URL was `https://az-chem-synth.vercel.app/` | `baseURL` is `https://uat-app.bznsbuilder.com/` |
 
 ## Why it was removed
 

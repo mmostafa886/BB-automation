@@ -11,7 +11,7 @@ import type { LocatorDefinition } from '../utils/self-healing-locator';
  * Conversion notes:
  *   - `.filterVisible()`            → `:visible` pseudo-class appended to the CSS selector.
  *   - `.nth(n)` / `.withExactText`  → `(page) => Locator` factory selectors.
- *   - All selectors should be re-verified against https://stgapp.bznsbuilder.com/.
+ *   - All selectors should be re-verified against https://uat-app.bznsbuilder.com/.
  */
 export const revenuesLocators = {
 

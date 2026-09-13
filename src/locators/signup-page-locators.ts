@@ -11,7 +11,7 @@ import type { LocatorDefinition } from '../utils/self-healing-locator';
  *   - `withAttribute(attr, val)`  → `[attr="val"]` CSS attribute selector.
  *   - `withExactText(text)`       → `(page) => page.getByText(text, { exact: true })` factory.
  *   - `.nth(n)`                   → `(page) => page.locator(...).nth(n)` factory.
- *   - All selectors should be re-verified against https://stgapp.bznsbuilder.com/.
+ *   - All selectors should be re-verified against https://uat-app.bznsbuilder.com/.
  */
 export const signupLocators = {
 
