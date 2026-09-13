@@ -296,3 +296,57 @@ export interface DividendInput {
     /** Period option, e.g. "Year" */
     period: string;
 }
+
+/**
+ * One happy-path row of `test-data/DividendsInputs.json`: adds a constant-amount dividend and
+ * verifies the rendered yearly values.
+ */
+export interface ConstantAmountCase {
+    test: string;
+    mail: string;
+    password: string;
+    company: string;
+    forecast: string;
+    name: string;
+    currentType: string;
+    entryType: string;
+    amount: string;
+    period: string;
+    attributeName: string;
+    years: string[];
+    expectedValue: string;
+}
+
+/**
+ * The negative row of `test-data/DividendsInputs.json`: carries no period or expected row values,
+ * only the amounts the field must refuse.
+ */
+export interface InvalidAmountCase {
+    test: string;
+    mail: string;
+    password: string;
+    company: string;
+    forecast: string;
+    name: string;
+    currentType: string;
+    /** Every value the amount field must refuse, checked one after another in the same wizard. */
+    invalidAmounts: string[];
+    /** Inline message expected under the field for each of them, e.g. "Invalid format". */
+    expectedError: string;
+}
+
+/**
+ * The rows of `DividendsInputs.json` are not all the same shape: the first three drive the
+ * happy-path constant-amount tests, the fourth drives the negative invalid-amount test and
+ * carries no period or expected row values. TypeScript infers one union element type for the
+ * whole array, which makes every field optional and every use of it a compile error.
+ *
+ * Describing the file as a fixed tuple restores per-row types, so each test reads its own
+ * row with no casts, no optional chaining and no non-null assertions.
+ */
+export type DividendsInputs = [
+    ConstantAmountCase,
+    ConstantAmountCase,
+    ConstantAmountCase,
+    InvalidAmountCase,
+];

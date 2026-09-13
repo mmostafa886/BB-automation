@@ -289,13 +289,42 @@ export class FinancialDashboardSelfHealing extends SelfHealingPageBase {
             // The app can leave a stale prior modal instance in the DOM alongside the
             // current one (confirmed live: closeModal resolved to 2 stacked dialogs).
             // Scope to the last visible instance — the one actually on top.
-            const closeButton = (await this.closeInstructionsModal.get()).filter({ visible: true }).last();
-            if (!(await closeButton.isVisible({ timeout: 3000 }).catch(() => false))) {
-                return;
+            //
+            // The app can also re-open the modal a moment after it is closed (confirmed in a
+            // trace on the Dividends chapter: closed, "Add Dividends" became reachable, then the
+            // modal re-appeared ~160 ms later and hid the toolbar). So keep closing until no new
+            // instance shows up within the grace period.
+            //
+            // waitFor() is used instead of isVisible({ timeout }) because isVisible ignores its
+            // timeout and returns immediately, which misses a modal that is still animating in.
+            const MAX_CLOSES = 3;
+            for (let attempt = 0; attempt < MAX_CLOSES; attempt++) {
+                const closeButton = (await this.closeInstructionsModal.get()).filter({ visible: true }).last();
+                const appeared = await closeButton
+                    .waitFor({ state: 'visible', timeout: attempt === 0 ? 3000 : 2000 })
+                    .then(() => true)
+                    .catch(() => false);
+                if (!appeared) {
+                    return;
+                }
+                // The modal can also close ITSELF between the visibility check and the click: on a
+                // chapter that already has entries it flashes up while the data loads, then the
+                // app removes it (confirmed in a trace on Dividends: resolved, "element is not
+                // visible", then detached). The visible-filtered locator then matches nothing and
+                // an unbounded click waits out the whole test timeout. So bound the click, and if
+                // it fails only because the button is gone, treat the modal as closed — the next
+                // loop iteration still catches a re-open.
+                // A raw click is used instead of actions.click(), which has no timeout and logs
+                // plus screenshots every failure — wrong for this expected, benign case.
+                try {
+                    await closeButton.click({ timeout: 5000 });
+                } catch (error) {
+                    if (await closeButton.isVisible()) {
+                        throw error;
+                    }
+                }
+                await closeButton.waitFor({ state: 'hidden', timeout: 5000 }).catch(() => {});
             }
-            // Close button detaches on click — skip the post-click Radix guards
-            // (otherwise the helper reads data-state off the removed node and hangs).
-            await this.actions.click(closeButton, 'Close instructions modal', true);
         });
     }
 
