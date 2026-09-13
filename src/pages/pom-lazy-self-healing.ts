@@ -8,6 +8,7 @@ import { IndirectCostPageSelfHealing } from './indirect-cost-page-self-healing';
 import { SignUpPageSelfHealing } from './signup-page-self-healing';
 import { AssetsPageSelfHealing } from './assets-page-self-healing';
 import { PersonnelPageSelfHealing } from './personnel-page-self-healing';
+import { DividendsPageSelfHealing } from './dividends-page-self-healing';
 import { type AIHealingProvider } from '../utils/self-healing-locator';
 
 /**
@@ -44,6 +45,7 @@ export class POMLazySelfHealing {
     private _signUpPage?: SignUpPageSelfHealing;
     private _assetsPage?: AssetsPageSelfHealing;
     private _personnelPage?: PersonnelPageSelfHealing;
+    private _dividendsPage?: DividendsPageSelfHealing;
 
     constructor(page: Page, testName?: string, aiProvider?: AIHealingProvider) {
         this.page = page;
@@ -161,6 +163,18 @@ export class POMLazySelfHealing {
         return this._personnelPage;
     }
 
+    /** Returns the DividendsPageSelfHealing instance, creating it on first access */
+    get dividendsPage(): DividendsPageSelfHealing {
+        if (!this._dividendsPage) {
+            this._dividendsPage = new DividendsPageSelfHealing(
+                this.page,
+                this._testName ?? '',
+                this._aiProvider,
+            );
+        }
+        return this._dividendsPage;
+    }
+
     // ===================== Healing Report =====================
 
     /**
@@ -178,6 +192,7 @@ export class POMLazySelfHealing {
             this._signUpPage,
             this._assetsPage,
             this._personnelPage,
+            this._dividendsPage,
         ];
 
         const sections = pages

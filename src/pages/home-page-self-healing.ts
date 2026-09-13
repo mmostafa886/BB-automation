@@ -54,6 +54,32 @@ export class HomePageSelfHealing extends SelfHealingPageBase {
             await this.assert.toBeVisible(await this.userAvatarIcon.get(), 'User avatar icon is visible in the top navigation bar');
         });
     }
+    /**
+     * Wait for the home dashboard to finish loading after sign-in, then assert it.
+     *
+     * Same two checks as {@link assertPageLoaded}, but the "Welcome!" heading is *waited* for
+     * with an explicit budget instead of asserted against Playwright's default 5 s expect
+     * timeout. Sign-in on staging regularly takes longer than 5 s (the modal's fields sit
+     * disabled while the request is in flight), which makes `assertPageLoaded()` flaky when
+     * called immediately after submitting the form.
+     *
+     * The 60 s default mirrors the legacy TestCafe specs, which all allowed
+     * `.expect(dashboard.financialPlan.visible).ok({timeout:60000})` at this point.
+     */
+    async waitForDashboardLoaded(timeout: number = 60000): Promise<void> {
+        await test.step('Wait for the home dashboard to load after sign-in', async () => {
+            await this.actions.waitForVisible(
+                await this.welcomeHeading.get(),
+                'Wait for the "Welcome!" heading on the home dashboard',
+                timeout,
+            );
+            await this.assert.toBeVisible(
+                await this.userAvatarIcon.get(),
+                'User avatar icon is visible in the top navigation bar',
+            );
+        });
+    }
+
     async openCompaniesMenu(): Promise<void> {
         await test.step('open companies menu',async () =>{
             await this.actions.click((await this.companiesMenu.get()).filter({visible:true}),'click companies menu')
