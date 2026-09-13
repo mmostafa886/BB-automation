@@ -33,7 +33,7 @@ The underlying endpoint was reverse-engineered live by adding a revenue through 
 inspecting the resulting request with `mcp__playwright__browser_network_request`:
 
 ```
-POST https://stgapi.bznsbuilder.com/api/revenue_streams   → 201
+POST https://uat-31e7d8.bznsbuilder.com/api/revenue_streams   → 201
 
 {
   "financial_plan_id": <forecastId>,

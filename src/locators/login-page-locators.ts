@@ -7,7 +7,7 @@ import type { LocatorDefinition } from '../utils/self-healing-locator';
  *   1. Main auth page (/auth) — shows Sign in / Sign Up triggers
  *   2. Sign-in modal (dialog) — opened by the trigger, contains the email/password form
  *
- * All selectors are verified against https://stgapp.bznsbuilder.com/auth.
+ * All selectors are verified against https://uat-app.bznsbuilder.com/auth.
  * Phase-2 semantic metadata provides automatic fallback if the primary CSS drifts.
  */
 export const loginLocators = {

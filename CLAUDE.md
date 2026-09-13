@@ -4,7 +4,7 @@
 
 AI-powered Playwright TypeScript QA framework for the BznsBuilder chemistry synthesis web app.  
 Pipeline: **BRD → User Stories → Test Cases → Playwright specs**, backed by 20 Claude Code skills.  
-App under test: `https://stgapp.bznsbuilder.com/` (override with `BASE_URL`).
+App under test: `https://uat-app.bznsbuilder.com/` (override with `BASE_URL`).
 
 ---
 

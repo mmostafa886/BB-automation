@@ -23,7 +23,7 @@ import signUpInputs from '../../../test-data/SignUpInputs.json';
  *
  * Migrated from the legacy TestCafe spec `signupTestCase.js`.
  * Data-driven over `test-data/SignUpInputs.json` (one Playwright test per row, mirroring the
- * legacy `data.forEach`). The legacy fixture targeted `https://stgapp.bznsbuilder.com/auth`;
+ * legacy `data.forEach`). The legacy fixture targeted `https://uat-app.bznsbuilder.com/auth`;
  * that URL is dropped — navigation comes from `playwright.config.ts` (`BASE_URL`).
  *
  * Notes:

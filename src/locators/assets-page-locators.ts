@@ -11,7 +11,7 @@ import type { LocatorDefinition } from '../utils/self-healing-locator';
  * Conversion notes:
  *   - `.withAttribute('data-automation-test','X')` → `tag[data-automation-test="X"]` CSS.
  *   - `.withExactText('X')`                        → `'//div[text()="X"]'` XPath string (no getByText).
- *   - All selectors should be re-verified against https://stgapp.bznsbuilder.com/.
+ *   - All selectors should be re-verified against https://uat-app.bznsbuilder.com/.
  *
  * ⚠ Quirks preserved verbatim (verify on the live app):
  *   - oneStartMonth / oneStartYear — attributes say dateYear / dateMonth respectively

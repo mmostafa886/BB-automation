@@ -17,7 +17,7 @@ import { AdvancedAPIHelper } from './advanced-api-helper';
  * Used from `test.beforeAll` hooks to seed a forecast before the UI test runs,
  * so the browser flow doesn't have to create one through the app.
  *
- * Base URL comes from `API_BASE_URL` (default: https://stgapi.bznsbuilder.com).
+ * Base URL comes from `API_BASE_URL` (default: https://uat-31e7d8.bznsbuilder.com).
  * Response language comes from `API_LANG` (default: en).
  */
 export interface CreatedForecast {
@@ -36,7 +36,7 @@ export interface CreatedRevenueStream {
  * Static frontend-bundle API client credentials sent by the BznsBuilder SPA on every
  * `/api/revenue_streams` request, regardless of which user is logged in — observed live
  * (identical on two separate requests from the same page load) via
- * `mcp__playwright__browser_network_request` against stgapp.bznsbuilder.com. Not a
+ * `mcp__playwright__browser_network_request` against uat-app.bznsbuilder.com. Not a
  * per-user secret; the SPA ships it in its JS bundle. See docs/personnel-revenue-seeding.md.
  */
 const REVENUE_STREAM_APP_CLIENT = {
@@ -65,7 +65,7 @@ export class ForecastApiClient {
     private accessToken?: string;
     private companyId?: number | string;
 
-    constructor(baseURL = process.env.API_BASE_URL || 'https://stgapi.bznsbuilder.com',
+    constructor(baseURL = process.env.API_BASE_URL || 'https://uat-31e7d8.bznsbuilder.com',
                 lang = process.env.API_LANG || 'en') {
         this.baseURL = baseURL.replace(/\/+$/, '');
         this.lang = lang;

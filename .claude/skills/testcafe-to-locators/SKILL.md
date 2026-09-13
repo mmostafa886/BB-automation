@@ -147,7 +147,7 @@ import type { LocatorDefinition } from '../utils/self-healing-locator';
  *   - `.withText(X)`      → XPath string `'//tag[contains(text(),"X")]'`
  *   - `.nth(n)` / parent/find chains → `(page) => Locator` factory selectors.
  *   - `getByText(...)` factories are NOT used — XPath strings are preferred for text matching.
- *   - All selectors should be re-verified against https://stgapp.bznsbuilder.com/.
+ *   - All selectors should be re-verified against https://uat-app.bznsbuilder.com/.
  */
 export const <camelCasePage>Locators = {
 

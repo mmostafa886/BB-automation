@@ -4,7 +4,7 @@ import type { LocatorDefinition } from '../utils/self-healing-locator';
  * Locator repository for HomePageSelfHealing — BznsBuilder home dashboard.
  *
  * This page is reached immediately after a successful login (URL: /).
- * All selectors are verified against https://stgapp.bznsbuilder.com/.
+ * All selectors are verified against https://uat-app.bznsbuilder.com/.
  */
 export const homeLocators = {
 

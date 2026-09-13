@@ -61,7 +61,7 @@ npm run report
 
 Tests handle login directly through the UI — there is no global pre-auth step or stored session state.
 
-Each spec navigates to `https://stgapp.bznsbuilder.com/`, opens the sign-in modal, and submits credentials from `test-data/login.json`. Update `validUser.email` and `validUser.password` in that file for the target environment.
+Each spec navigates to `https://uat-app.bznsbuilder.com/`, opens the sign-in modal, and submits credentials from `test-data/login.json`. Update `validUser.email` and `validUser.password` in that file for the target environment.
 
 ---
 
