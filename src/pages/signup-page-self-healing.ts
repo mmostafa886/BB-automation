@@ -30,7 +30,6 @@ export class SignUpPageSelfHealing extends SelfHealingPageBase {
     readonly socialMediaButtons:  SelfHealingLocator;
     readonly signUpPopUp:         SelfHealingLocator;
     readonly googleButton:        SelfHealingLocator;
-    readonly facebookButton:      SelfHealingLocator;
     readonly linkedinButton:      SelfHealingLocator;
     readonly closeBtn:            SelfHealingLocator;
 
@@ -66,7 +65,6 @@ export class SignUpPageSelfHealing extends SelfHealingPageBase {
         this.socialMediaButtons      = make(signupLocators.socialMediaButtons);
         this.signUpPopUp             = make(signupLocators.signUpPopUp);
         this.googleButton            = make(signupLocators.googleButton);
-        this.facebookButton          = make(signupLocators.facebookButton);
         this.linkedinButton          = make(signupLocators.linkedinButton);
         this.closeBtn                = make(signupLocators.closeBtn);
         this.email                   = make(signupLocators.email);
@@ -102,7 +100,6 @@ export class SignUpPageSelfHealing extends SelfHealingPageBase {
     async checkLanguage(): Promise<void> {
         await test.step('Check sign-up modal Arabic language copy', async () => {
             const loginWithGoogle   = 'الدخول بحساب جوجل';
-            const loginWithFacebook =' الدخول بحساب الفيسبوك';
             const loginWithLinkedin = 'الدخول بحساب لينكد ان';
             const signUpTab         = 'اشترك معنا';
             const signInTab         = 'تسجيل الدخول';
@@ -115,7 +112,6 @@ export class SignUpPageSelfHealing extends SelfHealingPageBase {
 
             // Social-login option labels (span.withExactText → runtime span locator)
             await this.assert.toBeVisible(this.page.locator('span').filter({ hasText: this.exactText(loginWithGoogle) }), 'Google login label is present');
-            await this.assert.toBeVisible(this.page.locator('span').filter({ hasText: this.exactText(loginWithFacebook) }), 'Facebook login label is present');
             await this.assert.toBeVisible(this.page.locator('span').filter({ hasText: this.exactText(loginWithLinkedin) }), 'Linkedin login label is present');
 
             // Sign-up / sign-in tab copy
@@ -136,7 +132,6 @@ export class SignUpPageSelfHealing extends SelfHealingPageBase {
     async checkExistanceOfSocialMediaButtons(): Promise<void> {
         await test.step('Check social-media login buttons exist', async () => {
             const buttons: Array<[SelfHealingLocator, string]> = [
-                [this.facebookButton, 'Facebook'],
                 [this.googleButton,   'Gmail'],
                 [this.linkedinButton, 'Linkedin'],
             ];
@@ -227,6 +222,21 @@ export class SignUpPageSelfHealing extends SelfHealingPageBase {
         });
     }
 
+    /**
+     * Submits the form with BOTH first name and last name blank and asserts that the required-field validation fires on each of them.
+     */
+    async emptyNameAssertion(): Promise<void> {
+        await test.step('Assert required-field validation on both name fields', async () => {
+            await this.actions.click(await this.signUpBtn.get(), 'Click sign-up submit button');
+            await this.assert.toHaveCount(
+                await this.requiredMsg.get(),
+                2,
+                'Two required-field validation messages are shown — one for first name, one for last name',
+            );
+            await this.assert.toBeHidden(await this.successMsg.get(), 'Success message is not present');
+        });
+    }
+
     /** Submits a malformed email and asserts the invalid-email-format validation message appears. */
     async invalidEmailAssertion(): Promise<void> {
         await test.step('Assert invalid-email-format validation', async () => {
@@ -252,6 +262,17 @@ export class SignUpPageSelfHealing extends SelfHealingPageBase {
         });
     }
 
+    /**
+     * Submits the form with a password that breaks ONE of the strength rules and asserts the criteria message appears and no account is created.
+     */
+    async passwordCriteriaAssertion(): Promise<void> {
+        await test.step('Assert password-criteria validation', async () => {
+            await this.actions.click(await this.signUpBtn.get(), 'Click sign-up submit button');
+            await this.assert.toBeVisible(await this.invalidPasswordFormatMsg.get(), 'Password-criteria validation message is visible');
+            await this.assert.toBeHidden(await this.successMsg.get(), 'Success message is not present');
+        });
+    }
+
     /** Asserts the email and password inputs carry the expected placeholder substrings. */
     async checkPlaceHolder(): Promise<void> {
         await test.step('Check email/password placeholders', async () => {
@@ -274,6 +295,12 @@ export class SignUpPageSelfHealing extends SelfHealingPageBase {
                 break;
             case 'empty':
                 await this.emptyFieldAssertion();
+                break;
+            case 'emptynames':
+                await this.emptyNameAssertion();
+                break;
+            case 'passwordcriteria':
+                await this.passwordCriteriaAssertion();
                 break;
             case 'invalidmail':
                 await this.invalidEmailAssertion();
