@@ -62,12 +62,42 @@ export const loginLocators = {
         },
     },
 
+    forgotPasswordLink: {
+        selector: 'a[data-automation-test="auto-link-forgetPassword"]',
+        metadata: {
+            role:        'link',
+            text:        'Forgot password?',
+            description: '"Forgot password?" link inside the BznsBuilder sign-in modal',
+        },
+    },
+
     errorToast: {
         // Angular Material snackbar shown on sign-in failure
         selector: 'snack-bar-container.custom-snackbar-panel',
         metadata: {
             role:        'alert',
             description: 'Material snackbar notification shown when sign-in fails',
+        },
+    },
+
+    invalidFormatMsg: {
+        // Inline validation message shown under the email field on bad email format
+        selector: 'span[class="error ng-star-inserted"]',
+        metadata: {
+            role:        'alert',
+            text:        'Invalid email format',
+            description: 'Inline "Invalid email format" validation message shown under the email input in the sign-in modal',
+        },
+    },
+
+    unverifiedEmailToast: {
+        // Same generic info-snackbar component as signupLocators.successMsg, reused here with
+        // different text — shown when signing in with an unverified email
+        selector: 'div[class="info snackbar-container"]',
+        metadata: {
+            role:        'alert',
+            text:        'Please, verify your email!',
+            description: 'Info snackbar shown when signing in with an unverified email address',
         },
     },
 
