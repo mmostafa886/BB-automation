@@ -19,12 +19,15 @@ import { AdvancedAssertionsHelper } from '../utils/advanced-assertions-helper';
  *   Phase 3 → AI healing via Playwright MCP (opt-in, requires aiProvider)
  */
 export class LoginPageSelfHealing extends SelfHealingPageBase {
-    readonly signInTriggerButton: SelfHealingLocator;
-    readonly emailInput:          SelfHealingLocator;
-    readonly passwordInput:       SelfHealingLocator;
-    readonly signInSubmitButton:  SelfHealingLocator;
-    readonly signInModal:         SelfHealingLocator;
-    readonly errorToast:          SelfHealingLocator;
+    readonly signInTriggerButton:  SelfHealingLocator;
+    readonly emailInput:           SelfHealingLocator;
+    readonly passwordInput:        SelfHealingLocator;
+    readonly signInSubmitButton:   SelfHealingLocator;
+    readonly signInModal:          SelfHealingLocator;
+    readonly errorToast:           SelfHealingLocator;
+    readonly invalidFormatMsg:     SelfHealingLocator;
+    readonly unverifiedEmailToast: SelfHealingLocator;
+    readonly forgotPasswordLink:   SelfHealingLocator;
 
     private readonly page:    Page;
     private readonly actions: AdvancedActionsHelper;
@@ -38,12 +41,15 @@ export class LoginPageSelfHealing extends SelfHealingPageBase {
 
         const logger = Logger.getLogger(`LoginPageSelfHealing-${testName}`);
 
-        this.signInTriggerButton = SelfHealingLocator.from(page, loginLocators.signInTriggerButton, logger, aiProvider);
-        this.emailInput          = SelfHealingLocator.from(page, loginLocators.emailInput,          logger, aiProvider);
-        this.passwordInput       = SelfHealingLocator.from(page, loginLocators.passwordInput,       logger, aiProvider);
-        this.signInSubmitButton  = SelfHealingLocator.from(page, loginLocators.signInSubmitButton,  logger, aiProvider);
-        this.signInModal         = SelfHealingLocator.from(page, loginLocators.signInModal,         logger, aiProvider);
-        this.errorToast          = SelfHealingLocator.from(page, loginLocators.errorToast,          logger, aiProvider);
+        this.signInTriggerButton  = SelfHealingLocator.from(page, loginLocators.signInTriggerButton,  logger, aiProvider);
+        this.emailInput           = SelfHealingLocator.from(page, loginLocators.emailInput,           logger, aiProvider);
+        this.passwordInput        = SelfHealingLocator.from(page, loginLocators.passwordInput,        logger, aiProvider);
+        this.signInSubmitButton   = SelfHealingLocator.from(page, loginLocators.signInSubmitButton,   logger, aiProvider);
+        this.signInModal          = SelfHealingLocator.from(page, loginLocators.signInModal,          logger, aiProvider);
+        this.errorToast           = SelfHealingLocator.from(page, loginLocators.errorToast,           logger, aiProvider);
+        this.invalidFormatMsg     = SelfHealingLocator.from(page, loginLocators.invalidFormatMsg,     logger, aiProvider);
+        this.unverifiedEmailToast = SelfHealingLocator.from(page, loginLocators.unverifiedEmailToast, logger, aiProvider);
+        this.forgotPasswordLink   = SelfHealingLocator.from(page, loginLocators.forgotPasswordLink,   logger, aiProvider);
     }
 
     // ── Navigation ──────────────────────────────────────────────────────────
@@ -87,6 +93,29 @@ export class LoginPageSelfHealing extends SelfHealingPageBase {
         });
     }
 
+    /** Click "Forgot password?" in the already-open sign-in modal */
+    async openForgotPasswordForm(): Promise<void> {
+        await test.step('Open forgot-password form', async () => {
+            await this.actions.click(await this.forgotPasswordLink.get(), 'Click Forgot password?');
+        });
+    }
+
+    /**
+     * Sign out by discarding the session, then return to the auth page. The app keeps its token
+     * in web storage as well as cookies, and web storage can only be cleared from a page on the
+     * app's origin — so this must run while the browser is on the app.
+     */
+    async signOutByClearingSession(): Promise<void> {
+        await test.step('Sign out by clearing the session', async () => {
+            await this.page.evaluate(() => {
+                localStorage.clear();
+                sessionStorage.clear();
+            });
+            await this.page.context().clearCookies();
+            await this.navigateToLogin();
+        });
+    }
+
     // ── Assertion Methods ────────────────────────────────────────────────────
 
     /** Assert the main auth page is loaded with the Sign in trigger visible */
@@ -115,5 +144,17 @@ export class LoginPageSelfHealing extends SelfHealingPageBase {
         });
     }
 
-    
+    /** Assert the "Invalid email format" inline validation message is visible */
+    async assertInvalidFormatMsgVisible(): Promise<void> {
+        await test.step('Assert invalid email format message is visible', async () => {
+            await this.assert.toBeVisible(await this.invalidFormatMsg.get(), 'Invalid email format message is visible');
+        });
+    }
+
+    /** Assert the "Please, verify your email!" snackbar is visible after signing in with an unverified email */
+    async assertUnverifiedEmailToastVisible(): Promise<void> {
+        await test.step('Assert unverified email toast is visible', async () => {
+            await this.assert.toBeVisible(await this.unverifiedEmailToast.get(), 'Unverified email toast is visible');
+        });
+    }
 }

@@ -166,6 +166,22 @@
     "flag":"oldmail",
     "firstName":"test",
     "lastName":"21"
+  },
+  {
+    "test":"Verify user cannot signUp with a leading space in the email",
+    "email":"  smoke@drmail.in",
+    "password":"Test1234!",
+    "flag":"invalidmail",
+    "firstName":"test",
+    "lastName":"22"
+  },
+  {
+    "test":"Verify user cannot signUp with a trailing space in the email",
+    "email":"smoke@drmail.in  ",
+    "password":"Test1234!",
+    "flag":"invalidmail",
+    "firstName":"test",
+    "lastName":"23"
   }
 ]
 

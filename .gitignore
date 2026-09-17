@@ -2,6 +2,7 @@ node_modules/
 .env
 db.env
 .playwright-profile/
+client_secret*.json
 playwright-auth.json
 session-storage.json
 .seed/
