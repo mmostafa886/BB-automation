@@ -8,6 +8,16 @@ import type { LocatorDefinition } from '../utils/self-healing-locator';
  */
 export const financialDashboardLocators = {
 
+    overviewTab: {
+        // Overview tab in the navbar; present on every forecast page (/financial/overview), whether the
+        // forecast has data or not. Verified on https://uat-app.bznsbuilder.com/.
+        selector: 'a[data-automation-test="auto-navbar-link-Overview"]',
+        metadata: {
+            text:        'Overview',
+            description: 'Overview tab in the forecast page navbar, shown after opening a forecast',
+        },
+    },
+
     financialTables: {
         // financial tables tab in the navbar that shows the links of the financial chapters when clicking on it
         selector: '[data-automation-test="auto-navbar-link-Financial_Tables"]',

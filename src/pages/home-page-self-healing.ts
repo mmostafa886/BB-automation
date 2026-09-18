@@ -20,6 +20,8 @@ export class HomePageSelfHealing extends SelfHealingPageBase {
     readonly companiesMenu: SelfHealingLocator;
     readonly forecastsMenu: SelfHealingLocator;
     readonly forecastTab: SelfHealingLocator;
+    readonly selectedCompanyName: SelfHealingLocator;
+    readonly selectedForecastName: SelfHealingLocator;
     readonly page: Page;
 
 
@@ -39,6 +41,8 @@ export class HomePageSelfHealing extends SelfHealingPageBase {
         this.companiesMenu = SelfHealingLocator.from(page, homeLocators.companiesMenu, logger, aiProvider);
         this.forecastTab = SelfHealingLocator.from(page, homeLocators.forecastTab, logger, aiProvider);
         this.userAvatarIcon = SelfHealingLocator.from(page, homeLocators.userAvatarIcon, logger, aiProvider);
+        this.selectedCompanyName = SelfHealingLocator.from(page, homeLocators.selectedCompanyName, logger, aiProvider);
+        this.selectedForecastName = SelfHealingLocator.from(page, homeLocators.selectedForecastName, logger, aiProvider);
     }
 
     // ── Assertion Methods ────────────────────────────────────────────────────
@@ -110,6 +114,28 @@ export class HomePageSelfHealing extends SelfHealingPageBase {
                 await this.actions.clickOption(option, `Select "${value}" from menu`);
             });
     }
+    /** Assert the browser is on the home dashboard: URL path is exactly "/" and the dashboard has loaded. */
+    async assertOnHomePage(): Promise<void> {
+        await test.step('Assert the home page is shown', async () => {
+            await this.assert.toHaveURL(/^https?:\/\/[^/]+\/?(\?.*)?$/, 'URL is the home page "/"');
+            await this.waitForDashboardLoaded();
+        });
+    }
+
+    /** Assert the side bar shows `company` as the selected company. */
+    async assertSelectedCompany(company: string): Promise<void> {
+        await test.step(`Assert selected company is "${company}"`, async () => {
+            await this.assert.toHaveText(await this.selectedCompanyName.get(), company, `Selected company in the side bar is "${company}"`);
+        });
+    }
+
+    /** Assert the side bar shows `forecast` as the selected forecast. */
+    async assertSelectedForecast(forecast: string): Promise<void> {
+        await test.step(`Assert selected forecast is "${forecast}"`, async () => {
+            await this.assert.toHaveText(await this.selectedForecastName.get(), forecast, `Selected forecast in the side bar is "${forecast}"`);
+        });
+    }
+
     private exactText(value: string): RegExp {
         const escaped = value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
         return new RegExp(`^\\s*${escaped}\\s*$`);

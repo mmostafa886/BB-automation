@@ -30,6 +30,7 @@ import { AdvancedAssertionsHelper } from '../utils/advanced-assertions-helper';
  */
 export class FinancialDashboardSelfHealing extends SelfHealingPageBase {
     // ─── Navbar — chapter edit links ─────────────────────────────────────────
+    readonly overviewTab:      SelfHealingLocator;
     readonly financialTables:  SelfHealingLocator;
     readonly editRevenues:     SelfHealingLocator;
     readonly editDirectCost:   SelfHealingLocator;
@@ -104,6 +105,7 @@ export class FinancialDashboardSelfHealing extends SelfHealingPageBase {
         const make   = (def: typeof L[keyof typeof L]) => SelfHealingLocator.from(page, def, logger, aiProvider);
 
         // Navbar — chapter edit links
+        this.overviewTab     = make(L.overviewTab);
         this.financialTables = make(L.financialTables);
         this.editRevenues    = make(L.editRevenues);
         this.editDirectCost  = make(L.editDirectCost);
@@ -162,6 +164,16 @@ export class FinancialDashboardSelfHealing extends SelfHealingPageBase {
         this.confirmDuplication     = make(L.confirmDuplication);
         this.closeInstructionsModal = make(L.closeInstructionsModal);
         this.closeFreeTrialModal    = make(L.closeFreeTrialModal);
+    }
+
+    // ── Page state ────────────────────────────────────────────────────────────
+
+    /** Assert the forecast page is open: URL is /financial/overview and the Overview navbar tab is shown. */
+    async assertForecastPageLoaded(): Promise<void> {
+        await test.step('Assert the forecast page is loaded', async () => {
+            await this.assert.toHaveURL(/\/financial\/overview/, 'URL contains /financial/overview');
+            await this.assert.toBeVisible(await this.overviewTab.get(15000), 'Overview tab is visible in the forecast navbar');
+        });
     }
 
     // ── Navbar navigation ─────────────────────────────────────────────────────

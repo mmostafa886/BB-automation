@@ -18,7 +18,7 @@ export default defineConfig({
 
   use: {
     viewport: null,
-    baseURL: process.env.BASE_URL || 'https://stgapp.bznsbuilder.com/',
+    baseURL: process.env.BASE_URL || 'https://uat-app.bznsbuilder.com/',
     trace: 'retain-on-failure',
     screenshot: 'only-on-failure',
     // video: 'retain-on-failure',
