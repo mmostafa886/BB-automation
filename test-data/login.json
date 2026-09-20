@@ -11,6 +11,23 @@
     "email": "SMOKE@drmail.in",
     "password": "12345678@Bb"
   },
+  "leadingSpaceUser":{
+    "email":"  smoke@drmail.in",
+    "password":"12345678@Bb"
+  },
+    "trailingSpaceUser":{
+    "email":"smoke@drmail.in  ",
+    "password":"12345678@Bb"
+  },
+  "passwordResetUser": {
+    "email": "testautobb+reset@gmail.com"
+  },
+  "unactivatedUser": {
+    "email": "unactivated@getnada.com",
+    "password": "Test1234!",
+    "firstName": "Test",
+    "lastName": "Unactivated"
+  },
   "authPagePath": "/auth",
   "signInModalTitle": "Sign in",
   "emailPlaceholder": "Email",
