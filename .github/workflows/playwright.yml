@@ -39,6 +39,11 @@ jobs:
       BASE_URL: ${{ vars.BASE_URL_QA }}
       TEST_USER_EMAIL: ${{ secrets.TEST_USER_EMAIL }}
       TEST_USER_PASSWORD: ${{ secrets.TEST_USER_PASSWORD }}
+      # Gmail API creds for specs that read a real email (e.g. TC-BB-005 forgot password).
+      # Without all three the spec test.skip()s itself instead of failing.
+      GMAIL_CLIENT_ID: ${{ secrets.GMAIL_CLIENT_ID }}
+      GMAIL_CLIENT_SECRET: ${{ secrets.GMAIL_CLIENT_SECRET }}
+      GMAIL_REFRESH_TOKEN: ${{ secrets.GMAIL_REFRESH_TOKEN }}
       BROWSER: ${{ github.event.inputs.browser || 'chromium' }}
       TEST_TAG: ${{ github.event.inputs.test_tag || '' }}
 
