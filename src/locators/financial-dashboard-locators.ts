@@ -4,7 +4,7 @@ import type { LocatorDefinition } from '../utils/self-healing-locator';
  * Locator repository for FinancialDashboardSelfHealing — BznsBuilder financial dashboard.
  *
  * This page is reached immediately after clicking forecast from the side menu.
- * All selectors are verified against https://stgapp.bznsbuilder.com/.
+ * All selectors are verified against https://uat-app.bznsbuilder.com/.
  */
 export const financialDashboardLocators = {
 

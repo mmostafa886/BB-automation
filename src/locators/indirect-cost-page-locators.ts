@@ -10,7 +10,7 @@ import type { LocatorDefinition } from '../utils/self-healing-locator';
  * `financial-dashboard-locators.ts`. This file contains only the selectors that were unique to
  * `IndirectCost.js`.
  *
- * All selectors should be re-verified against https://stgapp.bznsbuilder.com/.
+ * All selectors should be re-verified against https://uat-app.bznsbuilder.com/.
  */
 export const indirectCostLocators = {
 

@@ -11,6 +11,8 @@ import { PersonnelPageSelfHealing } from './personnel-page-self-healing';
 import { DividendsPageSelfHealing } from './dividends-page-self-healing';
 import { CreateCompanyPageSelfHealing } from './create-company-page-self-healing';
 import { SubscriptionsPageSelfHealing } from './subscriptions-page-self-healing';
+import { ForgotPasswordPageSelfHealing } from './forgot-password-page-self-healing';
+import { ResetPasswordPageSelfHealing } from './reset-password-page-self-healing';
 import { type AIHealingProvider } from '../utils/self-healing-locator';
 
 /**
@@ -50,6 +52,8 @@ export class POMLazySelfHealing {
     private _dividendsPage?: DividendsPageSelfHealing;
     private _createCompanyPage?: CreateCompanyPageSelfHealing;
     private _subscriptionsPage?: SubscriptionsPageSelfHealing;
+    private _forgotPasswordPage?: ForgotPasswordPageSelfHealing;
+    private _resetPasswordPage?: ResetPasswordPageSelfHealing;
 
     constructor(page: Page, testName?: string, aiProvider?: AIHealingProvider) {
         this.page = page;
@@ -203,6 +207,30 @@ export class POMLazySelfHealing {
         return this._subscriptionsPage;
     }
 
+    /** Returns the ForgotPasswordPageSelfHealing instance, creating it on first access */
+    get forgotPasswordPage(): ForgotPasswordPageSelfHealing {
+        if (!this._forgotPasswordPage) {
+            this._forgotPasswordPage = new ForgotPasswordPageSelfHealing(
+                this.page,
+                this._testName ?? '',
+                this._aiProvider,
+            );
+        }
+        return this._forgotPasswordPage;
+    }
+
+    /** Returns the ResetPasswordPageSelfHealing instance, creating it on first access */
+    get resetPasswordPage(): ResetPasswordPageSelfHealing {
+        if (!this._resetPasswordPage) {
+            this._resetPasswordPage = new ResetPasswordPageSelfHealing(
+                this.page,
+                this._testName ?? '',
+                this._aiProvider,
+            );
+        }
+        return this._resetPasswordPage;
+    }
+
     // ===================== Healing Report =====================
 
     /**
@@ -223,6 +251,8 @@ export class POMLazySelfHealing {
             this._dividendsPage,
             this._createCompanyPage,
             this._subscriptionsPage,
+            this._forgotPasswordPage,
+            this._resetPasswordPage,
         ];
 
         const sections = pages

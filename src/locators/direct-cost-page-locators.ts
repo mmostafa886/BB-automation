@@ -11,7 +11,7 @@ import type { LocatorDefinition } from '../utils/self-healing-locator';
  * Conversion notes:
  *   - `.filterVisible()`            → `:visible` pseudo-class appended to the CSS selector.
  *   - `.nth(n)` / `.withExactText`  → `(page) => Locator` factory selectors.
- *   - All selectors should be re-verified against https://stgapp.bznsbuilder.com/.
+ *   - All selectors should be re-verified against https://uat-app.bznsbuilder.com/.
  */
 export const directCostLocators = {
 
@@ -236,7 +236,7 @@ export const directCostLocators = {
     // NOTE: the following five entries come from the legacy `DirectCost` page object
     // (`const page = new DirectCost()`), whose source file was NOT provided. They are
     // best-effort reconstructions modeled on the Revenues precedent and MUST be verified
-    // against https://stgapp.bznsbuilder.com/ before the spec is trusted.
+    // against https://uat-app.bznsbuilder.com/ before the spec is trusted.
     addNew: {
         // "Add" button at the top-right of the Direct Costs financial table.
         // RECONSTRUCTED — verify the tag/data-automation-test on the live app.
