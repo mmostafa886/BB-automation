@@ -348,6 +348,153 @@
     "primaryCtaLabel": "Start Free Trial"
   },
 
+  "subscriptionPlansDisplayed": {
+    "test": "TC-BB-Create-Company-018: The Subscription Details step lists the plans with monthly and annual pricing and features",
+    "mail": "bznsplan@gmail.com",
+    "password": "12345678",
+    "describeOption": "I have a business idea",
+    "stageStepNumber": 2,
+    "stageStepTitle": "Company Stage",
+    "selectedStage": "Idea",
+    "businessInfoStepNumber": 3,
+    "businessInfoStepTitle": "Business Information",
+    "industry": "Animation",
+    "companyDetailsStepNumber": 4,
+    "companyDetailsStepTitle": "Company Details",
+    "companyName": "Subscription Plans Automation Co",
+    "financialStepNumber": 5,
+    "financialStepTitle": "Financial",
+    "forecastStartDay": "1",
+    "durationYears": "3",
+    "monthlyDetail": "1 year of monthly detail",
+    "numberFormat": "1,000.00",
+    "fundingStepNumber": 6,
+    "fundingStepTitle": "Funding",
+    "subscriptionStepNumber": 7,
+    "subscriptionStepTitle": "Subscription Details",
+
+    "billingTabs": ["Monthly", "Annually", "Offers"],
+    "defaultBillingPeriod": "Monthly",
+    "annualBillingPeriod": "Annually",
+    "planCount": 3,
+
+    "monthlyPlans": [
+      {
+        "name": "Launch",
+        "price": "EGP449",
+        "periodText": "paid monthly",
+        "featureCount": 10,
+        "feature": "Idea Canvas"
+      },
+      {
+        "name": "Build",
+        "price": "EGP949",
+        "periodText": "paid monthly",
+        "featureCount": 9,
+        "feature": "Performance dashboard (Monthly view)"
+      },
+      {
+        "name": "Decide",
+        "price": "EGP1999",
+        "periodText": "paid monthly",
+        "featureCount": 6,
+        "feature": "QuickBooks integration"
+      }
+    ],
+
+    "annualPlans": [
+      {
+        "name": "Launch",
+        "price": "EGP299",
+        "periodText": "paid annually",
+        "featureCount": 10,
+        "feature": "Idea Canvas"
+      },
+      {
+        "name": "Build",
+        "price": "EGP599",
+        "periodText": "paid annually",
+        "featureCount": 9,
+        "feature": "Performance dashboard (Monthly view)"
+      },
+      {
+        "name": "Decide",
+        "price": "EGP1299",
+        "periodText": "paid annually",
+        "featureCount": 6,
+        "feature": "QuickBooks integration"
+      }
+    ]
+  },
+
+  "planSelectionEnablesNext": {
+    "test": "TC-BB-Create-Company-019: Selecting a plan enables Next and opens the Payment Method step",
+    "mail": "bznsplan@gmail.com",
+    "password": "12345678",
+    "describeOption": "I have a business idea",
+    "stageStepNumber": 2,
+    "stageStepTitle": "Company Stage",
+    "selectedStage": "Idea",
+    "businessInfoStepNumber": 3,
+    "businessInfoStepTitle": "Business Information",
+    "industry": "Animation",
+    "companyDetailsStepNumber": 4,
+    "companyDetailsStepTitle": "Company Details",
+    "companyName": "Plan Selection Automation Co",
+    "financialStepNumber": 5,
+    "financialStepTitle": "Financial",
+    "forecastStartDay": "1",
+    "durationYears": "3",
+    "monthlyDetail": "1 year of monthly detail",
+    "numberFormat": "1,000.00",
+    "fundingStepNumber": 6,
+    "fundingStepTitle": "Funding",
+    "subscriptionStepNumber": 7,
+    "subscriptionStepTitle": "Subscription Details",
+    "planCount": 3,
+    "planNames": ["Launch", "Build", "Decide"],
+    "planToSelect": "Build",
+    "selectedPlanLabel": "Selected",
+    "paymentStepNumber": 8,
+    "paymentStepTitle": "Payment Method",
+    "checkoutCtaLabel": "Proceed to checkout"
+  },
+
+  "completeFlowWithPayment": {
+    "test": "TC-BB-Create-Company-020: Completing the wizard and paying creates the company with the chosen package active",
+    "mail": "bznsplan@gmail.com",
+    "password": "12345678",
+    "describeOption": "I have a business idea",
+    "stageStepNumber": 2,
+    "stageStepTitle": "Company Stage",
+    "selectedStage": "Idea",
+    "businessInfoStepNumber": 3,
+    "businessInfoStepTitle": "Business Information",
+    "typeOfBusiness": "Coffee shop",
+    "industry": "Animation",
+    "companyDetailsStepNumber": 4,
+    "companyDetailsStepTitle": "Company Details",
+    "companyNamePrefix": "Paid Company Automation",
+    "tagline": "Created by automation",
+    "financialStepNumber": 5,
+    "financialStepTitle": "Financial",
+    "forecastStartDay": "1",
+    "durationYears": "3",
+    "monthlyDetail": "1 year of monthly detail",
+    "numberFormat": "1,000.00",
+    "fundingStepNumber": 6,
+    "fundingStepTitle": "Funding",
+    "subscriptionStepNumber": 7,
+    "subscriptionStepTitle": "Subscription Details",
+    "planToBuy": "Launch",
+    "planPrice": "449",
+    "selectedPlanLabel": "Selected",
+    "paymentStepNumber": 8,
+    "paymentStepTitle": "Payment Method",
+    "checkoutCtaLabel": "Proceed to checkout",
+    "defaultForecastName": "Original forecast"
+  },
+
   "nextDisabledWithoutStage": {
     "test": "TC-BB-Create-Company-004: Next stays disabled until a company stage is chosen",
     "mail": "bznsplan@gmail.com",

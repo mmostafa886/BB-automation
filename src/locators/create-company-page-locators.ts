@@ -564,13 +564,124 @@ export const createCompanyLocators = {
 
     // ── Step 7: Subscription Details ─────────────────────────────────────────
 
+    billingPeriodTabs: {
+        // "Monthly" | "Annually Save more!" | "Offers" — the row also holds "See Compare Features"
+        // links (.text-right), which are excluded here so only the three tabs match.
+        selector: 'app-payment-package-select .layers-btns > div:not(.text-right)',
+        metadata: {
+            description: 'Monthly / Annually / Offers billing period tabs on the Subscription Details step',
+        },
+    },
+
+    activeBillingPeriodTab: {
+        // Monthly is active when the step opens.
+        selector: 'app-payment-package-select .layers-btns > div.active',
+        metadata: {
+            description: 'Currently selected billing period tab on the Subscription Details step',
+        },
+    },
+
     packageCards: {
-        // One card per package (Launch, Build, Decide on UAT). Next stays disabled on this step;
-        // the flow continues through a card's Subscribe button. The Subscribe buttons' automation
-        // ids embed backend package ids (packId9/11/12), so the page object scopes by package name.
+        // ALL package cards live in the DOM at once — the monthly set (packId 9/11/12), the annual set
+        // (packId 10/13/14) and the Offers card (packId136) — and the chosen tab decides which are
+        // visible, so always filter by visibility. Next stays disabled on this step; the flow continues
+        // through a card's Subscribe button, whose automation id embeds a backend package id, so the
+        // page object scopes by package name instead.
+        //
+        // Card anatomy: .pack-name (Launch / Build / Decide), .pack-desc, .pack-price (monthly shows
+        // one price + "paid monthly"; annual shows the original price, the discounted one and
+        // "paid annually"), .pack-best ("Best for:"), .pack-action (Subscribe) and .pack-features li.
         selector: 'app-create-company .pack-card',
         metadata: {
             description: 'Subscription package cards (Launch, Build, Decide) on the Subscription Details step',
+        },
+    },
+
+    selectedPackageCard: {
+        // A plan is chosen with its Subscribe button, NOT by clicking the card body (that does
+        // nothing). The chosen card then gains the `selected` class, its button reads "Selected"
+        // instead of "Subscribe", and Next becomes enabled and leads to step 8, Payment Method.
+        selector: 'app-create-company .pack-card.selected',
+        metadata: {
+            description: 'The subscription package card currently selected on the Subscription Details step',
+        },
+    },
+
+    packageName: {
+        selector: '.pack-name',
+        metadata: {
+            description: 'Package name inside a subscription package card',
+        },
+    },
+
+    packagePrice: {
+        selector: '.pack-price',
+        metadata: {
+            description: 'Price block of a subscription package card, holding the price and the billing period text',
+        },
+    },
+
+    packageFeatures: {
+        selector: '.pack-features li',
+        metadata: {
+            description: 'Feature rows listed on a subscription package card',
+        },
+    },
+
+    packageFeatureLabels: {
+        selector: '.pack-features li .text',
+        metadata: {
+            description: 'Feature names listed on a subscription package card',
+        },
+    },
+
+    packageSubscribeButton: {
+        // Selects the plan — it does NOT charge anything; payment happens on step 8. Its label flips
+        // from "Subscribe" to "Selected" once its card is the chosen one.
+        selector: '.pack-action app-our-button button',
+        metadata: {
+            role:        'button',
+            name:        'Subscribe',
+            text:        'Subscribe',
+            description: 'Subscribe button inside a subscription package card, selects that package',
+        },
+    },
+
+    // ── Step 8: Payment Method ───────────────────────────────────────────────
+    // Reached from step 7 once a package is selected. Holds the saved payment methods (one radio per
+    // card, the first pre-selected), an "Add new card" button and the order summary (package price,
+    // promo code, VAT and total). Its primary button reads "Proceed to checkout" and CHARGES the card.
+
+    paymentMethodPanel: {
+        selector: 'app-payment-method-select',
+        metadata: {
+            description: 'Payment Method step panel holding the saved cards and the order summary',
+        },
+    },
+
+    paymentMethodRadios: {
+        // One per saved card; the first is already selected when the step opens.
+        selector: 'app-payment-method-select input[type="radio"]',
+        metadata: {
+            description: 'Saved payment method radio buttons on the Payment Method step',
+        },
+    },
+
+    addNewCardButton: {
+        selector: 'app-payment-method-select app-our-button button',
+        metadata: {
+            role:        'button',
+            name:        'Add new card',
+            text:        'Add new card',
+            description: 'Add new card button on the Payment Method step',
+        },
+    },
+
+    orderSummary: {
+        // "Order Summary <package> <price> … VAT 14% (…) Total …"
+        selector: 'app-payment-method-select .col-md-4',
+        metadata: {
+            description: 'Order summary column on the Payment Method step',
         },
     },
 

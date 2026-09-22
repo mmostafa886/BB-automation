@@ -72,6 +72,18 @@ export class CreateCompanyPageSelfHealing extends SelfHealingPageBase {
     readonly currencySelectedValue:      SelfHealingLocator;
     readonly intentSelectedValue:        SelfHealingLocator;
 
+    // ─── Step 7: Subscription Details ───────────────────────────────────────
+    readonly billingPeriodTabs:      SelfHealingLocator;
+    readonly activeBillingPeriodTab: SelfHealingLocator;
+    /** Matches every package card, visible or not — filter by visibility before use. */
+    readonly packageCards:           SelfHealingLocator;
+    readonly selectedPackageCard:    SelfHealingLocator;
+
+    // ─── Step 8: Payment Method ─────────────────────────────────────────────
+    readonly paymentMethodPanel:  SelfHealingLocator;
+    readonly paymentMethodRadios: SelfHealingLocator;
+    readonly orderSummary:        SelfHealingLocator;
+
     private readonly page:    Page;
     private readonly actions: AdvancedActionsHelper;
     private readonly assert:  AdvancedAssertionsHelper;
@@ -126,6 +138,15 @@ export class CreateCompanyPageSelfHealing extends SelfHealingPageBase {
         this.numberFormatSelectedValue  = make(L.numberFormatSelectedValue);
         this.currencySelectedValue      = make(L.currencySelectedValue);
         this.intentSelectedValue        = make(L.intentSelectedValue);
+
+        this.billingPeriodTabs      = make(L.billingPeriodTabs);
+        this.activeBillingPeriodTab = make(L.activeBillingPeriodTab);
+        this.packageCards           = make(L.packageCards);
+        this.selectedPackageCard    = make(L.selectedPackageCard);
+
+        this.paymentMethodPanel  = make(L.paymentMethodPanel);
+        this.paymentMethodRadios = make(L.paymentMethodRadios);
+        this.orderSummary        = make(L.orderSummary);
     }
 
     // ═══════════════════════════════════════════════════════════════════════
@@ -251,6 +272,60 @@ export class CreateCompanyPageSelfHealing extends SelfHealingPageBase {
         });
     }
 
+    /** Switch the Subscription Details step to a billing period tab: "Monthly", "Annually" or "Offers". */
+    async selectBillingPeriod(period: string): Promise<void> {
+        await test.step(`Switch to the "${period}" billing period`, async () => {
+            await this.actions.click(this.billingPeriodTab(period), `Click the "${period}" tab`);
+            await this.assert.toContainText(await this.activeBillingPeriodTab.get(), period, `"${period}" tab is active`);
+        });
+    }
+
+    /**
+     * Click a package card on its name, without touching Subscribe.
+     *
+     * On UAT this does nothing: the card takes no selected state and Next stays disabled. The method
+     * exists so a spec can prove that, since Subscribe is the only way off this step.
+     *
+     * The click is dispatched straight to the package name rather than driven with the mouse: moving
+     * the pointer across the cards pops the feature tooltips that overlay them, and Playwright then
+     * waits for the covered element until the test times out. Dispatching keeps this step stable, and
+     * the assertion that follows — that nothing changed — holds either way.
+     */
+    async clickPlanCardBody(name: string): Promise<void> {
+        await test.step(`Click the body of the "${name}" package card`, async () => {
+            await this.planCard(name)
+                .locator(createCompanyLocators.packageName.selector)
+                .dispatchEvent('click');
+        });
+    }
+
+    /**
+     * Select a package on step 7 with its Subscribe button.
+     *
+     * This does NOT charge anything: the card becomes the selected one, its button reads "Selected"
+     * and Next opens step 8, where the card on file is actually charged.
+     */
+    async selectPlan(name: string): Promise<void> {
+        await test.step(`Select the "${name}" package`, async () => {
+            await this.actions.click(
+                this.planCard(name).locator(createCompanyLocators.packageSubscribeButton.selector),
+                `Click Subscribe on the "${name}" package`,
+            );
+        });
+    }
+
+    /**
+     * Click "Proceed to checkout" on step 8 — this CHARGES the selected payment method.
+     *
+     * The app then leaves the wizard for the home dashboard of the newly created company, so the
+     * caller should assert on the home page next.
+     */
+    async proceedToCheckout(): Promise<void> {
+        await test.step('Proceed to checkout', async () => {
+            await this.actions.click(await this.nextButton.get(), 'Click Proceed to checkout');
+        });
+    }
+
     /** Click Prev to go back one step. Not available on step 1. */
     async clickPrev(): Promise<void> {
         await test.step('Click Prev', async () => {
@@ -351,6 +426,93 @@ export class CreateCompanyPageSelfHealing extends SelfHealingPageBase {
     async assertPrimaryCtaLabel(label: string): Promise<void> {
         await test.step(`Assert the primary button reads "${label}"`, async () => {
             await this.assert.toHaveText(await this.nextButton.get(), label, `Primary button reads "${label}"`);
+        });
+    }
+
+    /** Assert the billing period tabs read `expectedTabs`, in order, and `activePeriod` is the selected one. */
+    async assertBillingPeriodTabs(expectedTabs: string[], activePeriod: string): Promise<void> {
+        await test.step(`Assert the billing period tabs are ${expectedTabs.join(' / ')}`, async () => {
+            await this.assert.toHaveCount(this.billingPeriodTabs.locator, expectedTabs.length, `${expectedTabs.length} billing period tabs are shown`);
+            await this.assert.toContainText(this.billingPeriodTabs.locator, expectedTabs, 'Billing period tabs read the expected labels, in order');
+            await this.assert.toContainText(await this.activeBillingPeriodTab.get(), activePeriod, `"${activePeriod}" is the selected billing period`);
+        });
+    }
+
+    /** Assert exactly `count` package cards are on show for the selected billing period. */
+    async assertVisiblePlanCount(count: number): Promise<void> {
+        await test.step(`Assert ${count} package card(s) are shown`, async () => {
+            await this.assert.toHaveCount(this.visiblePackageCards(), count, `${count} package card(s) are shown`);
+        });
+    }
+
+    /**
+     * Assert one package card shows its price, billing period text, feature list and Subscribe button.
+     *
+     * `price` and `periodText` are matched inside the card's price block, which on the annual tab holds
+     * both the original and the discounted price — so pass the discounted one there.
+     */
+    async assertPlanDetails(
+        name: string,
+        price: string,
+        periodText: string,
+        featureCount: number,
+        feature: string,
+    ): Promise<void> {
+        await test.step(`Assert the "${name}" plan shows ${price} (${periodText}) and its features`, async () => {
+            const card = this.planCard(name);
+            await this.assert.toBeVisible(card, `"${name}" package card is shown`);
+            await this.assert.toContainText(card.locator(createCompanyLocators.packagePrice.selector), price, `"${name}" shows the price ${price}`);
+            await this.assert.toContainText(card.locator(createCompanyLocators.packagePrice.selector), periodText, `"${name}" shows "${periodText}"`);
+            await this.assert.toHaveCount(card.locator(createCompanyLocators.packageFeatures.selector), featureCount, `"${name}" lists ${featureCount} features`);
+            await this.assert.toBeVisible(
+                card.locator(createCompanyLocators.packageFeatureLabels.selector).filter({ hasText: this.exactText(feature) }),
+                `"${name}" lists the feature "${feature}"`,
+            );
+            await this.assert.toBeVisible(card.locator(createCompanyLocators.packageSubscribeButton.selector), `"${name}" has a Subscribe button`);
+        });
+    }
+
+    /** Assert no package card is marked as selected. */
+    async assertNoPlanSelected(): Promise<void> {
+        await test.step('Assert no package card is selected', async () => {
+            await this.assert.toHaveCount(this.selectedPackageCard.locator, 0, 'No package card is in a selected state');
+        });
+    }
+
+    /** Assert a package card's Subscribe button is shown and clickable. It is never clicked by the specs. */
+    async assertPlanSubscribeEnabled(name: string): Promise<void> {
+        await test.step(`Assert the "${name}" Subscribe button is enabled`, async () => {
+            const subscribe = this.planCard(name).locator(createCompanyLocators.packageSubscribeButton.selector);
+            await this.assert.toBeVisible(subscribe, `"${name}" Subscribe button is visible`);
+            await this.assert.toBeEnabled(subscribe, `"${name}" Subscribe button is enabled`);
+        });
+    }
+
+    /** Assert `name` is the selected package: its card is marked selected and its button reads "Selected". */
+    async assertPlanSelected(name: string, selectedLabel: string): Promise<void> {
+        await test.step(`Assert the "${name}" package is selected`, async () => {
+            await this.assert.toHaveCount(this.selectedPackageCard.locator.filter({ visible: true }), 1, 'Exactly one package card is selected');
+            await this.assert.toHaveClass(this.planCard(name), /\bselected\b/, `"${name}" card is the selected one`);
+            await this.assert.toHaveText(
+                this.planCard(name).locator(createCompanyLocators.packageSubscribeButton.selector),
+                selectedLabel,
+                `"${name}" button reads "${selectedLabel}"`,
+            );
+        });
+    }
+
+    /**
+     * Assert the Payment Method step is ready to pay: a saved card is selected, the order summary
+     * shows the package and its price, and the primary button reads `ctaLabel`.
+     */
+    async assertPaymentStepReady(packageName: string, price: string, ctaLabel: string): Promise<void> {
+        await test.step('Assert the Payment Method step is ready to pay', async () => {
+            await this.assert.toBeVisible(await this.paymentMethodPanel.get(15000), 'Payment method panel is shown');
+            await this.assert.toBeChecked(this.paymentMethodRadios.locator.first(), 'A saved payment method is selected');
+            await this.assert.toContainText(await this.orderSummary.get(), packageName, `Order summary names the "${packageName}" package`);
+            await this.assert.toContainText(await this.orderSummary.get(), price, `Order summary shows ${price}`);
+            await this.assertPrimaryCtaLabel(ctaLabel);
+            await this.assertNextEnabled();
         });
     }
 
@@ -547,6 +709,30 @@ export class CreateCompanyPageSelfHealing extends SelfHealingPageBase {
     /** The card whose label is exactly `option` (its text also carries a "01".."09" number). */
     private describeOptionCard(option: string) {
         return this.describeOptions.locator.filter({ has: this.page.getByText(option, { exact: true }) });
+    }
+
+    /** The billing period tab whose label starts with `period` ("Annually" also carries "Save more!"). */
+    private billingPeriodTab(period: string) {
+        const escaped = period.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        return this.billingPeriodTabs.locator.filter({ hasText: new RegExp(`^\\s*${escaped}`) }).first();
+    }
+
+    /** Only the package cards of the selected billing period — the others stay in the DOM, hidden. */
+    private visiblePackageCards() {
+        return this.packageCards.locator.filter({ visible: true });
+    }
+
+    /** The visible package card whose name is exactly `name`, e.g. "Launch". */
+    private planCard(name: string) {
+        return this.visiblePackageCards().filter({
+            has: this.page.locator(createCompanyLocators.packageName.selector).filter({ hasText: this.exactText(name) }),
+        });
+    }
+
+    /** Anchored, escaped regex for matching a label exactly, ignoring surrounding whitespace. */
+    private exactText(value: string): RegExp {
+        const escaped = value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        return new RegExp(`^\\s*${escaped}\\s*$`);
     }
 
     /** The option in the open dropdown panel whose label is exactly `label`. */

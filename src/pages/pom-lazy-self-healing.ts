@@ -10,6 +10,7 @@ import { AssetsPageSelfHealing } from './assets-page-self-healing';
 import { PersonnelPageSelfHealing } from './personnel-page-self-healing';
 import { DividendsPageSelfHealing } from './dividends-page-self-healing';
 import { CreateCompanyPageSelfHealing } from './create-company-page-self-healing';
+import { SubscriptionsPageSelfHealing } from './subscriptions-page-self-healing';
 import { type AIHealingProvider } from '../utils/self-healing-locator';
 
 /**
@@ -48,6 +49,7 @@ export class POMLazySelfHealing {
     private _personnelPage?: PersonnelPageSelfHealing;
     private _dividendsPage?: DividendsPageSelfHealing;
     private _createCompanyPage?: CreateCompanyPageSelfHealing;
+    private _subscriptionsPage?: SubscriptionsPageSelfHealing;
 
     constructor(page: Page, testName?: string, aiProvider?: AIHealingProvider) {
         this.page = page;
@@ -189,6 +191,18 @@ export class POMLazySelfHealing {
         return this._createCompanyPage;
     }
 
+    /** Returns the SubscriptionsPageSelfHealing instance, creating it on first access */
+    get subscriptionsPage(): SubscriptionsPageSelfHealing {
+        if (!this._subscriptionsPage) {
+            this._subscriptionsPage = new SubscriptionsPageSelfHealing(
+                this.page,
+                this._testName ?? '',
+                this._aiProvider,
+            );
+        }
+        return this._subscriptionsPage;
+    }
+
     // ===================== Healing Report =====================
 
     /**
@@ -208,6 +222,7 @@ export class POMLazySelfHealing {
             this._personnelPage,
             this._dividendsPage,
             this._createCompanyPage,
+            this._subscriptionsPage,
         ];
 
         const sections = pages
