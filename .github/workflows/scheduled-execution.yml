@@ -33,7 +33,7 @@ jobs:
       # Personnel last means no other module sees it — placing Personnel earlier would silently
       # change dashboard totals for every module that runs after it. See
       # docs/personnel-revenue-seeding.md.
-      MODULES: "SignUp,Login,Revenues,DirectCost,IndirectCost,Assets,Personnel,Dividends"
+      MODULES: "SignUp,Login,Revenues,DirectCost,IndirectCost,Assets,Personnel,Dividends,CreateCompany"
 
     steps:
       - name: Checkout
