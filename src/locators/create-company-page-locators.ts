@@ -591,6 +591,9 @@ export const createCompanyLocators = {
         // Card anatomy: .pack-name (Launch / Build / Decide), .pack-desc, .pack-price (monthly shows
         // one price + "paid monthly"; annual shows the original price, the discounted one and
         // "paid annually"), .pack-best ("Best for:"), .pack-action (Subscribe) and .pack-features li.
+        //
+        // The AMOUNT in .pack-price is regional — "EGP449" from Egypt, "$19" from the CI runner — so
+        // specs assert that a price is shown, never a particular figure.
         selector: 'app-create-company .pack-card',
         metadata: {
             description: 'Subscription package cards (Launch, Build, Decide) on the Subscription Details step',
@@ -678,7 +681,9 @@ export const createCompanyLocators = {
     },
 
     orderSummary: {
-        // "Order Summary <package> <price> … VAT 14% (…) Total …"
+        // "Order Summary <package> <price> … [VAT …] Total …". Both the amounts and the VAT line are
+        // regional: an Egyptian account shows "EGP 449" plus "VAT 14%", the CI runner shows "$ 19"
+        // and no VAT row at all — so specs assert the package name and that an amount is present.
         selector: 'app-payment-method-select .col-md-4',
         metadata: {
             description: 'Order summary column on the Payment Method step',

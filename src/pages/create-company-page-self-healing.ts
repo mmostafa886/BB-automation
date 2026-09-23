@@ -446,22 +446,23 @@ export class CreateCompanyPageSelfHealing extends SelfHealingPageBase {
     }
 
     /**
-     * Assert one package card shows its price, billing period text, feature list and Subscribe button.
+     * Assert one package card shows a price, its billing period text, its feature list and a
+     * Subscribe button.
      *
-     * `price` and `periodText` are matched inside the card's price block, which on the annual tab holds
-     * both the original and the discounted price — so pass the discounted one there.
+     * The amount itself is NOT asserted: pricing is regional, so the same package reads "EGP449" from
+     * Egypt and "$19" on the CI runner. Only the presence of a number is checked, plus the billing
+     * period text, which is the same everywhere.
      */
     async assertPlanDetails(
         name: string,
-        price: string,
         periodText: string,
         featureCount: number,
         feature: string,
     ): Promise<void> {
-        await test.step(`Assert the "${name}" plan shows ${price} (${periodText}) and its features`, async () => {
+        await test.step(`Assert the "${name}" plan shows a price (${periodText}) and its features`, async () => {
             const card = this.planCard(name);
             await this.assert.toBeVisible(card, `"${name}" package card is shown`);
-            await this.assert.toContainText(card.locator(createCompanyLocators.packagePrice.selector), price, `"${name}" shows the price ${price}`);
+            await this.assert.toContainText(card.locator(createCompanyLocators.packagePrice.selector), /\d/, `"${name}" shows a price`);
             await this.assert.toContainText(card.locator(createCompanyLocators.packagePrice.selector), periodText, `"${name}" shows "${periodText}"`);
             await this.assert.toHaveCount(card.locator(createCompanyLocators.packageFeatures.selector), featureCount, `"${name}" lists ${featureCount} features`);
             await this.assert.toBeVisible(
@@ -503,14 +504,17 @@ export class CreateCompanyPageSelfHealing extends SelfHealingPageBase {
 
     /**
      * Assert the Payment Method step is ready to pay: a saved card is selected, the order summary
-     * shows the package and its price, and the primary button reads `ctaLabel`.
+     * names the package and shows an amount, and the primary button reads `ctaLabel`.
+     *
+     * The amount is not asserted — pricing is regional ("EGP 449" from Egypt, "$ 19" on the CI
+     * runner), and the VAT line only appears in some regions.
      */
-    async assertPaymentStepReady(packageName: string, price: string, ctaLabel: string): Promise<void> {
+    async assertPaymentStepReady(packageName: string, ctaLabel: string): Promise<void> {
         await test.step('Assert the Payment Method step is ready to pay', async () => {
             await this.assert.toBeVisible(await this.paymentMethodPanel.get(15000), 'Payment method panel is shown');
             await this.assert.toBeChecked(this.paymentMethodRadios.locator.first(), 'A saved payment method is selected');
             await this.assert.toContainText(await this.orderSummary.get(), packageName, `Order summary names the "${packageName}" package`);
-            await this.assert.toContainText(await this.orderSummary.get(), price, `Order summary shows ${price}`);
+            await this.assert.toContainText(await this.orderSummary.get(), /\d/, 'Order summary shows an amount');
             await this.assertPrimaryCtaLabel(ctaLabel);
             await this.assertNextEnabled();
         });

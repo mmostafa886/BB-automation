@@ -18,7 +18,6 @@
     "nextStepNumber": 2,
     "nextStepTitle": "Company Stage"
   },
-
   "nextDisabledWithoutCard": {
     "test": "TC-BB-Create-Company-002: Next stays disabled until a describe card is chosen",
     "mail": "bznsplan@gmail.com",
@@ -35,7 +34,6 @@
       "Other"
     ]
   },
-
   "chooseStageAndGoNext": {
     "test": "TC-BB-Create-Company-003: Choose a company stage and move to the Business Information step",
     "mail": "bznsplan@gmail.com",
@@ -43,12 +41,15 @@
     "describeOption": "I have a business idea",
     "stageStepNumber": 2,
     "stageStepTitle": "Company Stage",
-    "stages": ["Idea", "Startup", "Growth"],
+    "stages": [
+      "Idea",
+      "Startup",
+      "Growth"
+    ],
     "selectedStage": "Startup",
     "nextStepNumber": 3,
     "nextStepTitle": "Business Information"
   },
-
   "stepCountNotAffectedByCompanyAndForecast": {
     "test": "TC-BB-Create-Company-005: Switching company or forecast during the wizard keeps its 8 steps",
     "mail": "bznsplan@gmail.com",
@@ -65,7 +66,6 @@
     "nextStepNumber": 3,
     "nextStepTitle": "Business Information"
   },
-
   "confirmCompanySwitchWithData": {
     "test": "TC-BB-Create-Company-006: Confirming a switch to an existing company after entering data opens the Home page",
     "mail": "bznsplan@gmail.com",
@@ -79,7 +79,6 @@
     "unsavedChangesTitle": "Are You Sure ?",
     "unsavedChangesMessage": "You have unsaved changes. Do you want to save them before proceeding?"
   },
-
   "companySwitchWithoutData": {
     "test": "TC-BB-Create-Company-007: Switching to an existing company before entering any data opens the Home page directly",
     "mail": "bznsplan@gmail.com",
@@ -98,7 +97,6 @@
     ],
     "targetCompany": "idea"
   },
-
   "confirmForecastSwitchWithData": {
     "test": "TC-BB-Create-Company-008: Confirming a switch to an existing forecast after entering data opens the Forecast page",
     "mail": "bznsplan@gmail.com",
@@ -112,7 +110,6 @@
     "unsavedChangesTitle": "Are You Sure ?",
     "unsavedChangesMessage": "You have unsaved changes. Do you want to save them before proceeding?"
   },
-
   "forecastSwitchWithoutData": {
     "test": "TC-BB-Create-Company-009: Switching to an existing forecast before entering any data opens the Forecast page directly",
     "mail": "bznsplan@gmail.com",
@@ -131,7 +128,6 @@
     ],
     "targetForecast": "forecast3"
   },
-
   "prevHiddenOnFirstStep": {
     "test": "TC-BB-Create-Company-010: Prev is not shown on the first step and appears from the second step",
     "mail": "bznsplan@gmail.com",
@@ -151,7 +147,6 @@
     "stageStepNumber": 2,
     "stageStepTitle": "Company Stage"
   },
-
   "prevKeepsEnteredData": {
     "test": "TC-BB-Create-Company-011: Prev goes back one step at a time and keeps the data entered in each step",
     "mail": "bznsplan@gmail.com",
@@ -168,7 +163,6 @@
     "companyDetailsStepTitle": "Company Details",
     "companyName": "Prev Button Automation Co"
   },
-
   "generateSuggestionsGatedByTypeOfBusiness": {
     "test": "TC-BB-Create-Company-012: Generate Suggestions is disabled while the type of business is empty and enabled once it is filled",
     "mail": "bznsplan@gmail.com",
@@ -181,7 +175,6 @@
     "businessInfoStepTitle": "Business Information",
     "typeOfBusiness": "Coffee shop"
   },
-
   "industryGatesNext": {
     "test": "TC-BB-Create-Company-013: Next stays disabled until an industry is selected on the Business Information step",
     "mail": "bznsplan@gmail.com",
@@ -197,7 +190,6 @@
     "nextStepNumber": 4,
     "nextStepTitle": "Company Details"
   },
-
   "companyNameGatesNext": {
     "test": "TC-BB-Create-Company-014: Next stays disabled until a company name is entered on the Company Details step",
     "mail": "bznsplan@gmail.com",
@@ -215,7 +207,6 @@
     "whitespaceName": "   ",
     "companyName": "Name Gate Automation Co"
   },
-
   "financialRequiredFieldsGateNext": {
     "test": "TC-BB-Create-Company-015: Every required field on the Financial step must be filled before reaching Funding",
     "mail": "bznsplan@gmail.com",
@@ -241,7 +232,6 @@
     "nextStepNumber": 6,
     "nextStepTitle": "Funding"
   },
-
   "monthlyDetailLimitedByDuration": {
     "test": "TC-BB-Create-Company-016: Monthly detail can equal the financial plan duration but never exceed it",
     "mail": "bznsplan@gmail.com",
@@ -259,11 +249,12 @@
     "financialStepNumber": 5,
     "financialStepTitle": "Financial",
     "forecastStartDay": "1",
-
     "durationCases": [
       {
         "duration": "1",
-        "options": ["1 year of monthly detail"],
+        "options": [
+          "1 year of monthly detail"
+        ],
         "highestAllowed": "1 year of monthly detail"
       },
       {
@@ -298,19 +289,16 @@
         "highestAllowed": "5 years of monthly detail"
       }
     ],
-
     "clampDurationFrom": "5",
     "clampMonthlyDetailBefore": "5 years of monthly detail",
     "clampDurationTo": "2",
     "clampMonthlyDetailAfter": "2 years of monthly detail",
-
     "finalDuration": "3",
     "finalMonthlyDetail": "3 years of monthly detail",
     "numberFormat": "1,000.00",
     "nextStepNumber": 6,
     "nextStepTitle": "Funding"
   },
-
   "newAccountSixStepWizard": {
     "test": "TC-BB-Create-Company-017: A new account gets a 6-step wizard ending on Funding with a Start Free Trial button",
     "mail": "jeweyo7880@dreameg.com",
@@ -347,7 +335,6 @@
     "lastStepTitle": "Funding",
     "primaryCtaLabel": "Start Free Trial"
   },
-
   "subscriptionPlansDisplayed": {
     "test": "TC-BB-Create-Company-018: The Subscription Details step lists the plans with monthly and annual pricing and features",
     "mail": "bznsplan@gmail.com",
@@ -372,61 +359,55 @@
     "fundingStepTitle": "Funding",
     "subscriptionStepNumber": 7,
     "subscriptionStepTitle": "Subscription Details",
-
-    "billingTabs": ["Monthly", "Annually", "Offers"],
+    "billingTabs": [
+      "Monthly",
+      "Annually",
+      "Offers"
+    ],
     "defaultBillingPeriod": "Monthly",
     "annualBillingPeriod": "Annually",
     "planCount": 3,
-
     "monthlyPlans": [
       {
         "name": "Launch",
-        "price": "EGP449",
         "periodText": "paid monthly",
         "featureCount": 10,
         "feature": "Idea Canvas"
       },
       {
         "name": "Build",
-        "price": "EGP949",
         "periodText": "paid monthly",
         "featureCount": 9,
         "feature": "Performance dashboard (Monthly view)"
       },
       {
         "name": "Decide",
-        "price": "EGP1999",
         "periodText": "paid monthly",
         "featureCount": 6,
         "feature": "QuickBooks integration"
       }
     ],
-
     "annualPlans": [
       {
         "name": "Launch",
-        "price": "EGP299",
         "periodText": "paid annually",
         "featureCount": 10,
         "feature": "Idea Canvas"
       },
       {
         "name": "Build",
-        "price": "EGP599",
         "periodText": "paid annually",
         "featureCount": 9,
         "feature": "Performance dashboard (Monthly view)"
       },
       {
         "name": "Decide",
-        "price": "EGP1299",
         "periodText": "paid annually",
         "featureCount": 6,
         "feature": "QuickBooks integration"
       }
     ]
   },
-
   "planSelectionEnablesNext": {
     "test": "TC-BB-Create-Company-019: Selecting a plan enables Next and opens the Payment Method step",
     "mail": "bznsplan@gmail.com",
@@ -452,14 +433,17 @@
     "subscriptionStepNumber": 7,
     "subscriptionStepTitle": "Subscription Details",
     "planCount": 3,
-    "planNames": ["Launch", "Build", "Decide"],
+    "planNames": [
+      "Launch",
+      "Build",
+      "Decide"
+    ],
     "planToSelect": "Build",
     "selectedPlanLabel": "Selected",
     "paymentStepNumber": 8,
     "paymentStepTitle": "Payment Method",
     "checkoutCtaLabel": "Proceed to checkout"
   },
-
   "completeFlowWithPayment": {
     "test": "TC-BB-Create-Company-020: Completing the wizard and paying creates the company with the chosen package active",
     "mail": "bznsplan@gmail.com",
@@ -487,14 +471,12 @@
     "subscriptionStepNumber": 7,
     "subscriptionStepTitle": "Subscription Details",
     "planToBuy": "Launch",
-    "planPrice": "449",
     "selectedPlanLabel": "Selected",
     "paymentStepNumber": 8,
     "paymentStepTitle": "Payment Method",
     "checkoutCtaLabel": "Proceed to checkout",
     "defaultForecastName": "Original forecast"
   },
-
   "nextDisabledWithoutStage": {
     "test": "TC-BB-Create-Company-004: Next stays disabled until a company stage is chosen",
     "mail": "bznsplan@gmail.com",
@@ -502,6 +484,10 @@
     "describeOption": "I have a business idea",
     "stageStepNumber": 2,
     "stageStepTitle": "Company Stage",
-    "stages": ["Idea", "Startup", "Growth"]
+    "stages": [
+      "Idea",
+      "Startup",
+      "Growth"
+    ]
   }
 }

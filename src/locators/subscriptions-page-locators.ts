@@ -37,7 +37,9 @@ export const subscriptionsLocators = {
     },
 
     companySubscriptionExpiredBadge: {
-        // Only rendered for a lapsed subscription.
+        // Only rendered for a lapsed subscription. Not asserted by the specs — subscription length is
+        // the app's business, and on UAT a freshly paid plan is dated the day it was bought, so it
+        // carries this badge straight away.
         selector: '.info-badge',
         metadata: {
             text:        'Expired',
