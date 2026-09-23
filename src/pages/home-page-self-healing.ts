@@ -54,8 +54,11 @@ export class HomePageSelfHealing extends SelfHealingPageBase {
      */
     async assertPageLoaded(): Promise<void> {
         await test.step('Assert home page loaded', async () => {
-            await this.assert.toBeVisible(await this.welcomeHeading.get(), '"Welcome!" heading is visible on the home dashboard');
-            await this.assert.toBeVisible(await this.userAvatarIcon.get(), 'User avatar icon is visible in the top navigation bar');
+            // The dashboard renders a few seconds after sign-in, so probe for longer than the 2 s
+            // default — otherwise the primary selector is reported as failed and healing runs for
+            // nothing while the heading is simply not in the DOM yet.
+            await this.assert.toBeVisible(await this.welcomeHeading.get(15000), '"Welcome!" heading is visible on the home dashboard');
+            await this.assert.toBeVisible(await this.userAvatarIcon.get(15000), 'User avatar icon is visible in the top navigation bar');
         });
     }
     /**
@@ -72,13 +75,16 @@ export class HomePageSelfHealing extends SelfHealingPageBase {
      */
     async waitForDashboardLoaded(timeout: number = 60000): Promise<void> {
         await test.step('Wait for the home dashboard to load after sign-in', async () => {
+            // Probe with the same budget as the wait itself: sign-in regularly takes longer than the
+            // 2 s default, and a too-short probe reports the (valid) primary selector as broken and
+            // burns the healing phases before this method even starts waiting.
             await this.actions.waitForVisible(
-                await this.welcomeHeading.get(),
+                await this.welcomeHeading.get(timeout),
                 'Wait for the "Welcome!" heading on the home dashboard',
                 timeout,
             );
             await this.assert.toBeVisible(
-                await this.userAvatarIcon.get(),
+                await this.userAvatarIcon.get(15000),
                 'User avatar icon is visible in the top navigation bar',
             );
         });

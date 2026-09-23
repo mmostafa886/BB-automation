@@ -66,7 +66,10 @@ export class LoginPageSelfHealing extends SelfHealingPageBase {
     /** Click the main-page trigger to open the sign-in modal */
     async openSignInModal(): Promise<void> {
         await test.step('Open sign-in modal', async () => {
-            await this.actions.click(await this.signInTriggerButton.get(), 'Click Sign in trigger to open modal');
+            // The auth page needs a few seconds to render after navigation, which is longer than the
+            // 2 s default probe. Without a bigger budget the primary selector is reported as failed and
+            // self-healing runs for nothing — the button is simply not in the DOM yet.
+            await this.actions.click(await this.signInTriggerButton.get(15000), 'Click Sign in trigger to open modal');
         });
     }
 
@@ -122,7 +125,8 @@ export class LoginPageSelfHealing extends SelfHealingPageBase {
     async assertAuthPageVisible(): Promise<void> {
         await test.step('Assert auth page is visible', async () => {
             await this.assert.toHaveURL(/\/auth/, 'Auth page URL contains /auth');
-            await this.assert.toBeVisible(await this.signInTriggerButton.get(), 'Sign in trigger button is visible');
+            // Same first-render delay as openSignInModal() — probe for longer than the 2 s default.
+            await this.assert.toBeVisible(await this.signInTriggerButton.get(15000), 'Sign in trigger button is visible');
         });
     }
 
