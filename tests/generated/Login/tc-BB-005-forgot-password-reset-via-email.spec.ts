@@ -22,7 +22,7 @@
  *   6. Enter and confirm a new password, then submit.
  *   7. Assert "Password changed successfully" is shown.
  *   8. Sign out, then sign in again with the new password.
- *   9. Assert the user lands on the company-creation page — the new password works.
+ *   9. Assert the user lands on the home page — the new password works.
  */
 
 import { test } from '../../fixtures/self-healing-fixture';
