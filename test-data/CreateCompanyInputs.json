@@ -1,0 +1,493 @@
+{
+  "chooseCardAndGoNext": {
+    "test": "TC-BB-Create-Company-001: Choose a describe card and move to the Company Stage step",
+    "mail": "bznsplan@gmail.com",
+    "password": "12345678",
+    "describeOptions": [
+      "I have a business idea",
+      "I'm starting a business",
+      "I'm running a business",
+      "I'm advising a small business",
+      "I'm an Incubator or Accelerator",
+      "I'm a business plan writer",
+      "I'm an accountant",
+      "I'm a student",
+      "Other"
+    ],
+    "selectedOption": "I have a business idea",
+    "nextStepNumber": 2,
+    "nextStepTitle": "Company Stage"
+  },
+  "nextDisabledWithoutCard": {
+    "test": "TC-BB-Create-Company-002: Next stays disabled until a describe card is chosen",
+    "mail": "bznsplan@gmail.com",
+    "password": "12345678",
+    "describeOptions": [
+      "I have a business idea",
+      "I'm starting a business",
+      "I'm running a business",
+      "I'm advising a small business",
+      "I'm an Incubator or Accelerator",
+      "I'm a business plan writer",
+      "I'm an accountant",
+      "I'm a student",
+      "Other"
+    ]
+  },
+  "chooseStageAndGoNext": {
+    "test": "TC-BB-Create-Company-003: Choose a company stage and move to the Business Information step",
+    "mail": "bznsplan@gmail.com",
+    "password": "12345678",
+    "describeOption": "I have a business idea",
+    "stageStepNumber": 2,
+    "stageStepTitle": "Company Stage",
+    "stages": [
+      "Idea",
+      "Startup",
+      "Growth"
+    ],
+    "selectedStage": "Startup",
+    "nextStepNumber": 3,
+    "nextStepTitle": "Business Information"
+  },
+  "stepCountNotAffectedByCompanyAndForecast": {
+    "test": "TC-BB-Create-Company-005: Switching company or forecast during the wizard keeps its 8 steps",
+    "mail": "bznsplan@gmail.com",
+    "password": "12345678",
+    "describeOption": "I have a business idea",
+    "stageStepNumber": 2,
+    "stageStepTitle": "Company Stage",
+    "expectedStepCount": 8,
+    "company": "test",
+    "forecast": "forecast2",
+    "unsavedChangesTitle": "Are You Sure ?",
+    "unsavedChangesMessage": "You have unsaved changes. Do you want to save them before proceeding?",
+    "selectedStage": "Startup",
+    "nextStepNumber": 3,
+    "nextStepTitle": "Business Information"
+  },
+  "confirmCompanySwitchWithData": {
+    "test": "TC-BB-Create-Company-006: Confirming a switch to an existing company after entering data opens the Home page",
+    "mail": "bznsplan@gmail.com",
+    "password": "12345678",
+    "startCompany": "test",
+    "describeOption": "I have a business idea",
+    "stageStepNumber": 2,
+    "stageStepTitle": "Company Stage",
+    "selectedStage": "Idea",
+    "targetCompany": "idea",
+    "unsavedChangesTitle": "Are You Sure ?",
+    "unsavedChangesMessage": "You have unsaved changes. Do you want to save them before proceeding?"
+  },
+  "companySwitchWithoutData": {
+    "test": "TC-BB-Create-Company-007: Switching to an existing company before entering any data opens the Home page directly",
+    "mail": "bznsplan@gmail.com",
+    "password": "12345678",
+    "startCompany": "test",
+    "describeOptions": [
+      "I have a business idea",
+      "I'm starting a business",
+      "I'm running a business",
+      "I'm advising a small business",
+      "I'm an Incubator or Accelerator",
+      "I'm a business plan writer",
+      "I'm an accountant",
+      "I'm a student",
+      "Other"
+    ],
+    "targetCompany": "idea"
+  },
+  "confirmForecastSwitchWithData": {
+    "test": "TC-BB-Create-Company-008: Confirming a switch to an existing forecast after entering data opens the Forecast page",
+    "mail": "bznsplan@gmail.com",
+    "password": "12345678",
+    "company": "test",
+    "describeOption": "I have a business idea",
+    "stageStepNumber": 2,
+    "stageStepTitle": "Company Stage",
+    "selectedStage": "Idea",
+    "targetForecast": "forecast3",
+    "unsavedChangesTitle": "Are You Sure ?",
+    "unsavedChangesMessage": "You have unsaved changes. Do you want to save them before proceeding?"
+  },
+  "forecastSwitchWithoutData": {
+    "test": "TC-BB-Create-Company-009: Switching to an existing forecast before entering any data opens the Forecast page directly",
+    "mail": "bznsplan@gmail.com",
+    "password": "12345678",
+    "company": "test",
+    "describeOptions": [
+      "I have a business idea",
+      "I'm starting a business",
+      "I'm running a business",
+      "I'm advising a small business",
+      "I'm an Incubator or Accelerator",
+      "I'm a business plan writer",
+      "I'm an accountant",
+      "I'm a student",
+      "Other"
+    ],
+    "targetForecast": "forecast3"
+  },
+  "prevHiddenOnFirstStep": {
+    "test": "TC-BB-Create-Company-010: Prev is not shown on the first step and appears from the second step",
+    "mail": "bznsplan@gmail.com",
+    "password": "12345678",
+    "describeOptions": [
+      "I have a business idea",
+      "I'm starting a business",
+      "I'm running a business",
+      "I'm advising a small business",
+      "I'm an Incubator or Accelerator",
+      "I'm a business plan writer",
+      "I'm an accountant",
+      "I'm a student",
+      "Other"
+    ],
+    "describeOption": "I have a business idea",
+    "stageStepNumber": 2,
+    "stageStepTitle": "Company Stage"
+  },
+  "prevKeepsEnteredData": {
+    "test": "TC-BB-Create-Company-011: Prev goes back one step at a time and keeps the data entered in each step",
+    "mail": "bznsplan@gmail.com",
+    "password": "12345678",
+    "describeOption": "I'm running a business",
+    "stageStepNumber": 2,
+    "stageStepTitle": "Company Stage",
+    "selectedStage": "Growth",
+    "businessInfoStepNumber": 3,
+    "businessInfoStepTitle": "Business Information",
+    "typeOfBusiness": "Coffee shop",
+    "industry": "Animation",
+    "companyDetailsStepNumber": 4,
+    "companyDetailsStepTitle": "Company Details",
+    "companyName": "Prev Button Automation Co"
+  },
+  "generateSuggestionsGatedByTypeOfBusiness": {
+    "test": "TC-BB-Create-Company-012: Generate Suggestions is disabled while the type of business is empty and enabled once it is filled",
+    "mail": "bznsplan@gmail.com",
+    "password": "12345678",
+    "describeOption": "I have a business idea",
+    "stageStepNumber": 2,
+    "stageStepTitle": "Company Stage",
+    "selectedStage": "Idea",
+    "businessInfoStepNumber": 3,
+    "businessInfoStepTitle": "Business Information",
+    "typeOfBusiness": "Coffee shop"
+  },
+  "industryGatesNext": {
+    "test": "TC-BB-Create-Company-013: Next stays disabled until an industry is selected on the Business Information step",
+    "mail": "bznsplan@gmail.com",
+    "password": "12345678",
+    "describeOption": "I have a business idea",
+    "stageStepNumber": 2,
+    "stageStepTitle": "Company Stage",
+    "selectedStage": "Idea",
+    "businessInfoStepNumber": 3,
+    "businessInfoStepTitle": "Business Information",
+    "typeOfBusiness": "Coffee shop",
+    "industry": "Animation",
+    "nextStepNumber": 4,
+    "nextStepTitle": "Company Details"
+  },
+  "companyNameGatesNext": {
+    "test": "TC-BB-Create-Company-014: Next stays disabled until a company name is entered on the Company Details step",
+    "mail": "bznsplan@gmail.com",
+    "password": "12345678",
+    "describeOption": "I have a business idea",
+    "stageStepNumber": 2,
+    "stageStepTitle": "Company Stage",
+    "selectedStage": "Idea",
+    "businessInfoStepNumber": 3,
+    "businessInfoStepTitle": "Business Information",
+    "industry": "Animation",
+    "companyDetailsStepNumber": 4,
+    "companyDetailsStepTitle": "Company Details",
+    "tagline": "Tagline without a name",
+    "whitespaceName": "   ",
+    "companyName": "Name Gate Automation Co"
+  },
+  "financialRequiredFieldsGateNext": {
+    "test": "TC-BB-Create-Company-015: Every required field on the Financial step must be filled before reaching Funding",
+    "mail": "bznsplan@gmail.com",
+    "password": "12345678",
+    "describeOption": "I have a business idea",
+    "stageStepNumber": 2,
+    "stageStepTitle": "Company Stage",
+    "selectedStage": "Idea",
+    "businessInfoStepNumber": 3,
+    "businessInfoStepTitle": "Business Information",
+    "industry": "Animation",
+    "companyDetailsStepNumber": 4,
+    "companyDetailsStepTitle": "Company Details",
+    "companyName": "Financial Step Automation Co",
+    "financialStepNumber": 5,
+    "financialStepTitle": "Financial",
+    "forecastStartDay": "1",
+    "durationYears": "5",
+    "monthlyDetail": "1 year of monthly detail",
+    "numberFormat": "1,000.00",
+    "defaultCurrency": "Dollar($)",
+    "defaultIntent": "before",
+    "nextStepNumber": 6,
+    "nextStepTitle": "Funding"
+  },
+  "monthlyDetailLimitedByDuration": {
+    "test": "TC-BB-Create-Company-016: Monthly detail can equal the financial plan duration but never exceed it",
+    "mail": "bznsplan@gmail.com",
+    "password": "12345678",
+    "describeOption": "I have a business idea",
+    "stageStepNumber": 2,
+    "stageStepTitle": "Company Stage",
+    "selectedStage": "Idea",
+    "businessInfoStepNumber": 3,
+    "businessInfoStepTitle": "Business Information",
+    "industry": "Animation",
+    "companyDetailsStepNumber": 4,
+    "companyDetailsStepTitle": "Company Details",
+    "companyName": "Monthly Detail Rule Co",
+    "financialStepNumber": 5,
+    "financialStepTitle": "Financial",
+    "forecastStartDay": "1",
+    "durationCases": [
+      {
+        "duration": "1",
+        "options": [
+          "1 year of monthly detail"
+        ],
+        "highestAllowed": "1 year of monthly detail"
+      },
+      {
+        "duration": "3",
+        "options": [
+          "1 year of monthly detail",
+          "2 years of monthly detail",
+          "3 years of monthly detail"
+        ],
+        "highestAllowed": "3 years of monthly detail"
+      },
+      {
+        "duration": "5",
+        "options": [
+          "1 year of monthly detail",
+          "2 years of monthly detail",
+          "3 years of monthly detail",
+          "4 years of monthly detail",
+          "5 years of monthly detail"
+        ],
+        "highestAllowed": "5 years of monthly detail"
+      },
+      {
+        "duration": "7",
+        "options": [
+          "1 year of monthly detail",
+          "2 years of monthly detail",
+          "3 years of monthly detail",
+          "4 years of monthly detail",
+          "5 years of monthly detail"
+        ],
+        "highestAllowed": "5 years of monthly detail"
+      }
+    ],
+    "clampDurationFrom": "5",
+    "clampMonthlyDetailBefore": "5 years of monthly detail",
+    "clampDurationTo": "2",
+    "clampMonthlyDetailAfter": "2 years of monthly detail",
+    "finalDuration": "3",
+    "finalMonthlyDetail": "3 years of monthly detail",
+    "numberFormat": "1,000.00",
+    "nextStepNumber": 6,
+    "nextStepTitle": "Funding"
+  },
+  "newAccountSixStepWizard": {
+    "test": "TC-BB-Create-Company-017: A new account gets a 6-step wizard ending on Funding with a Start Free Trial button",
+    "mail": "jeweyo7880@dreameg.com",
+    "password": "By@12345678",
+    "describeOptions": [
+      "I have a business idea",
+      "I'm starting a business",
+      "I'm running a business",
+      "I'm advising a small business",
+      "I'm an Incubator or Accelerator",
+      "I'm a business plan writer",
+      "I'm an accountant",
+      "I'm a student",
+      "Other"
+    ],
+    "describeOption": "I have a business idea",
+    "expectedStepCount": 6,
+    "stageStepNumber": 2,
+    "stageStepTitle": "Company Stage",
+    "selectedStage": "Idea",
+    "businessInfoStepNumber": 3,
+    "businessInfoStepTitle": "Business Information",
+    "industry": "Animation",
+    "companyDetailsStepNumber": 4,
+    "companyDetailsStepTitle": "Company Details",
+    "companyName": "New Account Wizard Co",
+    "financialStepNumber": 5,
+    "financialStepTitle": "Financial",
+    "forecastStartDay": "1",
+    "durationYears": "3",
+    "monthlyDetail": "1 year of monthly detail",
+    "numberFormat": "1,000.00",
+    "lastStepNumber": 6,
+    "lastStepTitle": "Funding",
+    "primaryCtaLabel": "Start Free Trial"
+  },
+  "subscriptionPlansDisplayed": {
+    "test": "TC-BB-Create-Company-018: The Subscription Details step lists the plans with monthly and annual pricing and features",
+    "mail": "bznsplan@gmail.com",
+    "password": "12345678",
+    "describeOption": "I have a business idea",
+    "stageStepNumber": 2,
+    "stageStepTitle": "Company Stage",
+    "selectedStage": "Idea",
+    "businessInfoStepNumber": 3,
+    "businessInfoStepTitle": "Business Information",
+    "industry": "Animation",
+    "companyDetailsStepNumber": 4,
+    "companyDetailsStepTitle": "Company Details",
+    "companyName": "Subscription Plans Automation Co",
+    "financialStepNumber": 5,
+    "financialStepTitle": "Financial",
+    "forecastStartDay": "1",
+    "durationYears": "3",
+    "monthlyDetail": "1 year of monthly detail",
+    "numberFormat": "1,000.00",
+    "fundingStepNumber": 6,
+    "fundingStepTitle": "Funding",
+    "subscriptionStepNumber": 7,
+    "subscriptionStepTitle": "Subscription Details",
+    "billingTabs": [
+      "Monthly",
+      "Annually",
+      "Offers"
+    ],
+    "defaultBillingPeriod": "Monthly",
+    "annualBillingPeriod": "Annually",
+    "planCount": 3,
+    "monthlyPlans": [
+      {
+        "name": "Launch",
+        "periodText": "paid monthly",
+        "featureCount": 10,
+        "feature": "Idea Canvas"
+      },
+      {
+        "name": "Build",
+        "periodText": "paid monthly",
+        "featureCount": 9,
+        "feature": "Performance dashboard (Monthly view)"
+      },
+      {
+        "name": "Decide",
+        "periodText": "paid monthly",
+        "featureCount": 6,
+        "feature": "QuickBooks integration"
+      }
+    ],
+    "annualPlans": [
+      {
+        "name": "Launch",
+        "periodText": "paid annually",
+        "featureCount": 10,
+        "feature": "Idea Canvas"
+      },
+      {
+        "name": "Build",
+        "periodText": "paid annually",
+        "featureCount": 9,
+        "feature": "Performance dashboard (Monthly view)"
+      },
+      {
+        "name": "Decide",
+        "periodText": "paid annually",
+        "featureCount": 6,
+        "feature": "QuickBooks integration"
+      }
+    ]
+  },
+  "planSelectionEnablesNext": {
+    "test": "TC-BB-Create-Company-019: Selecting a plan enables Next and opens the Payment Method step",
+    "mail": "bznsplan@gmail.com",
+    "password": "12345678",
+    "describeOption": "I have a business idea",
+    "stageStepNumber": 2,
+    "stageStepTitle": "Company Stage",
+    "selectedStage": "Idea",
+    "businessInfoStepNumber": 3,
+    "businessInfoStepTitle": "Business Information",
+    "industry": "Animation",
+    "companyDetailsStepNumber": 4,
+    "companyDetailsStepTitle": "Company Details",
+    "companyName": "Plan Selection Automation Co",
+    "financialStepNumber": 5,
+    "financialStepTitle": "Financial",
+    "forecastStartDay": "1",
+    "durationYears": "3",
+    "monthlyDetail": "1 year of monthly detail",
+    "numberFormat": "1,000.00",
+    "fundingStepNumber": 6,
+    "fundingStepTitle": "Funding",
+    "subscriptionStepNumber": 7,
+    "subscriptionStepTitle": "Subscription Details",
+    "planCount": 3,
+    "planNames": [
+      "Launch",
+      "Build",
+      "Decide"
+    ],
+    "planToSelect": "Build",
+    "selectedPlanLabel": "Selected",
+    "paymentStepNumber": 8,
+    "paymentStepTitle": "Payment Method",
+    "checkoutCtaLabel": "Proceed to checkout"
+  },
+  "completeFlowWithPayment": {
+    "test": "TC-BB-Create-Company-020: Completing the wizard and paying creates the company with the chosen package active",
+    "mail": "bznsplan@gmail.com",
+    "password": "12345678",
+    "describeOption": "I have a business idea",
+    "stageStepNumber": 2,
+    "stageStepTitle": "Company Stage",
+    "selectedStage": "Idea",
+    "businessInfoStepNumber": 3,
+    "businessInfoStepTitle": "Business Information",
+    "typeOfBusiness": "Coffee shop",
+    "industry": "Animation",
+    "companyDetailsStepNumber": 4,
+    "companyDetailsStepTitle": "Company Details",
+    "companyNamePrefix": "Paid Company Automation",
+    "tagline": "Created by automation",
+    "financialStepNumber": 5,
+    "financialStepTitle": "Financial",
+    "forecastStartDay": "1",
+    "durationYears": "3",
+    "monthlyDetail": "1 year of monthly detail",
+    "numberFormat": "1,000.00",
+    "fundingStepNumber": 6,
+    "fundingStepTitle": "Funding",
+    "subscriptionStepNumber": 7,
+    "subscriptionStepTitle": "Subscription Details",
+    "planToBuy": "Launch",
+    "selectedPlanLabel": "Selected",
+    "paymentStepNumber": 8,
+    "paymentStepTitle": "Payment Method",
+    "checkoutCtaLabel": "Proceed to checkout",
+    "defaultForecastName": "Original forecast"
+  },
+  "nextDisabledWithoutStage": {
+    "test": "TC-BB-Create-Company-004: Next stays disabled until a company stage is chosen",
+    "mail": "bznsplan@gmail.com",
+    "password": "12345678",
+    "describeOption": "I have a business idea",
+    "stageStepNumber": 2,
+    "stageStepTitle": "Company Stage",
+    "stages": [
+      "Idea",
+      "Startup",
+      "Growth"
+    ]
+  }
+}

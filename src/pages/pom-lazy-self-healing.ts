@@ -9,6 +9,8 @@ import { SignUpPageSelfHealing } from './signup-page-self-healing';
 import { AssetsPageSelfHealing } from './assets-page-self-healing';
 import { PersonnelPageSelfHealing } from './personnel-page-self-healing';
 import { DividendsPageSelfHealing } from './dividends-page-self-healing';
+import { CreateCompanyPageSelfHealing } from './create-company-page-self-healing';
+import { SubscriptionsPageSelfHealing } from './subscriptions-page-self-healing';
 import { ForgotPasswordPageSelfHealing } from './forgot-password-page-self-healing';
 import { ResetPasswordPageSelfHealing } from './reset-password-page-self-healing';
 import { type AIHealingProvider } from '../utils/self-healing-locator';
@@ -48,6 +50,8 @@ export class POMLazySelfHealing {
     private _assetsPage?: AssetsPageSelfHealing;
     private _personnelPage?: PersonnelPageSelfHealing;
     private _dividendsPage?: DividendsPageSelfHealing;
+    private _createCompanyPage?: CreateCompanyPageSelfHealing;
+    private _subscriptionsPage?: SubscriptionsPageSelfHealing;
     private _forgotPasswordPage?: ForgotPasswordPageSelfHealing;
     private _resetPasswordPage?: ResetPasswordPageSelfHealing;
 
@@ -179,6 +183,30 @@ export class POMLazySelfHealing {
         return this._dividendsPage;
     }
 
+    /** Returns the CreateCompanyPageSelfHealing instance, creating it on first access */
+    get createCompanyPage(): CreateCompanyPageSelfHealing {
+        if (!this._createCompanyPage) {
+            this._createCompanyPage = new CreateCompanyPageSelfHealing(
+                this.page,
+                this._testName ?? '',
+                this._aiProvider,
+            );
+        }
+        return this._createCompanyPage;
+    }
+
+    /** Returns the SubscriptionsPageSelfHealing instance, creating it on first access */
+    get subscriptionsPage(): SubscriptionsPageSelfHealing {
+        if (!this._subscriptionsPage) {
+            this._subscriptionsPage = new SubscriptionsPageSelfHealing(
+                this.page,
+                this._testName ?? '',
+                this._aiProvider,
+            );
+        }
+        return this._subscriptionsPage;
+    }
+
     /** Returns the ForgotPasswordPageSelfHealing instance, creating it on first access */
     get forgotPasswordPage(): ForgotPasswordPageSelfHealing {
         if (!this._forgotPasswordPage) {
@@ -221,6 +249,8 @@ export class POMLazySelfHealing {
             this._assetsPage,
             this._personnelPage,
             this._dividendsPage,
+            this._createCompanyPage,
+            this._subscriptionsPage,
             this._forgotPasswordPage,
             this._resetPasswordPage,
         ];

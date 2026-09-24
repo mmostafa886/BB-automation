@@ -20,6 +20,8 @@ export class HomePageSelfHealing extends SelfHealingPageBase {
     readonly companiesMenu: SelfHealingLocator;
     readonly forecastsMenu: SelfHealingLocator;
     readonly forecastTab: SelfHealingLocator;
+    readonly selectedCompanyName: SelfHealingLocator;
+    readonly selectedForecastName: SelfHealingLocator;
     readonly page: Page;
 
 
@@ -39,6 +41,8 @@ export class HomePageSelfHealing extends SelfHealingPageBase {
         this.companiesMenu = SelfHealingLocator.from(page, homeLocators.companiesMenu, logger, aiProvider);
         this.forecastTab = SelfHealingLocator.from(page, homeLocators.forecastTab, logger, aiProvider);
         this.userAvatarIcon = SelfHealingLocator.from(page, homeLocators.userAvatarIcon, logger, aiProvider);
+        this.selectedCompanyName = SelfHealingLocator.from(page, homeLocators.selectedCompanyName, logger, aiProvider);
+        this.selectedForecastName = SelfHealingLocator.from(page, homeLocators.selectedForecastName, logger, aiProvider);
     }
 
     // ── Assertion Methods ────────────────────────────────────────────────────
@@ -50,8 +54,11 @@ export class HomePageSelfHealing extends SelfHealingPageBase {
      */
     async assertPageLoaded(): Promise<void> {
         await test.step('Assert home page loaded', async () => {
-            await this.assert.toBeVisible(await this.welcomeHeading.get(), '"Welcome!" heading is visible on the home dashboard');
-            await this.assert.toBeVisible(await this.userAvatarIcon.get(), 'User avatar icon is visible in the top navigation bar');
+            // The dashboard renders a few seconds after sign-in, so probe for longer than the 2 s
+            // default — otherwise the primary selector is reported as failed and healing runs for
+            // nothing while the heading is simply not in the DOM yet.
+            await this.assert.toBeVisible(await this.welcomeHeading.get(15000), '"Welcome!" heading is visible on the home dashboard');
+            await this.assert.toBeVisible(await this.userAvatarIcon.get(15000), 'User avatar icon is visible in the top navigation bar');
         });
     }
     /**
@@ -68,13 +75,16 @@ export class HomePageSelfHealing extends SelfHealingPageBase {
      */
     async waitForDashboardLoaded(timeout: number = 60000): Promise<void> {
         await test.step('Wait for the home dashboard to load after sign-in', async () => {
+            // Probe with the same budget as the wait itself: sign-in regularly takes longer than the
+            // 2 s default, and a too-short probe reports the (valid) primary selector as broken and
+            // burns the healing phases before this method even starts waiting.
             await this.actions.waitForVisible(
-                await this.welcomeHeading.get(),
+                await this.welcomeHeading.get(timeout),
                 'Wait for the "Welcome!" heading on the home dashboard',
                 timeout,
             );
             await this.assert.toBeVisible(
-                await this.userAvatarIcon.get(),
+                await this.userAvatarIcon.get(15000),
                 'User avatar icon is visible in the top navigation bar',
             );
         });
@@ -110,6 +120,28 @@ export class HomePageSelfHealing extends SelfHealingPageBase {
                 await this.actions.clickOption(option, `Select "${value}" from menu`);
             });
     }
+    /** Assert the browser is on the home dashboard: URL path is exactly "/" and the dashboard has loaded. */
+    async assertOnHomePage(): Promise<void> {
+        await test.step('Assert the home page is shown', async () => {
+            await this.assert.toHaveURL(/^https?:\/\/[^/]+\/?(\?.*)?$/, 'URL is the home page "/"');
+            await this.waitForDashboardLoaded();
+        });
+    }
+
+    /** Assert the side bar shows `company` as the selected company. */
+    async assertSelectedCompany(company: string): Promise<void> {
+        await test.step(`Assert selected company is "${company}"`, async () => {
+            await this.assert.toHaveText(await this.selectedCompanyName.get(), company, `Selected company in the side bar is "${company}"`);
+        });
+    }
+
+    /** Assert the side bar shows `forecast` as the selected forecast. */
+    async assertSelectedForecast(forecast: string): Promise<void> {
+        await test.step(`Assert selected forecast is "${forecast}"`, async () => {
+            await this.assert.toHaveText(await this.selectedForecastName.get(), forecast, `Selected forecast in the side bar is "${forecast}"`);
+        });
+    }
+
     private exactText(value: string): RegExp {
         const escaped = value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
         return new RegExp(`^\\s*${escaped}\\s*$`);

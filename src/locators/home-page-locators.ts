@@ -35,6 +35,22 @@ export const homeLocators = {
         },
     },
 
+    selectedCompanyName: {
+        // Name of the currently selected company shown on the companies menu header in the side bar
+        selector: 'app-bzns-company-select .has-submenu label',
+        metadata: {
+            description: 'Name of the currently selected company at the top of the side bar',
+        },
+    },
+
+    selectedForecastName: {
+        // Name of the currently selected forecast shown on the forecasts menu header in the side bar
+        selector: 'app-bzns-finance-select .has-submenu label',
+        metadata: {
+            description: 'Name of the currently selected forecast below the company name in the side bar',
+        },
+    },
+
     forecastsMenu: {
         // forecasts list in the top of the side menu below the companies menu; 
         selector: 'app-bzns-finance-select',
