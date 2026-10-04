@@ -75,6 +75,10 @@ test.describe('Dividends', () => {
             // ── Open the Dividends chapter ───────────────────────────────────
             await pomSelfHealing.homePage.openFinancialPlan();
             await pomSelfHealing.financialDashboard.openFinancialTables();
+            // Financial Tables opens the Revenue chapter first. When that chapter has no entries the
+            // app can open its add-entry side panel by itself, and the panel blocks the Dividends
+            // sub-link until it is cancelled. Optional step: a no-op when no panel is shown.
+            await pomSelfHealing.financialDashboard.cancelOpenEntryPanel();
             await pomSelfHealing.financialDashboard.goToDividends();
             await pomSelfHealing.financialDashboard.dismissInstructionsModal();
 
@@ -120,6 +124,9 @@ test.describe('Dividends', () => {
             // ── Open the Dividends chapter ───────────────────────────────────
             await pomSelfHealing.homePage.openFinancialPlan();
             await pomSelfHealing.financialDashboard.openFinancialTables();
+            // Optional: Financial Tables opens the Revenue chapter first, and an empty chapter can open
+            // its add-entry side panel by itself, which blocks the Dividends sub-link until cancelled.
+            await pomSelfHealing.financialDashboard.cancelOpenEntryPanel();
             await pomSelfHealing.financialDashboard.goToDividends();
             await pomSelfHealing.financialDashboard.dismissInstructionsModal();
 
@@ -165,6 +172,9 @@ test.describe('Dividends', () => {
             // ── Open the Dividends chapter ───────────────────────────────────
             await pomSelfHealing.homePage.openFinancialPlan();
             await pomSelfHealing.financialDashboard.openFinancialTables();
+            // Optional: Financial Tables opens the Revenue chapter first, and an empty chapter can open
+            // its add-entry side panel by itself, which blocks the Dividends sub-link until cancelled.
+            await pomSelfHealing.financialDashboard.cancelOpenEntryPanel();
             await pomSelfHealing.financialDashboard.goToDividends();
             await pomSelfHealing.financialDashboard.dismissInstructionsModal();
 
@@ -229,6 +239,9 @@ test.describe('Dividends', () => {
             // -- Open the Dividends chapter -----------------------------------
             await pomSelfHealing.homePage.openFinancialPlan();
             await pomSelfHealing.financialDashboard.openFinancialTables();
+            // Optional: Financial Tables opens the Revenue chapter first, and an empty chapter can open
+            // its add-entry side panel by itself, which blocks the Dividends sub-link until cancelled.
+            await pomSelfHealing.financialDashboard.cancelOpenEntryPanel();
             await pomSelfHealing.financialDashboard.goToDividends();
             await pomSelfHealing.financialDashboard.dismissInstructionsModal();
 
