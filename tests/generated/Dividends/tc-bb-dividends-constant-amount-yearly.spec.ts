@@ -78,6 +78,11 @@ test.describe('Dividends', () => {
             // Financial Tables opens the Revenue chapter first. When that chapter has no entries the
             // app can open its add-entry side panel by itself, and the panel blocks the Dividends
             // sub-link until it is cancelled. Optional step: a no-op when no panel is shown.
+            // Financial Tables lands on the Revenue chapter, which greets an empty chapter with its
+            // instructions modal. That modal sits in the Material overlay OVER the navbar, so the
+            // Dividends sub-link cannot be clicked until it is closed - the click just retries until
+            // the test times out (seen in its call log). Guarded: a no-op when no modal is shown.
+            await pomSelfHealing.financialDashboard.dismissInstructionsModal();
             await pomSelfHealing.financialDashboard.cancelOpenEntryPanel();
             await pomSelfHealing.financialDashboard.goToDividends();
             await pomSelfHealing.financialDashboard.dismissInstructionsModal();
@@ -126,6 +131,11 @@ test.describe('Dividends', () => {
             await pomSelfHealing.financialDashboard.openFinancialTables();
             // Optional: Financial Tables opens the Revenue chapter first, and an empty chapter can open
             // its add-entry side panel by itself, which blocks the Dividends sub-link until cancelled.
+            // Financial Tables lands on the Revenue chapter, which greets an empty chapter with its
+            // instructions modal. That modal sits in the Material overlay OVER the navbar, so the
+            // Dividends sub-link cannot be clicked until it is closed - the click just retries until
+            // the test times out (seen in its call log). Guarded: a no-op when no modal is shown.
+            await pomSelfHealing.financialDashboard.dismissInstructionsModal();
             await pomSelfHealing.financialDashboard.cancelOpenEntryPanel();
             await pomSelfHealing.financialDashboard.goToDividends();
             await pomSelfHealing.financialDashboard.dismissInstructionsModal();
@@ -174,6 +184,11 @@ test.describe('Dividends', () => {
             await pomSelfHealing.financialDashboard.openFinancialTables();
             // Optional: Financial Tables opens the Revenue chapter first, and an empty chapter can open
             // its add-entry side panel by itself, which blocks the Dividends sub-link until cancelled.
+            // Financial Tables lands on the Revenue chapter, which greets an empty chapter with its
+            // instructions modal. That modal sits in the Material overlay OVER the navbar, so the
+            // Dividends sub-link cannot be clicked until it is closed - the click just retries until
+            // the test times out (seen in its call log). Guarded: a no-op when no modal is shown.
+            await pomSelfHealing.financialDashboard.dismissInstructionsModal();
             await pomSelfHealing.financialDashboard.cancelOpenEntryPanel();
             await pomSelfHealing.financialDashboard.goToDividends();
             await pomSelfHealing.financialDashboard.dismissInstructionsModal();
@@ -241,6 +256,11 @@ test.describe('Dividends', () => {
             await pomSelfHealing.financialDashboard.openFinancialTables();
             // Optional: Financial Tables opens the Revenue chapter first, and an empty chapter can open
             // its add-entry side panel by itself, which blocks the Dividends sub-link until cancelled.
+            // Financial Tables lands on the Revenue chapter, which greets an empty chapter with its
+            // instructions modal. That modal sits in the Material overlay OVER the navbar, so the
+            // Dividends sub-link cannot be clicked until it is closed - the click just retries until
+            // the test times out (seen in its call log). Guarded: a no-op when no modal is shown.
+            await pomSelfHealing.financialDashboard.dismissInstructionsModal();
             await pomSelfHealing.financialDashboard.cancelOpenEntryPanel();
             await pomSelfHealing.financialDashboard.goToDividends();
             await pomSelfHealing.financialDashboard.dismissInstructionsModal();
