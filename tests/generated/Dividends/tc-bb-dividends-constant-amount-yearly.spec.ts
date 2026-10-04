@@ -40,8 +40,18 @@ import { dividendsInputs } from '../../../test-data/dividends-inputs';
  *   - The `getByRole('button', { name: '×' })` click is `dismissInstructionsModal()`, which is
  *     already guarded: the modal only renders for a chapter with no entries, so the call is a
  *     no-op on a re-run against a forecast that already has dividends.
+ *   - These tests share one forecast, so the describe below runs in serial mode — see the comment
+ *     there. Keep any new Dividends test in this file (or serial too) rather than letting it run
+ *     alongside these against the same chapter.
  */
 test.describe('Dividends', () => {
+    // Run these one at a time. Every test here signs in as the same account and edits the SAME
+    // Dividends chapter of the same company and forecast, so with `fullyParallel: true` two of them
+    // open that chapter at once and the app stops responding: the "Dividends" sub-link click hangs
+    // until the test times out. Measured on UAT: 2 workers gave 1 failure + 1 flaky out of 4, while
+    // the same four pass every time on a single worker.
+    test.describe.configure({ mode: 'serial' });
+
     // ---- Dividends - Constant Amount - Quarter Year ------------------------
     test(
         `${dividendsInputs[0].test} @dividends @automation`,
