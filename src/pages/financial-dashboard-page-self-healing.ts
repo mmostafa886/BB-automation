@@ -340,6 +340,47 @@ export class FinancialDashboardSelfHealing extends SelfHealingPageBase {
         });
     }
 
+    /**
+     * Cancel the entry side panel, if the app has one open. Optional by design — does nothing when
+     * no panel is there.
+     *
+     * Opening Financial Tables lands on the Revenue chapter, and when that chapter has no entries
+     * the app can open its add-entry side panel by itself. While that panel is open the chapter
+     * sub-links (Dividends, Expenses, …) cannot be clicked: the click waits out the whole test
+     * timeout instead of failing fast. Call this between `openFinancialTables()` and the
+     * `goTo<Chapter>()` call to clear it when it is there.
+     *
+     * Reads the locator through `.locator` rather than `get()` on purpose: the panel is absent most
+     * of the time, and `get()` would spend its probe budget and then run the healing phases over a
+     * selector that is perfectly fine, logging a failure for a non-event.
+     *
+     * @param timeout - how long to wait for a panel to show up before deciding there is none
+     */
+    async cancelOpenEntryPanel(timeout: number = 3000): Promise<void> {
+        await test.step('Cancel the open entry panel if one is shown', async () => {
+            const cancelButton = this.cancelBtn.locator.filter({ visible: true }).last();
+
+            const appeared = await cancelButton
+                .waitFor({ state: 'visible', timeout })
+                .then(() => true)
+                .catch(() => false);
+            if (!appeared) {
+                return;
+            }
+
+            // A raw click, bounded: actions.click() has no timeout and screenshots every failure,
+            // which is wrong for a panel that may legitimately close itself mid-step.
+            try {
+                await cancelButton.click({ timeout: 5000 });
+            } catch (error) {
+                if (await cancelButton.isVisible()) {
+                    throw error;
+                }
+            }
+            await cancelButton.waitFor({ state: 'hidden', timeout: 5000 }).catch(() => {});
+        });
+    }
+
     /** Close the free-trial banner */
     async dismissFreeTrialBanner(): Promise<void> {
         await test.step('Close free-trial banner', async () => {
