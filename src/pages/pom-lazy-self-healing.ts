@@ -13,6 +13,7 @@ import { CreateCompanyPageSelfHealing } from './create-company-page-self-healing
 import { SubscriptionsPageSelfHealing } from './subscriptions-page-self-healing';
 import { ForgotPasswordPageSelfHealing } from './forgot-password-page-self-healing';
 import { ResetPasswordPageSelfHealing } from './reset-password-page-self-healing';
+import { RealityCheckPageSelfHealing} from './reality-check-page-self-healing';
 import { type AIHealingProvider } from '../utils/self-healing-locator';
 
 /**
@@ -54,7 +55,7 @@ export class POMLazySelfHealing {
     private _subscriptionsPage?: SubscriptionsPageSelfHealing;
     private _forgotPasswordPage?: ForgotPasswordPageSelfHealing;
     private _resetPasswordPage?: ResetPasswordPageSelfHealing;
-
+    private _realityCheckPage?: RealityCheckPageSelfHealing;
     constructor(page: Page, testName?: string, aiProvider?: AIHealingProvider) {
         this.page = page;
         this._testName = testName;
@@ -230,7 +231,16 @@ export class POMLazySelfHealing {
         }
         return this._resetPasswordPage;
     }
-
+    get realityCheckPage(): RealityCheckPageSelfHealing{
+                if (!this._realityCheckPage) {
+            this._realityCheckPage = new RealityCheckPageSelfHealing(
+                this.page,
+                this._testName ?? '',
+                this._aiProvider,
+            );
+        }
+        return this._realityCheckPage;
+    }
     // ===================== Healing Report =====================
 
     /**
@@ -253,6 +263,7 @@ export class POMLazySelfHealing {
             this._subscriptionsPage,
             this._forgotPasswordPage,
             this._resetPasswordPage,
+            this._realityCheckPage
         ];
 
         const sections = pages
@@ -264,4 +275,5 @@ export class POMLazySelfHealing {
             ? sections.join('\n')
             : '(no locators were exercised during this test)';
     }
+
 }
