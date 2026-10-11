@@ -227,7 +227,7 @@
     "durationYears": "5",
     "monthlyDetail": "1 year of monthly detail",
     "numberFormat": "1,000.00",
-    "defaultCurrency": "Dollar($)",
+    "defaultCurrency": "USD ($)",
     "defaultIntent": "before",
     "nextStepNumber": 6,
     "nextStepTitle": "Funding"
