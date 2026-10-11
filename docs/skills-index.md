@@ -262,6 +262,7 @@ Jira User Stories
 | Add a test.describe wrapper and flatten single-case JSON data access | `/describe-and-flatten-json-data` |
 | Add a new method to an existing page object | `/add-method-to-page` |
 | Clean up / fix issues in generated code | `/polish-generated-code` |
+| Shrink verbose comments/JSDoc to Clean Code style (comments only) | `/clean-code-comments [file] [method]` |
 | Run failing tests, live-fix them, and re-run until green | `/execute-and-fix-tests` |
 | Debug a failing test from its trace file | `/analyze-trace` |
 | Push User Stories to Jira | `/jira-uss-to-tcs <FeatureName>` |
