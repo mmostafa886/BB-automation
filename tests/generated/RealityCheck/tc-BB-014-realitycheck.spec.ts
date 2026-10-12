@@ -1,35 +1,7 @@
 /**
- * @testcase  TC-BB-014-realitycheck
- * @title      Verify customer count below the benchmark floor triggers "Conservative customer projection" with the selected category
- * @module    RealityCheck
- * @area      RealityCheck
  * @jira      BZNS-3963
- * @priority  2
- * @tags      @realitycheck @automation
-
-Preconditions
-
-Complete Step 1 with the standard fixed input (premium Egyptian cotton bedding idea / E-commerce / Egypt / Testing an idea).
-
-Step 2:  customer type B2C; .
-
-Test Data:
-
-Benchmarks values for Egypt
-
-Month-one volume — B2C: 40 – 250
-
-Steps
-
-Enter customers = 35
-
-Verify amber insight: "Conservative customer projection".
-Enter customers = exactly {floor} → verify the warning does NOT fire (within range).
-
-Enter customers = {floor} − 1 → verify the warning fires (boundary check).
-
-Expected Result Priority-5 warning fires only below the category floor, shows the correct category name, and respects the exact boundary .
-*/
+ * @title      Verify customer count below the benchmark floor triggers "Conservative customer projection" with the selected category
+ */
 
 import { test } from '../../fixtures/self-healing-fixture';
 import RealityCheckInputs  from '../../../test-data/RealityCheckInputs.json';

@@ -1,34 +1,7 @@
 /**
- * @testcase  TC-BB-013-realitycheck
- * @title      Verify B2B customer-count thresholds trigger the aggressive-target and high-dependency warnings with the correct dynamic count
- * @module    RealityCheck
- * @area      RealityCheck
  * @jira      BZNS-3962
- * @priority  2
- * @tags      @realitycheck @automation
-
-Preconditions
-
-Complete Step 1 with the standard fixed input (premium Egyptian cotton bedding idea / E-commerce / Egypt / Testing an idea).
-
-Step 2:  customer type B2B;
-
-Steps
-Aggressive B2B target (Priority 3 — B2B AND customers > 25):
-
-Enter customers = 26 → verify amber insight: "Aggressive B2B target" / "25+ B2B clients in month one may be too optimistic. B2B sales cycles are usually longer."
-
-Enter customers = 25 → verify the warning does NOT fire (boundary is strictly > 25); record actual behavior.
-
-High dependency on each customer (Priority 4 — B2B AND customers = 1 or 2): 
-
-Enter customers = 2 → verify amber insight: "High dependency on each customer" / "With only 2 B2B customers projected, each customer is a major event for the business. Worth planning for that risk." — dynamic {customers} = 2. 
-
-Expected Result
-Both B2B warnings fire at their exact thresholds with correct dynamic counts, only for B2B; the placeholder trigger outranks high-dependency at customers = 1.
-
-
-*/
+ * @title      Verify B2B customer-count thresholds trigger the aggressive-target and high-dependency warnings with the correct dynamic count
+ */
 
 import { test } from '../../fixtures/self-healing-fixture';
 import RealityCheckInputs  from '../../../test-data/RealityCheckInputs.json';

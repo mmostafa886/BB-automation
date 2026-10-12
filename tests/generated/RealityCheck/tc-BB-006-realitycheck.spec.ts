@@ -1,25 +1,6 @@
 /**
- * @testcase  TC-BB-006-realitycheck
- * @title     Verify the user can select a currency and the selected value is displayed in the field and as price prefix
  * @jira      BZNS-3951
- * @module    RealityCheck
- * @area      RealityCheck
- * @priority  1
- * @tags      @realitycheck @automation
- *
- * Preconditions:
- *   - Complete Step 1 with the standard fixed input
- *     (premium Egyptian cotton bedding idea / E-commerce / Egypt / Testing an idea).
- *   - Land on Step 2.
- *
- * Steps:
- *   1. Select currency EGP → the field and the price prefix show "EGP".
- *   2. Enter customers = 100, price = 1500 → monthly revenue is shown in EGP.
- *   3. Select currency USD → the field, price prefix and monthly revenue update to "USD".
- *
- * Expected Result:
- *   The selection replaces the placeholder immediately and updates correctly on re-selection,
- *   in the field, the price prefix and the revenue preview.
+ * @title     Verify the user can select a currency and the selected value is displayed in the field and as price prefix
  */
 
 import { test } from '../../fixtures/self-healing-fixture';
@@ -56,7 +37,7 @@ test('TC-BB-006: Verify the user can select a currency and the selected value is
 
         // Fill customers and price so the monthly revenue renders, then verify it uses the selected currency
         await pomSelfHealing.realityCheckPage.fillCustomerCount(RealityCheckInputs[5].customers[0]);
-        await pomSelfHealing.realityCheckPage.fillPrice(RealityCheckInputs[5].price[0]);
+        await pomSelfHealing.realityCheckPage.fillPrice(RealityCheckInputs[5].price![0]);
         await pomSelfHealing.realityCheckPage.assertRevenueCurrency(RealityCheckInputs[5].currency[0]);
 
 

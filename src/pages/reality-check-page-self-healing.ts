@@ -85,14 +85,10 @@ constructor(page: Page, testName: string, aiProvider?: AIHealingProvider) {
     }
     // Actions
 
-   /**
-     * Open the Financial Reality Check wizard from the left sidebar and wait until step 1
-     * has actually rendered.
-     *
-     * The wizard is slow to paint after the click, and its business-category cards arrive a
-     * few seconds AFTER the rest of step 1. Waiting on `stepTitle` alone is enough to know
-     * the step is up, but callers that immediately touch a category card should still let
-     * Playwright's auto-waiting handle the rest.
+    /**
+     * Opens the wizard from the left sidebar and waits until step 1 has rendered.
+     * The wizard is slow to paint, and its category cards arrive seconds after the step title,
+     * so callers that touch a card right away rely on auto-waiting.
      */
     async navigateToRealityCheck(): Promise<void> {
         await test.step('Navigate to the Financial Reality Check wizard', async () => {
@@ -106,10 +102,8 @@ constructor(page: Page, testName: string, aiProvider?: AIHealingProvider) {
         });
     }
     /**
-     * Pick a country on step 1 (e.g. "Egypt").
-     *
-     * Same custom select widget as the currency box: open the head, then click the option
-     * (`auto-select-country-singleOption-<Country>`) inside the self-healing options panel.
+     * Picks a country on step 1 (e.g. "Egypt").
+     * Same custom select widget as the currency box: open the head, then click the option.
      */
     async selectCountry(country: string): Promise<void> {
         await test.step(`Select the "${country}" country`, async () => {
@@ -123,17 +117,15 @@ constructor(page: Page, testName: string, aiProvider?: AIHealingProvider) {
     }
 
     /**
-     * Pick a currency on step 2 (e.g. "EGP", "USD").
-     *
-     * The select is a custom Angular widget, not a native `<select>`: click the head to open
-     * the options panel, then click the option. The option's attribute is value-dependent
-     * (`auto-select-currency-singleOption-<Code>`), so it is resolved inside the self-healing
-     * options-panel locator rather than declared in the locator repository.
+     * Picks a currency on step 2 (e.g. "EGP", "USD").
+     * Custom Angular widget, not a native `<select>`: open the head, then click the option.
      */
     async selectCurrency(currency: string): Promise<void> {
         await test.step(`Select the "${currency}" currency`, async () => {
             await this.actions.click(await this.currencySelectBoxHead.get(), 'Open the currency select box');
             const optionsPanel = await this.selectBoxOptionsContainer.get();
+            // The option attribute is value-dependent, so it is resolved inside the options panel
+            // rather than declared in the locator repository.
             await this.actions.click(
                 optionsPanel.locator(`[data-automation-test="auto-select-currency-singleOption-${currency}"]`),
                 `Select "${currency}" from the currency select box`,
@@ -142,19 +134,16 @@ constructor(page: Page, testName: string, aiProvider?: AIHealingProvider) {
     }
 
     /**
-     * Fill in every field of step 1 — idea, business category, country and current stage.
-     *
-     * `category` and `stage` are the cards' visible titles as written in test data
-     * (e.g. "Product / E-commerce", "Testing an idea"); each maps to its own
-     * `auto-industry-<n>` / `auto-stage-<n>` locator.
-     *
-     * The six business-category cards are fetched separately and land a few seconds AFTER
-     * the idea textarea, so this waits for the last one ("Other") before touching any.
+     * Fills every step-1 field: idea, business category, country and current stage.
+     * @param category - card's visible title as written in test data (e.g. "Product / E-commerce")
+     * @param stage - card's visible title as written in test data (e.g. "Testing an idea")
      */
     async fillStep1Inputs(idea: string, category: string, country: string, stage: string): Promise<void> {
         await test.step('Fill in Step 1 inputs', async () => {
             await this.actions.fill(await this.businessIdeaTextarea.get(), idea, 'Fill in the business idea');
 
+            // The category cards are fetched separately and land seconds after the textarea;
+            // wait for the last one ("Other") before touching any.
             await this.actions.waitForVisible(await this.otherCategoryOption.get(), 'Wait for the business-category cards to load', 30000);
 
             await this.actions.click(await this.optionByTitle(this.categoryOptions, category, 'business category').get(), `Select the "${category}" business category`);

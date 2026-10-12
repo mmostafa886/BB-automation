@@ -1,29 +1,7 @@
 /**
- * @testcase  TC-BB-015-realitycheck
- * @title     Verify "Clear revenue assumption" appears when no warnings apply and displays the calculated revenue and currency
- * @module    RealityCheck
- * @area      RealityCheck
  * @jira      BZNS-3964
- * @priority  2
- * @tags      @realitycheck @automation
-
-Preconditions
-
-Complete Step 1 with the standard fixed input (premium Egyptian cotton bedding idea / E-commerce / Egypt / Testing an idea).
-
-Step 2: currency EGP; customer type B2C.
-
-Steps
-
-Enter customers = 100 a value within the B2C benchmark range, price = 1500 .
-
-Verify the green insight appears: title "Clear revenue assumption", subtitle "Estimated monthly revenue of {monthly_revenue} {currency}. Costs come next."
-
-Change the price → verify the dynamic revenue value inside the subtitle updates immediately.
-
-Expected Result Default insight shows if and only if no warning matches, with green styling and correct dynamic revenue + currency + "Costs come next.".
-
-*/
+ * @title     Verify "Clear revenue assumption" appears when no warnings apply and displays the calculated revenue and currency
+ */
 
 import { test } from '../../fixtures/self-healing-fixture';
 import RealityCheckInputs  from '../../../test-data/RealityCheckInputs.json';

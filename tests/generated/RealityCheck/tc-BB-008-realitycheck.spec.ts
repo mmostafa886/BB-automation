@@ -1,31 +1,6 @@
 /**
- * @testcase  TC-BB-008-realitycheck
- * @title     Verify selecting Other routes benchmark comparisons using global benchmark  
- * @module    RealityCheck
- * @area      RealityCheck
  * @jira      BZNS-3848
- * @priority  2
- * @tags      @realitycheck @automation
-
-Preconditions
-
-Complete Step 1 with the standard fixed input (premium Egyptian cotton bedding idea / E-commerce  / Testing an idea).
-
-Select "Other" from the country dropdown.
-
-Land on Step 2.
-
-Test Data:
-
-Month-one volume — B2C: 30 – 200
-
-Steps
-
-
-Enter customer type B2C, customers = 100.
-
-Verify the score is increased by 20 points.
-
+ * @title     Verify selecting Other routes benchmark comparisons using global benchmark  
  */
 
 import { test } from '../../fixtures/self-healing-fixture';

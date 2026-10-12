@@ -1,28 +1,6 @@
 /**
- * @testcase  TC-BB-009-realitycheck
+ * @jira      BZNS-3954
  * @title     Verify the price field is disabled before currency selection and enabled after selection  
- * @module    RealityCheck
- * @area      RealityCheck
- * @jira      BZNS-3848
- * @priority  3
- * @tags      @realitycheck @automation
- * Preconditions
-
-Complete Step 1 with the standard fixed input (premium Egyptian cotton bedding idea / E-commerce / Egypt / Testing an idea).
-
-Land on Step 2 with no currency selected.
-
-Steps
-
-Verify the "Price per product or service" field is disabled (not focusable, no typing possible) while no currency is selected.
-
-Attempt to click/type into the price field — verify no input is accepted.
-
-Select currency EGP.
-
-Verify the price field becomes enabled and accepts input.
-
-Expected Result Price field is strictly disabled before currency selection and becomes active immediately after a currency is selected (AC2).
  */
 
 import { test } from '../../fixtures/self-healing-fixture';

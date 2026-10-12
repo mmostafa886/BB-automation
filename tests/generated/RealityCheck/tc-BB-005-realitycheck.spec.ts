@@ -1,25 +1,6 @@
 /**
- * @testcase  TC-BB-005-realitycheck
- * @title     Verify customer-type selection is required
  * @jira      BZNS-3952
- * @module    RealityCheck
- * @area      RealityCheck
- * @priority  1
- * @tags      @realitycheck @automation
- *
- * Preconditions:
- *   - Complete Step 1 with the standard fixed input
- *     (premium Egyptian cotton bedding idea / E-commerce / Egypt / Testing an idea).
- *   - Land on Step 2.
- *
- * Steps:
- *   1. Fill the other Step 2 fields validly (currency EGP, customers = 100, price = 1500),
- *      leaving customer type unselected → Continue disabled.
- *   2. Select customer type B2C → Continue enabled.
- *
- * Expected Result:
- *   Customer type is mandatory: Continue is blocked without a selection and unblocks
- *   once one card is selected (AC16).
+ * @title     Verify customer-type selection is required
  */
 
 import { test } from '../../fixtures/self-healing-fixture';
@@ -48,7 +29,7 @@ test('TC-BB-005: Verify customer-type selection is required @realitycheck @autom
         // Fill all other Step 2 fields validly (currency = EGP, customers = 100, price = 1500) but leave customer type unselected.
         await pomSelfHealing.realityCheckPage.selectCurrency(RealityCheckInputs[4].currency[0]);
         await pomSelfHealing.realityCheckPage.fillCustomerCount(RealityCheckInputs[4].customers[0]);
-        await pomSelfHealing.realityCheckPage.fillPrice(RealityCheckInputs[4].price[0]);
+        await pomSelfHealing.realityCheckPage.fillPrice(RealityCheckInputs[4].price![0]);
 
         // Verify the Continue button remains disabled.
         await pomSelfHealing.realityCheckPage.assertContinueButtonDisabled();

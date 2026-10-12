@@ -1,31 +1,6 @@
 /**
- * @testcase  TC-BB-003-realitycheck
- * @title     Verify the price field is required and rejects negative values, letters, and unsupported characters
  * @jira      BZNS-3846
- * @module    RealityCheck
- * @area      RealityCheck
- * @priority  1
- * @tags      @realitycheck @automation
- *
- * Preconditions:
- *   - Complete Step 1 with the standard fixed input
- *     (premium Egyptian cotton bedding idea / E-commerce / Egypt / Testing an idea).
- *   - Land on Step 2; currency EGP; customer type B2C; customers = 100.
- *
- * Steps — enter each value in the price field and check validation + Continue state:
- *   1. "100"       → valid; monthly revenue is calculated and shown.
- *   2. Empty       → Continue disabled (price is required).
- *   3. "-100"      → rejected; Continue disabled.
- *   4. "abc"       → not typeable; field stays empty.
- *   5. "10.5.5"    → sanitized to "10.55" (only one decimal separator kept).
- *   6. " 1500"     → leading space trimmed to "1500".
- *   7. "1,500"     → sanitized to "1500".
- *   8. "1'500"     → sanitized to "1500".
- *   9. "99999999"  → accepted; revenue shown with no overflow or crash.
- *
- * Expected Result:
- *   Price is required and must be a positive number > 0; malformed inputs are rejected
- *   or safely sanitized; Continue never enables with an invalid price (AC7, AC16).
+ * @title     Verify the price field is required and rejects negative values, letters, and unsupported characters
  */
 
 import { test } from '../../fixtures/self-healing-fixture';
@@ -57,36 +32,36 @@ test('TC-BB-003: Verify the price field is required and rejects negative values,
         
         // Steps — try each input in the price field and check field validation + Continue state:
         // Valid price input -> revenue is calculated and visible
-        await pomSelfHealing.realityCheckPage.fillPrice(RealityCheckInputs[2].price[0]);
+        await pomSelfHealing.realityCheckPage.fillPrice(RealityCheckInputs[2].price![0]);
         await pomSelfHealing.realityCheckPage.assertValidPrice();
         
         // Empty → Continue disabled (required).
-    await pomSelfHealing.realityCheckPage.fillPrice(RealityCheckInputs[2].price[1]);
+    await pomSelfHealing.realityCheckPage.fillPrice(RealityCheckInputs[2].price![1]);
     await pomSelfHealing.realityCheckPage.assertEmptyPrice();
          
     //-100 → rejected.
-    await pomSelfHealing.realityCheckPage.fillPrice(RealityCheckInputs[2].price[2]);
+    await pomSelfHealing.realityCheckPage.fillPrice(RealityCheckInputs[2].price![2]);
     await pomSelfHealing.realityCheckPage.assertNegativePrice();
 
     // "abc" → rejected / not typeable.
-    await pomSelfHealing.realityCheckPage.typePrice(RealityCheckInputs[2].price[3]);
+    await pomSelfHealing.realityCheckPage.typePrice(RealityCheckInputs[2].price![3]);
     await pomSelfHealing.realityCheckPage.assertPriceNotTypeable();
 
     // "10.5.5" (multiple decimal separators) → rejected / sanitized.
-    await pomSelfHealing.realityCheckPage.typePrice(RealityCheckInputs[2].price[4])
-    await pomSelfHealing.realityCheckPage.assertExpectedPrice(RealityCheckInputs[2].ExpectedPrice[0]);
+    await pomSelfHealing.realityCheckPage.typePrice(RealityCheckInputs[2].price![4])
+    await pomSelfHealing.realityCheckPage.assertExpectedPrice(RealityCheckInputs[2].ExpectedPrice![0]);
 
     // " 1500 " (leading/trailing spaces) → trimmed or rejected; no crash.
-    await pomSelfHealing.realityCheckPage.typePrice(RealityCheckInputs[2].price[5])
-    await pomSelfHealing.realityCheckPage.assertExpectedPrice(RealityCheckInputs[2].ExpectedPrice[1]);
+    await pomSelfHealing.realityCheckPage.typePrice(RealityCheckInputs[2].price![5])
+    await pomSelfHealing.realityCheckPage.assertExpectedPrice(RealityCheckInputs[2].ExpectedPrice![1]);
     
     // Symbols e.g. "1,500" or "1'500" → record accepted/sanitized behavior; must not silently compute a wrong number.
-    await pomSelfHealing.realityCheckPage.typePrice(RealityCheckInputs[2].price[6])
-    await pomSelfHealing.realityCheckPage.assertExpectedPrice(RealityCheckInputs[2].ExpectedPrice[1]);
-    await pomSelfHealing.realityCheckPage.typePrice(RealityCheckInputs[2].price[7])
-    await pomSelfHealing.realityCheckPage.assertExpectedPrice(RealityCheckInputs[2].ExpectedPrice[1]);
+    await pomSelfHealing.realityCheckPage.typePrice(RealityCheckInputs[2].price![6])
+    await pomSelfHealing.realityCheckPage.assertExpectedPrice(RealityCheckInputs[2].ExpectedPrice![1]);
+    await pomSelfHealing.realityCheckPage.typePrice(RealityCheckInputs[2].price![7])
+    await pomSelfHealing.realityCheckPage.assertExpectedPrice(RealityCheckInputs[2].ExpectedPrice![1]);
     
     // large values 99999999 -> accepted by field validation; no overflow/crash in display or preview.
-    await pomSelfHealing.realityCheckPage.fillPrice(RealityCheckInputs[2].price[8]);
+    await pomSelfHealing.realityCheckPage.fillPrice(RealityCheckInputs[2].price![8]);
     await pomSelfHealing.realityCheckPage.assertValidPrice();
 });

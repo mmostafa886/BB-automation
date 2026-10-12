@@ -1,56 +1,7 @@
 /**
- * @testcase  TC-BB-010-realitycheck
- * @title     Verify customer-count realism scoring for all benchmark scoring ranges  
- * @module    RealityCheck
- * @area      RealityCheck
  * @jira      BZNS-3852
- * @priority  1
- * @tags      @realitycheck @automation
- * Preconditions
-
-Preconditions
-
-Complete Step 1 with the standard fixed input (premium Egyptian cotton bedding idea / E-commerce / Egypt / Testing an idea).
-
-Land on Step 2;.
-
-Steps — for customer type B2C, enter counts hitting every band and verify the awarded points:
-
-Within range ({floor} ≤ x ≤ {ceiling}) → 20 pts
-
-Between 50% of floor and floor → 15 pts
-
-Between ceiling and 2× ceiling → 15 pts
-
-Between 2× and 5× ceiling → 10 pts
-
-Below 50% of floor → 5 pts
-
-Above 5× ceiling → 0 pts
-
-Test Data: B2C benchmark range: 40–250; 
-
-Steps:
-
-use customer counts 
-
-150 Customer → 20 pts
-
-25 Customer → 15 pts
-
-400 Customer → 15 pts
-
-700 Customer → 10 pts
-
-19 Customer → 5 pts
-
-1500 Customer → 0 pts
-
-
-
-Expected Result
-Points match the lookup table for every customer type; 
-*/
+ * @title     Verify customer-count realism scoring for all benchmark scoring ranges  
+ */
 
 import { test } from '../../fixtures/self-healing-fixture';
 import RealityCheckInputs  from '../../../test-data/RealityCheckInputs.json';

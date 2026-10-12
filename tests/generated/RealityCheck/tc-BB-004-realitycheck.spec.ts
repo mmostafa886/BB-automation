@@ -1,25 +1,6 @@
 /**
- * @testcase  TC-BB-004-realitycheck
- * @title     Step 2 Continue button: disabled per missing input, enabled when all valid
  * @jira      BZNS-3847
- * @module    RealityCheck
- * @area      RealityCheck
- * @priority  1
- * @tags      @realitycheck @automation
- *
- * Preconditions:
- *   - Complete Step 1 with the standard fixed input
- *     (premium Egyptian cotton bedding idea / E-commerce / Egypt / Testing an idea).
- *   - Land on Step 2.
- *
- * Steps:
- *   1. Select currency EGP → Continue disabled.
- *   2. Select customer type B2C → Continue still disabled.
- *   3. Enter customers = 100 → Continue still disabled.
- *   4. Enter price = 100 → Continue enabled.
- *
- * Expected Result:
- *   Continue is enabled only when every Step 2 input holds a valid value.
+ * @title     Step 2 Continue button: disabled per missing input, enabled when all valid
  */
 
 import { test } from '../../fixtures/self-healing-fixture';
@@ -58,6 +39,6 @@ test('TC-BB-004: Automate Step 2 Continue button: disabled per missing, enabled 
 
         // Enter the price 100 then         // 
         // Assert the button is enabled
-        await pomSelfHealing.realityCheckPage.fillPrice(RealityCheckInputs[3].price[0]);
+        await pomSelfHealing.realityCheckPage.fillPrice(RealityCheckInputs[3].price![0]);
         await pomSelfHealing.realityCheckPage.assertContinueButtonEnabled();
 })

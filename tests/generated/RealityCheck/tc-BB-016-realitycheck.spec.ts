@@ -1,26 +1,7 @@
 /**
- * @testcase  TC-BB-016-realitycheck
- * @title     Verify that when multiple non-placeholder warnings match simultaneously, only the highest-priority warning is displayed
- * @module    RealityCheck
- * @area      RealityCheck
  * @jira      BZNS-3967
- * @priority  2
- * @tags      @realitycheck @automation
-
-Preconditions
-
-Complete Step 1 with the standard fixed input (premium Egyptian cotton bedding idea / E-commerce / Egypt / Testing an idea).
-
-Step 2: currency EGP; price = 1500.
-
-Steps
-
-P2 vs P3 collision: customer type B2B, customers = 76 a value that is BOTH > 25 (P3) AND > 5 × B2B {ceiling} (P2) → verify ONLY "Volume above typical range" (P2) displays, with the correct dynamic count.
-
-Reduce customers to the value 30 > 25 but ≤ 5× ceiling (P3 only) → verify the block switches to "Aggressive B2B target".
-
-Expected Result When multiple non-placeholder conditions match, the highest-priority one always displays alone; transitions to the next warning happen correctly as conditions change.
-*/
+ * @title     Verify that when multiple non-placeholder warnings match simultaneously, only the highest-priority warning is displayed
+ */
 
 import { test } from '../../fixtures/self-healing-fixture';
 import RealityCheckInputs  from '../../../test-data/RealityCheckInputs.json';
