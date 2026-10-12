@@ -6,7 +6,7 @@
 import { test } from '../../fixtures/self-healing-fixture';
 import RealityCheckInputs  from '../../../test-data/RealityCheckInputs.json';
 
-test('TC-BB-008: Verify selecting Other routes benchmark comparisons using global benchmark @realitycheck @automation', async ({ selfHealingFixture: { pomSelfHealing } }) => {
+test('TC-BB-008: Verify selecting Other routes benchmark comparisons using global benchmark @RealityCheck @automation', async ({ selfHealingFixture: { pomSelfHealing } }) => {
         // Login
         await pomSelfHealing.loginPage.navigateToLogin();
         await pomSelfHealing.loginPage.openSignInModal();

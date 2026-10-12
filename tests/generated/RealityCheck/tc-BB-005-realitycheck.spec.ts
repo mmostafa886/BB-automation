@@ -6,7 +6,7 @@
 import { test } from '../../fixtures/self-healing-fixture';
 import RealityCheckInputs  from '../../../test-data/RealityCheckInputs.json';
 
-test('TC-BB-005: Verify customer-type selection is required @realitycheck @automation', async ({ selfHealingFixture: { pomSelfHealing } }) => {
+test('TC-BB-005: Verify customer-type selection is required @RealityCheck @automation', async ({ selfHealingFixture: { pomSelfHealing } }) => {
         // Login
         await pomSelfHealing.loginPage.navigateToLogin();
         await pomSelfHealing.loginPage.openSignInModal();

@@ -6,7 +6,7 @@
 import { test } from '../../fixtures/self-healing-fixture';
 import RealityCheckInputs  from '../../../test-data/RealityCheckInputs.json';
 
-test('TC-BB-015: Verify "Clear revenue assumption" appears when no warnings apply and displays the calculated revenue and currency @realitycheck @automation', async ({ selfHealingFixture: { pomSelfHealing } }) => {
+test('TC-BB-015: Verify "Clear revenue assumption" appears when no warnings apply and displays the calculated revenue and currency @RealityCheck @automation', async ({ selfHealingFixture: { pomSelfHealing } }) => {
     // Login
     await pomSelfHealing.loginPage.navigateToLogin();
     await pomSelfHealing.loginPage.openSignInModal();

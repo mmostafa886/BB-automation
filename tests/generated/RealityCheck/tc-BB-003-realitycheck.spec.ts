@@ -6,7 +6,7 @@
 import { test } from '../../fixtures/self-healing-fixture';
 import RealityCheckInputs  from '../../../test-data/RealityCheckInputs.json';
 
-test('TC-BB-003: Verify the price field is required and rejects negative values, letters, and unsupported characters @realitycheck @automation', async ({ selfHealingFixture: { pomSelfHealing } }) => {
+test('TC-BB-003: Verify the price field is required and rejects negative values, letters, and unsupported characters @RealityCheck @automation', async ({ selfHealingFixture: { pomSelfHealing } }) => {
     // Login
         await pomSelfHealing.loginPage.navigateToLogin();
         await pomSelfHealing.loginPage.openSignInModal();

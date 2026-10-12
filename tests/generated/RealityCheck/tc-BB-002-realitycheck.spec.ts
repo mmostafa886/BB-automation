@@ -6,7 +6,7 @@
 import { test } from '../../fixtures/self-healing-fixture';
 import RealityCheckInputs  from '../../../test-data/RealityCheckInputs.json';
 
-test('TC-BB-002: Verify monthly revenue calculations support decimal prices correctly @realitycheck @automation', async ({ selfHealingFixture: { pomSelfHealing } }) => {
+test('TC-BB-002: Verify monthly revenue calculations support decimal prices correctly @RealityCheck @automation', async ({ selfHealingFixture: { pomSelfHealing } }) => {
     // Login
         await pomSelfHealing.loginPage.navigateToLogin();
         await pomSelfHealing.loginPage.openSignInModal();

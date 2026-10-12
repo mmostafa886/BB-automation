@@ -1,14 +1,15 @@
 /**
  * @jira      BZNS-3953
  * @title     Verify the customer-count field is required and accepts only positive integers
- */
+ * @module      RealityCheck
+*/
 
 import { test } from '../../fixtures/self-healing-fixture';
 import RealityCheckInputs  from '../../../test-data/RealityCheckInputs.json';
 
 const data = RealityCheckInputs[6];
 
-test('TC-BB-007: Verify the customer-count field is required and accepts only positive integers @realitycheck @automation', async ({ selfHealingFixture: { pomSelfHealing } }) => {
+test('TC-BB-007: Verify the customer-count field is required and accepts only positive integers @RealityCheck @automation', async ({ selfHealingFixture: { pomSelfHealing } }) => {
     // Login
     await pomSelfHealing.loginPage.navigateToLogin();
     await pomSelfHealing.loginPage.openSignInModal();
