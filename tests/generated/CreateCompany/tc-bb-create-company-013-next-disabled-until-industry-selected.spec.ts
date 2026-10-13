@@ -2,30 +2,8 @@ import { test } from '../../fixtures/self-healing-fixture';
 import createCompanyInputs from '../../../test-data/CreateCompanyInputs.json';
 
 /**
- * @testcase     TC-BB-Create-Company-013
- * @title        Next stays disabled until an industry is selected on the Business Information step
- * @module       CreateCompany
- * @priority     P1
- * @tags         @createcompany @automation
- *
- * @preconditions
- *   - App reachable at BASE_URL; the auth landing page is shown.
- *   - The account in `test-data/CreateCompanyInputs.json` can sign in and has at least one company.
- *   - No company is created — the flow stops on step 4.
- *
- * @steps
- *   1. Navigate to the BznsBuilder auth page, sign in, and wait for the dashboard.
- *   2. Click the "+" icon next to the company name, then "Create New Company".
- *   3. Choose a describe card → Next, choose a company stage → Next.
- *   4. On step 3, assert no industry is selected and Next is disabled.
- *   5. Fill "What type of business is this"; assert Next is STILL disabled.
- *   6. Select an industry; assert it is selected and Next becomes enabled.
- *   7. Click Next; assert the wizard moves to step 4, "Company Details".
- *
- * Notes:
- *   - Step 5 proves the gate is the industry dropdown and not the text field: filling the type of
- *     business alone leaves Next disabled. (The reverse also holds on UAT — an industry with an empty
- *     type of business enables Next — but that is left to its own test case.)
+ * @jira   BZNS-3830
+ * @title  Automation-Company Creation: Verify that the Next button remains disabled until an industry is selected and becomes enabled after selecting an industry.
  */
 const input = createCompanyInputs.industryGatesNext;
 

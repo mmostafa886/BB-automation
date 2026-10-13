@@ -2,37 +2,8 @@ import { test } from '../../fixtures/self-healing-fixture';
 import createCompanyInputs from '../../../test-data/CreateCompanyInputs.json';
 
 /**
- * @testcase     TC-BB-Create-Company-015
- * @title        Every required field on the Financial step must be filled before reaching Funding
- * @module       CreateCompany
- * @priority     P1
- * @tags         @createcompany @automation
- *
- * @preconditions
- *   - App reachable at BASE_URL; the auth landing page is shown.
- *   - The account in `test-data/CreateCompanyInputs.json` can sign in and has at least one company.
- *   - No company is created — the flow stops on step 6 and never subscribes.
- *
- * @steps
- *   1. Navigate to the BznsBuilder auth page, sign in, and wait for the dashboard.
- *   2. Click the "+" icon next to the company name, then "Create New Company".
- *   3. Pass steps 1–4: describe card → Next, company stage → Next, industry → Next, company name → Next.
- *   4. On step 5 assert the 1st year of forecast is empty, currency and intent are pre-filled,
- *      and Next is disabled.
- *   5. Pick the 1st year of forecast; assert Next is STILL disabled.
- *   6. Pick the duration; assert Next is STILL disabled.
- *   7. Pick the monthly detail; assert Next is STILL disabled.
- *   8. Pick the number format — the last required field; assert Next becomes enabled.
- *   9. Click Next; assert the wizard moves to step 6, "Funding".
- *
- * Notes:
- *   - Four fields gate Next: 1st year of forecast, duration, monthly detail and number format.
- *     Filling them one at a time shows each is needed — Next only enables on the last one.
- *   - Currency ("Dollar($)") and intent ("before") arrive pre-filled, so they do not block the step;
- *     the test asserts their defaults instead of setting them.
- *   - The date is picked in the month the picker opens on, so the test does not depend on the day it runs.
- *   - Prev is not used: going back to this step re-renders the date as a raw JS date and opens the
- *     picker on "Invalid date" (seen on UAT).
+ * @jira   BZNS-3832
+ * @title  Automation-Company Creation: Verify that all required fields in Step 5 must be completed before proceeding to Step 6.
  */
 const input = createCompanyInputs.financialRequiredFieldsGateNext;
 

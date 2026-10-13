@@ -2,33 +2,8 @@ import { test } from '../../fixtures/self-healing-fixture';
 import createCompanyInputs from '../../../test-data/CreateCompanyInputs.json';
 
 /**
- * @testcase     TC-BB-Create-Company-019
- * @title        Selecting a plan enables Next and opens the Payment Method step
- * @module       CreateCompany
- * @priority     P1
- * @tags         @createcompany @automation
- *
- * @preconditions
- *   - App reachable at BASE_URL; the auth landing page is shown.
- *   - The account in `test-data/CreateCompanyInputs.json` already has a company, so its wizard has the
- *     8-step shape that includes Subscription Details and Payment Method.
- *   - Nothing is paid for and no company is created: the test stops on the Payment Method step and
- *     never clicks "Proceed to checkout" (TC-BB-Create-Company-020 covers the paid flow).
- *
- * @steps
- *   1. Navigate to the BznsBuilder auth page, sign in, and wait for the dashboard.
- *   2. Open "Create New Company" and pass steps 1–6.
- *   3. Assert step 7 shows 3 plans with none selected and Next disabled.
- *   4. Click a plan card's body (its name, not Subscribe); assert nothing is selected and Next is
- *      still disabled — the card body is not the control that selects a plan.
- *   5. Click Subscribe on that plan; assert its card becomes the selected one, its button now reads
- *      "Selected", and Next becomes enabled.
- *   6. Click Next; assert the wizard moves to step 8, "Payment Method", whose primary button reads
- *      "Proceed to checkout".
- *
- * Notes:
- *   - "Subscribe" is the control that SELECTS a package; it does not charge anything. The card on file
- *     is charged on step 8 by "Proceed to checkout", which this test deliberately does not click.
+ * @jira   BZNS-3844
+ * @title  Automation-Company Creation: Verify that selecting a plan enables Next and allows the company creation flow to proceed
  */
 const input = createCompanyInputs.planSelectionEnablesNext;
 

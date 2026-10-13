@@ -2,40 +2,14 @@ import { test } from '../../fixtures/self-healing-fixture';
 import createCompanyInputs from '../../../test-data/CreateCompanyInputs.json';
 
 /**
- * @testcase     TC-BB-Create-Company-020
- * @title        Completing the wizard and paying creates the company with the chosen package active
- * @module       CreateCompany
- * @priority     P1
- * @tags         @createcompany @automation @payment
+ * @jira   BZNS-3845
+ * @title  Automation-Company Creation: Verify that completing the company creation flow with valid data and selecting a plan makes a successful payment and creates the company with the selected package activated
  *
- * @preconditions
- *   - App reachable at BASE_URL; the auth landing page is shown.
- *   - The account in `test-data/CreateCompanyInputs.json` already has a company, so its wizard has the
- *     8-step shape ending in Subscription Details + Payment Method.
- *   - The account has a saved payment method (a Stripe test card, e.g. 4242 4242 4242 4242). The test
- *     pays with the card that is pre-selected on step 8; it never fills a card form. If the account
- *     has no saved card, add one first through Billing & Subscriptions → Payment Methods.
+ * @jira   BZNS-3782
+ * @title  Automation-Company Creation: Verify that only 8 steps are displayed when the company is not the first company
  *
- * ⚠ THIS TEST SPENDS MONEY AND LEAVES DATA BEHIND. Every run charges the saved card for the chosen
- *   package and creates one real company on the account, which cannot be removed from the test. Run
- *   it only against an account whose card is a test card. Each run uses a unique company name
- *   (`companyNamePrefix` + a timestamp) so repeated runs stay distinguishable.
- *
- * @steps
- *   1. Navigate to the BznsBuilder auth page, sign in, and wait for the dashboard.
- *   2. Open "Create New Company" and fill steps 1–5 with valid data, then pass Funding on its defaults.
- *   3. On step 7 click Subscribe on the chosen package; assert it becomes the selected one and Next enables.
- *   4. Click Next; assert step 8, "Payment Method", shows a selected saved card, an order summary naming
- *      the package and its price, and a "Proceed to checkout" button.
- *   5. Click "Proceed to checkout" — this charges the card.
- *   6. Assert the app lands on the home dashboard with the new company selected and its default forecast.
- *   7. Open Billing & Subscriptions and assert the new company is listed carrying the chosen package.
- *
- * Notes:
- *   - Prices are not asserted anywhere: they are regional ("EGP 449" from Egypt, "$ 19" on the CI
- *     runner), and the order summary's VAT row only appears in some regions.
- *   - The subscription's expiry date and "Expired" badge are not asserted either — the check is that
- *     the company was created with the package, not how long that package runs for.
+ * ⚠ Spends money: every run charges the account's saved card and leaves one real company behind.
+ *   Run it only against an account whose saved payment method is a Stripe test card.
  */
 const input = createCompanyInputs.completeFlowWithPayment;
 

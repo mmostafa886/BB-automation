@@ -2,28 +2,8 @@ import { test } from '../../fixtures/self-healing-fixture';
 import createCompanyInputs from '../../../test-data/CreateCompanyInputs.json';
 
 /**
- * @testcase     TC-BB-Create-Company-007
- * @title        Switching to an existing company before entering any data opens the Home page directly
- * @module       CreateCompany
- * @priority     P2
- * @tags         @createcompany @automation
- *
- * @preconditions
- *   - App reachable at BASE_URL; the auth landing page is shown.
- *   - The account in `test-data/CreateCompanyInputs.json` has both `startCompany` and `targetCompany`.
- *   - No company is created.
- *
- * @steps
- *   1. Navigate to the BznsBuilder auth page, sign in, and wait for the dashboard.
- *   2. From the home page, select `startCompany` so the company clicked later is a different one.
- *   3. Open "Create New Company"; assert step 1 is shown with no card selected (no data entered).
- *   4. Open the companies menu and click `targetCompany`.
- *   5. Assert the Home page is shown, no unsaved changes dialog appeared, and `targetCompany` is selected.
- *
- * Notes:
- *   - `startCompany` is selected first because clicking the company that is ALREADY selected does not
- *     open the Home page: it opens /financial/overview instead (seen on UAT).
- *     `targetCompany` must therefore differ from `startCompany`.
+ * @jira   BZNS-3827
+ * @title  Automation-Company Creation: Verify that navigating to an existing company displays an unsaved changes confirmation dialog when data has been entered, and redirects directly to the Home page when no data has been entered
  */
 const input = createCompanyInputs.companySwitchWithoutData;
 

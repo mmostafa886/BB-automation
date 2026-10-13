@@ -2,26 +2,8 @@ import { test } from '../../fixtures/self-healing-fixture';
 import createCompanyInputs from '../../../test-data/CreateCompanyInputs.json';
 
 /**
- * @testcase     TC-BB-Create-Company-002
- * @title        Next stays disabled until a describe card is chosen
- * @module       CreateCompany
- * @priority     P1
- * @tags         @createcompany @automation @negative
- *
- * @preconditions
- *   - App reachable at BASE_URL; the auth landing page is shown.
- *   - The account in `test-data/CreateCompanyInputs.json` can sign in and has at least one company,
- *     so the companies menu is shown in the side bar.
- *   - No company is created — the flow never leaves step 1 of the wizard.
- *
- * @steps
- *   1. Navigate to the BznsBuilder auth page, sign in, and wait for the dashboard.
- *   2. Click the "+" icon next to the company name in the side bar.
- *   3. Click "Create New Company".
- *   4. Assert the "Which of these best describe you?" step shows the 9 cards and none is selected.
- *   5. Assert Next is disabled.
- *   6. Try to click Next without choosing a card.
- *   7. Assert the wizard is still on the describe step and Next is still disabled.
+ * @jira   BZNS-3823
+ * @title  Automation-Company Creation: Can't go to step 1 without choose a card
  */
 const input = createCompanyInputs.nextDisabledWithoutCard;
 

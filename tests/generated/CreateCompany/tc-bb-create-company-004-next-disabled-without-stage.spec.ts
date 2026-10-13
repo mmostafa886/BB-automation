@@ -2,26 +2,8 @@ import { test } from '../../fixtures/self-healing-fixture';
 import createCompanyInputs from '../../../test-data/CreateCompanyInputs.json';
 
 /**
- * @testcase     TC-BB-Create-Company-004
- * @title        Next stays disabled until a company stage is chosen
- * @module       CreateCompany
- * @priority     P1
- * @tags         @createcompany @automation @negative
- *
- * @preconditions
- *   - App reachable at BASE_URL; the auth landing page is shown.
- *   - The account in `test-data/CreateCompanyInputs.json` can sign in and has at least one company,
- *     so the companies menu is shown in the side bar.
- *   - No company is created — the flow never leaves step 2 of the wizard.
- *
- * @steps
- *   1. Navigate to the BznsBuilder auth page, sign in, and wait for the dashboard.
- *   2. Click the "+" icon next to the company name in the side bar, then "Create New Company".
- *   3. Choose a describe card and click Next.
- *   4. Assert the wizard is on step 2, "Company Stage", showing Idea / Startup / Growth, none selected.
- *   5. Assert Next is disabled.
- *   6. Try to click Next without choosing a stage.
- *   7. Assert the wizard is still on step 2 and Next is still disabled.
+ * @jira   BZNS-3825
+ * @title  Automation-Company Creation: Can't go to the next step until choosing a stage
  */
 const input = createCompanyInputs.nextDisabledWithoutStage;
 
