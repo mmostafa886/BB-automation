@@ -38,6 +38,16 @@ export class RealityCheckPageSelfHealing extends SelfHealingPageBase {
     private readonly viabilityScore:        SelfHealingLocator;
     private readonly insightWarning:        SelfHealingLocator;
     private readonly insightSuccess:        SelfHealingLocator;
+    private readonly countryInput:          SelfHealingLocator;
+    /** Matches every country in the open drop-down — read through `.locator`. */
+    private readonly countryOptions:        SelfHealingLocator;
+    private readonly minimumLengthError:    SelfHealingLocator;
+    private readonly maximumLengthError:    SelfHealingLocator;
+    /** Matches all seven step chips — read through `.locator`. */
+    private readonly stepChips:             SelfHealingLocator;
+    private readonly livePreviewPanel:      SelfHealingLocator;
+    private readonly progressSummary:       SelfHealingLocator;
+    private readonly industryLens:          SelfHealingLocator;
 constructor(page: Page, testName: string, aiProvider?: AIHealingProvider) {
         super();
         this.page = page;
@@ -68,6 +78,14 @@ constructor(page: Page, testName: string, aiProvider?: AIHealingProvider) {
         this.viabilityScore          = SelfHealingLocator.from(page, realityCheckLocators.viabilityScore,         logger, aiProvider);
         this.insightWarning          = SelfHealingLocator.from(page, realityCheckLocators.insightWarning,   logger, aiProvider);
         this.insightSuccess          = SelfHealingLocator.from(page, realityCheckLocators.insightSuccess,   logger, aiProvider);
+        this.countryInput            = SelfHealingLocator.from(page, realityCheckLocators.countryInput,           logger, aiProvider);
+        this.countryOptions          = SelfHealingLocator.from(page, realityCheckLocators.countryOptions,         logger, aiProvider);
+        this.minimumLengthError      = SelfHealingLocator.from(page, realityCheckLocators.minimumLengthError,     logger, aiProvider);
+        this.maximumLengthError      = SelfHealingLocator.from(page, realityCheckLocators.maximumLengthError,     logger, aiProvider);
+        this.stepChips               = SelfHealingLocator.from(page, realityCheckLocators.stepChips,              logger, aiProvider);
+        this.livePreviewPanel        = SelfHealingLocator.from(page, realityCheckLocators.livePreviewPanel,       logger, aiProvider);
+        this.progressSummary         = SelfHealingLocator.from(page, realityCheckLocators.progressSummary,        logger, aiProvider);
+        this.industryLens            = SelfHealingLocator.from(page, realityCheckLocators.industryLens,           logger, aiProvider);
 
         this.categoryOptions = {
             'Product / E-commerce': SelfHealingLocator.from(page, realityCheckLocators.productEcommerceCategoryOption, logger, aiProvider),
@@ -156,6 +174,42 @@ constructor(page: Page, testName: string, aiProvider?: AIHealingProvider) {
         await test.step('Fill in Step 1 inputs and submit', async () => {
             await this.fillStep1Inputs(idea, category, country, stage);
             await this.actions.click(await this.continueButton.get(), 'Click Continue to submit Step 1');
+        });
+    }
+
+    /** Waits for the idea textarea (the wizard is slow to paint) and types the business idea. */
+    async enterIdea(idea: string): Promise<void> {
+        await test.step('Enter the business idea', async () => {
+            await this.actions.waitForVisible(await this.businessIdeaTextarea.get(), 'Wait for the business-idea field', 60000);
+            await this.actions.fill(await this.businessIdeaTextarea.get(), idea, 'Type the business idea');
+        });
+    }
+
+    /** Picks a step-1 business-category card by its visible title, e.g. "Food & Beverage". */
+    async selectCategory(category: string): Promise<void> {
+        await test.step(`Select the "${category}" business category`, async () => {
+            // The cards arrive seconds after the textarea; see fillStep1Inputs.
+            await this.actions.waitForVisible(await this.otherCategoryOption.get(), 'Wait for the business-category cards to load', 30000);
+            await this.actions.click(await this.optionByTitle(this.categoryOptions, category, 'business category').get(), `Select the "${category}" business category`);
+        });
+    }
+
+    /** Picks a step-1 "Where are you right now?" card by its visible title, e.g. "Testing an idea". */
+    async selectStage(stage: string): Promise<void> {
+        await test.step(`Select the "${stage}" stage`, async () => {
+            await this.actions.click(await this.optionByTitle(this.stageOptions, stage, 'stage').get(), `Select the "${stage}" stage`);
+        });
+    }
+
+    async openCountrySelect(): Promise<void> {
+        await test.step('Open the country drop-down', async () => {
+            await this.actions.click(await this.countrySelectHead.get(), 'Open the country drop-down');
+        });
+    }
+
+    async clickContinueButton(): Promise<void> {
+        await test.step('Click Continue', async () => {
+            await this.actions.click(await this.continueButton.get(), 'Click the Continue button');
         });
     }
     async fillCustomerCount(count: string): Promise<void>{
@@ -302,15 +356,21 @@ async assertWholeNumberError(): Promise<void> {
     });
 }
 
-async assertContinueButtonEnabled(): Promise<void> {
+async assertContinueButtonEnabled(failedMessage?: string): Promise<void> {
     await test.step('Assert Continue button is enabled', async () => {
-        await this.assert.toBeEnabled(await this.continueButton.get(), 'Continue button is enabled');
+        await this.assert.toBeEnabled(await this.continueButton.get(), failedMessage ?? 'Continue button is enabled');
     });
 }
 
-async assertContinueButtonDisabled(): Promise<void> {
+async assertContinueButtonDisabled(failedMessage?: string): Promise<void> {
     await test.step('Assert Continue button is disabled', async () => {
-        await this.assert.toBeDisabled(await this.continueButton.get(), 'Continue button is disabled');
+        await this.assert.toBeDisabled(await this.continueButton.get(), failedMessage ?? 'Continue button is disabled');
+    });
+}
+
+async assertContinueButtonVisible(failedMessage?: string): Promise<void> {
+    await test.step('Assert Continue button is visible', async () => {
+        await this.actions.waitForVisible(await this.continueButton.get(), failedMessage ?? 'Continue button is visible', 60000);
     });
 }
 
@@ -397,5 +457,143 @@ async assertInsightSuccessContains(expected: string): Promise<void> {
         );
     });
 }
+
+    // ─── Step 1 assertions ───────────────────────────────────────────────────
+
+    async assertMinimumMsgVisible(failedMessage?: string): Promise<void> {
+        await test.step('Assert the "Minimum 20 characters" message is shown', async () => {
+            await this.actions.waitForVisible(
+                (await this.minimumLengthError.get()).first(),
+                failedMessage ?? 'The "Minimum 20 characters" message is shown',
+                6000,
+            );
+        });
+    }
+
+    async assertMaximumMsgVisible(failedMessage?: string): Promise<void> {
+        await test.step('Assert the "Maximum 300 characters" message is shown', async () => {
+            await this.actions.waitForVisible(
+                (await this.maximumLengthError.get()).first(),
+                failedMessage ?? 'The "Maximum 300 characters" message is shown',
+                6000,
+            );
+        });
+    }
+
+    async assertNoLengthValidationMessages(failedMessage?: string): Promise<void> {
+        await test.step('Assert no length-validation message is shown', async () => {
+            // `.locator`, not `.get()`: the element is expected to be absent, and `.get()` would spend
+            // ~4 s per locator running the healing chain before returning the primary anyway.
+            await this.assert.toBeHidden(
+                this.minimumLengthError.locator.first(),
+                failedMessage ?? 'The "Minimum 20 characters" message is not shown',
+            );
+            await this.assert.toBeHidden(
+                this.maximumLengthError.locator.first(),
+                failedMessage ?? 'The "Maximum 300 characters" message is not shown',
+            );
+        });
+    }
+
+    /** The score is recalculated as the step is filled in, so wait for the element, then the value. */
+    async assertScore(value: string, failedMessage?: string, timeout: number = 30000): Promise<void> {
+        await test.step(`Assert the readiness score is "${value}"`, async () => {
+            await this.actions.waitForVisible(
+                this.viabilityScore.locator,
+                'Wait for the viability score in the Live Financial Preview panel',
+                timeout,
+            );
+            await this.assert.toHaveText(this.viabilityScore.locator, value, failedMessage ?? `The readiness score is "${value}"`);
+        });
+    }
+
+    async assertHint(text: string, failedMessage?: string): Promise<void> {
+        await test.step(`Assert the hint "${text}" is shown`, async () => {
+            await this.assert.toContainText(this.progressSummary.locator, text, failedMessage ?? `The hint "${text}" is shown`);
+        });
+    }
+
+    /** Assert the country drop-down is still on its default: placeholder shown, nothing chosen. */
+    async assertCountryPlaceholder(placeholder: string, failedMessage?: string): Promise<void> {
+        await test.step(`Assert the country drop-down shows "${placeholder}" by default`, async () => {
+            await this.assert.toHaveAttribute(
+                await this.countryInput.get(15000),
+                'placeholder',
+                placeholder,
+                failedMessage ?? `The country drop-down placeholder is "${placeholder}"`,
+            );
+            await this.assert.toBeEmpty(await this.countryInput.get(), failedMessage ?? 'No country is selected yet');
+        });
+    }
+
+    /**
+     * Assert the open country drop-down lists `countryCount` countries plus `lastOption` once, at the end.
+     * Call after {@link openCountrySelect}.
+     */
+    async assertCountryOptions(countryCount: number, lastOption: string, failedMessage?: string): Promise<void> {
+        await test.step(`Assert the country drop-down lists ${countryCount} countries with "${lastOption}" last`, async () => {
+            const options = this.countryOptions.locator.filter({ visible: true });
+
+            await this.assert.toHaveCount(
+                options,
+                countryCount + 1,
+                failedMessage ?? `The country drop-down lists ${countryCount} countries plus "${lastOption}"`,
+            );
+            await this.assert.toHaveText(
+                options.last(),
+                lastOption,
+                failedMessage ?? `"${lastOption}" is the last option in the country drop-down`,
+            );
+            await this.assert.toHaveCount(
+                options.filter({ hasText: this.exactText(lastOption) }),
+                1,
+                failedMessage ?? `"${lastOption}" is listed once in the country drop-down`,
+            );
+        });
+    }
+
+    /**
+     * Asserted against the whole panel: the Industry Lens element is only rendered once a
+     * category is chosen, so before then there is nothing to match.
+     */
+    async assertIndustryLensPlaceholder(text: string, failedMessage?: string): Promise<void> {
+        await test.step(`Assert the Industry Lens shows "${text}"`, async () => {
+            await this.assert.toContainText(this.livePreviewPanel.locator, text, failedMessage ?? `The Industry Lens shows "${text}"`);
+        });
+    }
+
+    /** Used after switching category, to prove the block was replaced rather than added to. */
+    async assertIndustryLensDoesNotShow(text: string, failedMessage?: string): Promise<void> {
+        await test.step(`Assert the Industry Lens no longer shows "${text}"`, async () => {
+            await this.assert.toHaveCount(
+                this.industryLens.locator.filter({ hasText: text }),
+                0,
+                failedMessage ?? `The Industry Lens no longer shows "${text}"`,
+            );
+        });
+    }
+
+    async assertIndustryLens(text: string, failedMessage?: string): Promise<void> {
+        await test.step(`Assert the Industry Lens shows "${text}"`, async () => {
+            await this.assert.toContainText(this.industryLens.locator, text, failedMessage ?? `The Industry Lens shows "${text}"`);
+        });
+    }
+
+    /** The stepper marks the current step with `active` and the ones behind it with `passed`. */
+    async assertCurrentStep(name: string, failedMessage?: string): Promise<void> {
+        await test.step(`Assert the wizard is on the "${name}" step`, async () => {
+            await this.assert.toHaveClass(
+                this.stepChips.locator.filter({ visible: true }).and(this.page.locator(`[data-automation-test="auto-step-${name}"]`)),
+                /\bactive\b/,
+                failedMessage ?? `The wizard is on the "${name}" step`,
+            );
+        });
+    }
+
+    /** Anchored regex so `filter({ hasText })` matches the whole trimmed text. */
+    private exactText(value: string): RegExp {
+        const escaped = value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        return new RegExp(`^\\s*${escaped}\\s*$`);
+    }
 
 }
