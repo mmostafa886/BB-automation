@@ -2,27 +2,8 @@ import { test } from '../../fixtures/self-healing-fixture';
 import createCompanyInputs from '../../../test-data/CreateCompanyInputs.json';
 
 /**
- * @testcase     TC-BB-Create-Company-003
- * @title        Choose a company stage and move to the Business Information step
- * @module       CreateCompany
- * @priority     P1
- * @tags         @createcompany @automation
- *
- * @preconditions
- *   - App reachable at BASE_URL; the auth landing page is shown.
- *   - The account in `test-data/CreateCompanyInputs.json` can sign in and has at least one company,
- *     so the companies menu is shown in the side bar.
- *   - No company is created — the flow stops on step 3 of the wizard.
- *
- * @steps
- *   1. Navigate to the BznsBuilder auth page, sign in, and wait for the dashboard.
- *   2. Click the "+" icon next to the company name in the side bar, then "Create New Company".
- *   3. Choose a describe card and click Next.
- *   4. Assert the wizard is on step 2, "Company Stage", showing Idea / Startup / Growth, none selected.
- *   5. Click one of the stage cards.
- *   6. Assert that card is selected and Next is enabled.
- *   7. Click Next.
- *   8. Assert the wizard is on step 3, "Business Information".
+ * @jira   BZNS-3824
+ * @title  Automation-Company Creation: Select a company stage and go to the next step
  */
 const input = createCompanyInputs.chooseStageAndGoNext;
 

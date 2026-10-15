@@ -2,30 +2,8 @@ import { test } from '../../fixtures/self-healing-fixture';
 import createCompanyInputs from '../../../test-data/CreateCompanyInputs.json';
 
 /**
- * @testcase     TC-BB-Create-Company-014
- * @title        Next stays disabled until a company name is entered on the Company Details step
- * @module       CreateCompany
- * @priority     P1
- * @tags         @createcompany @automation
- *
- * @preconditions
- *   - App reachable at BASE_URL; the auth landing page is shown.
- *   - The account in `test-data/CreateCompanyInputs.json` can sign in and has at least one company.
- *   - No company is created — the flow stops on step 4 and never subscribes.
- *
- * @steps
- *   1. Navigate to the BznsBuilder auth page, sign in, and wait for the dashboard.
- *   2. Click the "+" icon next to the company name, then "Create New Company".
- *   3. Choose a describe card → Next, choose a company stage → Next, select an industry → Next.
- *   4. On step 4 with the company name empty, assert Next is disabled.
- *   5. Fill the tagline only; assert Next is STILL disabled.
- *   6. Type only spaces into the company name; assert Next is STILL disabled.
- *   7. Enter a real company name; assert Next becomes enabled.
- *   8. Clear the company name; assert Next is disabled again.
- *
- * Notes:
- *   - Steps 5 and 6 prove the gate is the company name itself, and that whitespace does not count.
- *   - Next is not clicked: step 5 (Financial) is not part of this test case.
+ * @jira   BZNS-3831
+ * @title  Automation-Company Creation: Verify that the Next button in Step 4 remains disabled until a company name is entered and becomes enabled after entering a company name.
  */
 const input = createCompanyInputs.companyNameGatesNext;
 

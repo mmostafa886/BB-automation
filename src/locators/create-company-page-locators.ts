@@ -49,6 +49,15 @@ export const createCompanyLocators = {
         },
     },
 
+    forecastsMenuItems: {
+        // One row per forecast in the open forecasts menu in the side bar. Scoped to
+        // app-bzns-finance-select so a forecast name is never confused with the same text elsewhere.
+        selector: 'app-bzns-finance-select .sidebar-submenu-item',
+        metadata: {
+            description: 'Forecast name rows listed in the open forecasts menu in the side bar',
+        },
+    },
+
     createNewCompanyLink: {
         // Inside the open companies menu. `a.add-new` alone also matches the sibling
         // "Manage Company" link, so narrow by text.

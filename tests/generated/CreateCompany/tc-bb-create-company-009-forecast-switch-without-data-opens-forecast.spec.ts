@@ -2,25 +2,8 @@ import { test } from '../../fixtures/self-healing-fixture';
 import createCompanyInputs from '../../../test-data/CreateCompanyInputs.json';
 
 /**
- * @testcase     TC-BB-Create-Company-009
- * @title        Switching to an existing forecast before entering any data opens the Forecast page directly
- * @module       CreateCompany
- * @priority     P2
- * @tags         @createcompany @automation
- *
- * @preconditions
- *   - App reachable at BASE_URL; the auth landing page is shown.
- *   - The account in `test-data/CreateCompanyInputs.json` has `company`, and that company has `targetForecast`.
- *     It is deliberately NOT "Start Up", whose forecasts the Dividends specs rely on.
- *   - No company is created.
- *
- * @steps
- *   1. Navigate to the BznsBuilder auth page, sign in, and wait for the dashboard.
- *   2. From the home page, select `company` so its forecasts are listed in the forecasts menu.
- *   3. Open "Create New Company"; assert step 1 is shown with no card selected (no data entered).
- *   4. Open the forecasts menu and click `targetForecast`.
- *   5. Assert the Forecast page (/financial/overview) is shown, no unsaved changes dialog appeared,
- *      and `targetForecast` is the selected forecast.
+ * @jira   BZNS-3828
+ * @title  Automation-Company Creation: Verify that navigating to an existing forecast displays an unsaved changes confirmation dialog when data has been entered, and redirects directly to the selected Forecast page when no data has been entered
  */
 const input = createCompanyInputs.forecastSwitchWithoutData;
 

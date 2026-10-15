@@ -104,6 +104,15 @@ export const realityCheckLocators = {
         },
     },
 
+    stepChips: {
+        // Every step chip: auto-step-Idea, -Customer, -Revenue, -Costs, -Signals, -Timeline, -Reality.
+        // The current one carries the `active` class; filter by name in the page object.
+        selector: '[data-automation-test^="auto-step-"]',
+        metadata: {
+            description: 'All step chips of the Financial Reality Check step indicator',
+        },
+    },
+
     passedStep: {
         // Any completed step chip — used to assert an earlier step was left behind
         selector: '[data-automation-test="auto-stepper"] > div.passed',
@@ -337,6 +346,49 @@ export const realityCheckLocators = {
             role:        'textbox',
             placeholder: 'Select Country',
             description: 'Country select input on step 1 of the Financial Reality Check wizard',
+        },
+    },
+
+    countryOptions: {
+        // Options of the open country drop-down: one div per entry, 43 in all — 42 countries in
+        // alphabetical order (Argentina … Vietnam) followed by "Other" (verified on UAT).
+        selector: '.selectbox-options-container > div',
+        metadata: {
+            description: 'Country options listed in the open country drop-down on step 1',
+        },
+    },
+
+    // ── Idea length validation ───────────────────────────────────────────────
+
+    ideaCharCounter: {
+        // "<typed>/300" under the idea field, e.g. "107/300" or "643/300" when over the limit.
+        selector: 'span.counter, span:has-text("/300")',
+        metadata: {
+            description: 'Character counter under the business idea textarea on step 1',
+        },
+    },
+
+    fieldErrors: {
+        // Every inline validation message on the step; used for absence assertions.
+        selector: 'span.field-error',
+        metadata: {
+            description: 'Inline validation messages on step 1 of the Financial Reality Check wizard',
+        },
+    },
+
+    minimumLengthError: {
+        selector: 'span.field-error:has-text("Minimum 20 characters")',
+        metadata: {
+            text:        'Minimum 20 characters',
+            description: '"Minimum 20 characters" validation message under the business idea textarea',
+        },
+    },
+
+    maximumLengthError: {
+        selector: 'span.field-error:has-text("Maximum 300 characters")',
+        metadata: {
+            text:        'Maximum 300 characters',
+            description: '"Maximum 300 characters" validation message under the business idea textarea',
         },
     },
 

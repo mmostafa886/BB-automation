@@ -9,11 +9,11 @@ import { SignUpPageSelfHealing } from './signup-page-self-healing';
 import { AssetsPageSelfHealing } from './assets-page-self-healing';
 import { PersonnelPageSelfHealing } from './personnel-page-self-healing';
 import { DividendsPageSelfHealing } from './dividends-page-self-healing';
+import { RealityCheckPageSelfHealing } from './reality-check-page-self-healing';
 import { CreateCompanyPageSelfHealing } from './create-company-page-self-healing';
 import { SubscriptionsPageSelfHealing } from './subscriptions-page-self-healing';
 import { ForgotPasswordPageSelfHealing } from './forgot-password-page-self-healing';
 import { ResetPasswordPageSelfHealing } from './reset-password-page-self-healing';
-import { RealityCheckPageSelfHealing} from './reality-check-page-self-healing';
 import { type AIHealingProvider } from '../utils/self-healing-locator';
 
 /**
@@ -51,11 +51,12 @@ export class POMLazySelfHealing {
     private _assetsPage?: AssetsPageSelfHealing;
     private _personnelPage?: PersonnelPageSelfHealing;
     private _dividendsPage?: DividendsPageSelfHealing;
+    private _realityCheckPage?: RealityCheckPageSelfHealing;
     private _createCompanyPage?: CreateCompanyPageSelfHealing;
     private _subscriptionsPage?: SubscriptionsPageSelfHealing;
     private _forgotPasswordPage?: ForgotPasswordPageSelfHealing;
     private _resetPasswordPage?: ResetPasswordPageSelfHealing;
-    private _realityCheckPage?: RealityCheckPageSelfHealing;
+
     constructor(page: Page, testName?: string, aiProvider?: AIHealingProvider) {
         this.page = page;
         this._testName = testName;
@@ -184,6 +185,18 @@ export class POMLazySelfHealing {
         return this._dividendsPage;
     }
 
+    /** Returns the RealityCheckPageSelfHealing instance, creating it on first access */
+    get realityCheckPage(): RealityCheckPageSelfHealing {
+        if (!this._realityCheckPage) {
+            this._realityCheckPage = new RealityCheckPageSelfHealing(
+                this.page,
+                this._testName ?? '',
+                this._aiProvider,
+            );
+        }
+        return this._realityCheckPage;
+    }
+
     /** Returns the CreateCompanyPageSelfHealing instance, creating it on first access */
     get createCompanyPage(): CreateCompanyPageSelfHealing {
         if (!this._createCompanyPage) {
@@ -231,16 +244,7 @@ export class POMLazySelfHealing {
         }
         return this._resetPasswordPage;
     }
-    get realityCheckPage(): RealityCheckPageSelfHealing{
-                if (!this._realityCheckPage) {
-            this._realityCheckPage = new RealityCheckPageSelfHealing(
-                this.page,
-                this._testName ?? '',
-                this._aiProvider,
-            );
-        }
-        return this._realityCheckPage;
-    }
+
     // ===================== Healing Report =====================
 
     /**
@@ -259,11 +263,11 @@ export class POMLazySelfHealing {
             this._assetsPage,
             this._personnelPage,
             this._dividendsPage,
+            this._realityCheckPage,
             this._createCompanyPage,
             this._subscriptionsPage,
             this._forgotPasswordPage,
             this._resetPasswordPage,
-            this._realityCheckPage
         ];
 
         const sections = pages
@@ -275,5 +279,4 @@ export class POMLazySelfHealing {
             ? sections.join('\n')
             : '(no locators were exercised during this test)';
     }
-
 }

@@ -1,4 +1,4 @@
-import { test, type Page } from '@playwright/test';
+import { test, type Page, type Locator } from '@playwright/test';
 import { SelfHealingPageBase } from './self-healing-page-base';
 import { SelfHealingLocator, type AIHealingProvider } from '../utils/self-healing-locator';
 import { createCompanyLocators } from '../locators/create-company-page-locators';
@@ -22,6 +22,7 @@ export class CreateCompanyPageSelfHealing extends SelfHealingPageBase {
     readonly createNewCompanyLink:  SelfHealingLocator;
     /** Matches every company row — read it through `.locator`, since `get()` probes a single element. */
     readonly companiesMenuItems:    SelfHealingLocator;
+    readonly forecastsMenuItems:    SelfHealingLocator;
 
     // ─── Wizard shell ───────────────────────────────────────────────────────
     readonly stepTitle:        SelfHealingLocator;
@@ -101,6 +102,7 @@ export class CreateCompanyPageSelfHealing extends SelfHealingPageBase {
         this.companiesMenuPlusIcon = make(L.companiesMenuPlusIcon);
         this.createNewCompanyLink  = make(L.createNewCompanyLink);
         this.companiesMenuItems    = make(L.companiesMenuItems);
+        this.forecastsMenuItems    = make(L.forecastsMenuItems);
 
         this.stepTitle        = make(L.stepTitle);
         this.stepNumbers      = make(L.stepNumbers);
@@ -166,6 +168,24 @@ export class CreateCompanyPageSelfHealing extends SelfHealingPageBase {
     async clickCreateNewCompany(): Promise<void> {
         await test.step('Click "Create New Company"', async () => {
             await this.actions.click(await this.createNewCompanyLink.get(), 'Click Create New Company link');
+        });
+    }
+
+    /**
+     * Click `company` in the already-open companies menu. Scoped to the menu rows: a short company
+     * name like "test" also matches the side bar's selected-company label, and clicking that only
+     * closes the menu instead of switching company.
+     */
+    async selectCompanyFromMenu(company: string): Promise<void> {
+        await test.step(`Select company "${company}" from the companies menu`, async () => {
+            await this.actions.click(this.menuRow(this.companiesMenuItems.locator, company), `Click company "${company}" in the companies menu`);
+        });
+    }
+
+    /** Click `forecast` in the already-open forecasts menu. Scoped to the menu rows, as above. */
+    async selectForecastFromMenu(forecast: string): Promise<void> {
+        await test.step(`Select forecast "${forecast}" from the forecasts menu`, async () => {
+            await this.actions.click(this.menuRow(this.forecastsMenuItems.locator, forecast), `Click forecast "${forecast}" in the forecasts menu`);
         });
     }
 
@@ -711,6 +731,12 @@ export class CreateCompanyPageSelfHealing extends SelfHealingPageBase {
     // ═══════════════════════════════════════════════════════════════════════
 
     /** The card whose label is exactly `option` (its text also carries a "01".."09" number). */
+    /** The row whose trimmed text is exactly `name` inside the given side-bar menu row collection. */
+    private menuRow(rows: Locator, name: string): Locator {
+        const escaped = name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        return rows.filter({ hasText: new RegExp(`^\\s*${escaped}\\s*$`) }).first();
+    }
+
     private describeOptionCard(option: string) {
         return this.describeOptions.locator.filter({ has: this.page.getByText(option, { exact: true }) });
     }

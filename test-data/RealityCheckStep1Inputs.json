@@ -1,0 +1,169 @@
+{
+  "minimumLengthMessage": {
+    "jira": "BZNS-3854",
+    "title": "Automation - Reality Check - Step1: Verify Minimum Length Validation Message Appears When Business Idea Contains Fewer Than 20 Characters",
+    "mail": "automation-youstena@drmail.in",
+    "password": "12345678",
+    "test": "Verify the minimum-length message appears for an idea under 20 characters",
+    "idea": "Coffee shop",
+    "score": "0",
+    "hint": "Start with the business idea",
+    "failedMessage": "The minimum-length validation did not behave as expected for a too-short idea"
+  },
+  "maximumLengthMessage": {
+    "jira": "BZNS-3855",
+    "title": "Automation - Reality Check - Step1: Verify Maximum Length Validation Message Appears When Business Idea Exceeds 300 Characters",
+    "mail": "automation-youstena@drmail.in",
+    "password": "12345678",
+    "test": "Verify the maximum-length message appears for an idea over 300 characters",
+    "idea": "A premium Egyptian specialty coffee roastery that sources single-origin arabica beans directly from smallholder farms, roasts them in small batches in Cairo, and sells them through an online subscription service as well as a flagship retail store with an in-house tasting bar and barista training academy for enthusiasts. A premium Egyptian specialty coffee roastery that sources single-origin arabica beans directly from smallholder farms, roasts them in small batches in Cairo, and sells them through an online subscription service as well as a flagship retail store with an in-house tasting bar and barista training academy for enthusiasts.",
+    "score": "0",
+    "hint": "Start with the business idea",
+    "failedMessage": "The maximum-length validation did not behave as expected for a too-long idea"
+  },
+  "viabilityScore8": {
+    "jira": "BZNS-3856",
+    "title": "Automation - Reality Check - Step1: Verify Live Preview Viability Ring Updates Based on the Idea Specificity Score 8,6,4",
+    "mail": "automation-youstena@drmail.in",
+    "password": "12345678",
+    "test": "Verify the Live Preview scores the handmade organic skincare idea as 8",
+    "idea": "I will sell handmade organic skincare products through an online store for women in Cairo.",
+    "score": "8",
+    "failedMessage": "The Live Financial Preview did not score this business idea as 8"
+  },
+  "viabilityScore6": {
+    "jira": "BZNS-3856",
+    "title": "Automation - Reality Check - Step1: Verify Live Preview Viability Ring Updates Based on the Idea Specificity Score 8,6,4",
+    "mail": "automation-youstena@drmail.in",
+    "password": "12345678",
+    "test": "Verify the Live Preview scores the AI tutoring app idea as 6",
+    "idea": "AI tutoring app for students in Cairo.",
+    "score": "6",
+    "failedMessage": "The Live Financial Preview did not score this business idea as 6"
+  },
+  "viabilityScore4": {
+    "jira": "BZNS-3856",
+    "title": "Automation - Reality Check - Step1: Verify Live Preview Viability Ring Updates Based on the Idea Specificity Score 8,6,4",
+    "mail": "automation-youstena@drmail.in",
+    "password": "12345678",
+    "test": "Verify the Live Preview scores the handmade soap idea as 4",
+    "idea": "We sell handmade soap through our online store.",
+    "score": "4",
+    "failedMessage": "The Live Financial Preview did not score this business idea as 4"
+  },
+  "viabilityScore2": {
+    "jira": "BZNS-3857",
+    "title": "Automation - Reality Check - Step1: Verify Live Preview Viability Ring Updates Based on the Idea Specificity Score 2,0",
+    "mail": "automation-youstena@drmail.in",
+    "password": "12345678",
+    "test": "Verify the Live Preview scores the coffee shop idea as 2",
+    "idea": "I want to open a coffee shop.",
+    "score": "2",
+    "failedMessage": "The Live Financial Preview did not score this business idea as 2"
+  },
+  "viabilityScore0": {
+    "jira": "BZNS-3857",
+    "title": "Automation - Reality Check - Step1: Verify Live Preview Viability Ring Updates Based on the Idea Specificity Score 2,0",
+    "mail": "automation-youstena@drmail.in",
+    "password": "12345678",
+    "test": "Verify the Live Preview scores the lorem ipsum idea as 0",
+    "idea": "Lorem ipsum dolor sit amet cons.",
+    "score": "0",
+    "failedMessage": "The Live Financial Preview did not score this business idea as 0"
+  },
+  "notEnoughInformationHint": {
+    "jira": "BZNS-3858",
+    "title": "Automation - Reality Check - Step1: Verify Live Preview Displays \"Not Enough Information Yet\" for a Valid Idea Between 20 and 300 Characters",
+    "mail": "automation-youstena@drmail.in",
+    "password": "12345678",
+    "test": "Verify the Live Preview shows \"Not enough information yet\" for an idea between 20 and 300 characters",
+    "idea": "A subscription box delivering locally roasted coffee beans to homes in Cairo every month.",
+    "hint": "Not enough information yet",
+    "failedMessage": "The Live Financial Preview did not show \"Not enough information yet\" for a valid idea"
+  },
+  "industryLensReflectsCategory": {
+    "jira": "BZNS-3859",
+    "title": "Automation - Reality Check - Step1: Verify Selected Business Category Is Reflected in the Live Preview Industry Lens",
+    "mail": "automation-youstena@drmail.in",
+    "password": "12345678",
+    "test": "Verify the Industry Lens reflects the selected business category and follows a change of category",
+    "idea": "A subscription box delivering locally roasted coffee beans to homes in Cairo every month.",
+    "lensPlaceholder": "Pick a category to see industry context",
+    "category": "Food & Beverage",
+    "lensText": "Perishability · Staff turnover · Delivery commissions",
+    "switchCategory": "SaaS / Digital",
+    "switchLensText": "Slow early acquisition · Churn management · Longer runway needed",
+    "failedMessage": "The Industry Lens did not reflect the selected business category"
+  },
+  "countryDropdownOptions": {
+    "jira": "BZNS-3860",
+    "title": "Automation - Reality Check - Step1: Verify Country Dropdown Displays All 42 Countries, \"Other\" as the Last Option, and \"Select Country\" as the Default Placeholder",
+    "mail": "automation-youstena@drmail.in",
+    "password": "12345678",
+    "test": "Verify the country drop-down lists 42 countries with \"Other\" last and \"Select Country\" as its placeholder",
+    "idea": "A subscription box delivering locally roasted coffee beans to homes in Cairo every month.",
+    "countryPlaceholder": "Select Country",
+    "countryCount": 42,
+    "lastCountryOption": "Other",
+    "failedMessage": "The country drop-down did not list 42 countries with \"Other\" last and \"Select Country\" as its placeholder"
+  },
+  "completeStepOne": {
+    "jira": "BZNS-3861",
+    "title": "Automation - Reality Check - Step 1: Verify the Continue Button Is Enabled When Idea, Business Category, Country, and Founder Situation Are Validly Selected, and Disabled When Any Required Field Is Not Selected",
+    "mail": "automation-youstena@drmail.in",
+    "password": "12345678",
+    "test": "Verify step 1 can be completed with a valid idea and Continue opens the Customer step",
+    "idea": "A premium Egyptian coffee roastery selling single-origin beans online and through a flagship store in Cairo",
+    "hint": "Not enough information yet",
+    "category": "Food & Beverage",
+    "country": "Egypt",
+    "stage": "Testing an idea",
+    "nextStep": "Customer",
+    "failedMessage": "Step 1 of the Reality Check did not accept a valid idea"
+  },
+  "continueEnabledWhenAllSelected": {
+    "jira": "BZNS-3861",
+    "title": "Automation - Reality Check - Step 1: Verify the Continue Button Is Enabled When Idea, Business Category, Country, and Founder Situation Are Validly Selected, and Disabled When Any Required Field Is Not Selected",
+    "mail": "automation-youstena@drmail.in",
+    "password": "12345678",
+    "test": "Verify Continue is enabled once the idea, category, country and founder situation are all selected",
+    "idea": "A subscription box delivering locally roasted coffee beans to homes in Cairo every month.",
+    "category": "Food & Beverage",
+    "country": "Egypt",
+    "stage": "Testing an idea",
+    "failedMessage": "Continue was not enabled after the idea, category, country and founder situation were all selected"
+  },
+  "continueDisabledWithoutCategory": {
+    "jira": "BZNS-3861",
+    "title": "Automation - Reality Check - Step 1: Verify the Continue Button Is Enabled When Idea, Business Category, Country, and Founder Situation Are Validly Selected, and Disabled When Any Required Field Is Not Selected",
+    "mail": "automation-youstena@drmail.in",
+    "password": "12345678",
+    "test": "Verify Continue stays disabled when the business category is not selected",
+    "idea": "A subscription box delivering locally roasted coffee beans to homes in Cairo every month.",
+    "country": "Egypt",
+    "stage": "Testing an idea",
+    "failedMessage": "Continue was enabled even though no business category was selected"
+  },
+  "continueDisabledWithoutCountry": {
+    "jira": "BZNS-3861",
+    "title": "Automation - Reality Check - Step 1: Verify the Continue Button Is Enabled When Idea, Business Category, Country, and Founder Situation Are Validly Selected, and Disabled When Any Required Field Is Not Selected",
+    "mail": "automation-youstena@drmail.in",
+    "password": "12345678",
+    "test": "Verify Continue stays disabled when the country is not selected",
+    "idea": "A subscription box delivering locally roasted coffee beans to homes in Cairo every month.",
+    "category": "Food & Beverage",
+    "stage": "Testing an idea",
+    "failedMessage": "Continue was enabled even though no country was selected"
+  },
+  "continueDisabledWithoutStage": {
+    "jira": "BZNS-3861",
+    "title": "Automation - Reality Check - Step 1: Verify the Continue Button Is Enabled When Idea, Business Category, Country, and Founder Situation Are Validly Selected, and Disabled When Any Required Field Is Not Selected",
+    "mail": "automation-youstena@drmail.in",
+    "password": "12345678",
+    "test": "Verify Continue stays disabled when the founder situation is not selected",
+    "idea": "A subscription box delivering locally roasted coffee beans to homes in Cairo every month.",
+    "category": "Food & Beverage",
+    "country": "Egypt",
+    "failedMessage": "Continue was enabled even though no founder situation was selected"
+  }
+}

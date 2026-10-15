@@ -1,7 +1,7 @@
 [
   {
     "test": "Verify step 2 monthly revenue = customers x price and recalculates immediately",
-    "email": "realitycheck@gmail.com",
+    "email": "automation-youstena@drmail.in",
     "password":"12345678",
     "businessIdea": "A premium Egyptian cotton bedding brand selling to expats, tourists, and boutique hotels online",
     "businessCategory": "Product / E-commerce",
@@ -27,7 +27,7 @@
   },
   {
     "test": "Verify monthly revenue calculations support decimal prices correctly",
-    "email": "realitycheck@gmail.com",
+    "email": "automation-youstena@drmail.in",
     "password":"12345678",
     "businessIdea": "A premium Egyptian cotton bedding brand selling to expats, tourists, and boutique hotels online",
     "businessCategory": "Product / E-commerce",
@@ -44,7 +44,7 @@
   },
   {
     "test": "Verify the price field is required and rejects negative values, letters, and unsupported characters",
-    "email": "realitycheck@gmail.com",
+    "email": "automation-youstena@drmail.in",
     "password":"12345678",
     "businessIdea": "A premium Egyptian cotton bedding brand selling to expats, tourists, and boutique hotels online",
     "businessCategory": "Product / E-commerce",
@@ -60,7 +60,7 @@
   },
   {
     "test": "Step 2 Continue button: disabled per missing, enabled when all valid",
-    "email": "realitycheck@gmail.com",
+    "email": "automation-youstena@drmail.in",
     "password":"12345678",
     "businessIdea": "A premium Egyptian cotton bedding brand selling to expats, tourists, and boutique hotels online",
     "businessCategory": "Product / E-commerce",
@@ -76,7 +76,7 @@
   },
   {
     "test": "Verify customer-type selection is required",
-    "email": "realitycheck@gmail.com",
+    "email": "automation-youstena@drmail.in",
     "password":"12345678",
     "businessIdea": "A premium Egyptian cotton bedding brand selling to expats, tourists, and boutique hotels online",
     "businessCategory": "Product / E-commerce",
@@ -92,7 +92,7 @@
   },
   {
     "test": "Verify the user can select a currency and the selected value is displayed in the field",
-    "email": "realitycheck@gmail.com",
+    "email": "automation-youstena@drmail.in",
     "password":"12345678",
     "businessIdea": "A premium Egyptian cotton bedding brand selling to expats, tourists, and boutique hotels online",
     "businessCategory": "Product / E-commerce",
@@ -108,7 +108,7 @@
   },
   {
     "test": "Verify the customer-count field is required and accepts only positive integers",
-    "email": "realitycheck@gmail.com",
+    "email": "automation-youstena@drmail.in",
     "password":"12345678",
     "businessIdea": "A premium Egyptian cotton bedding brand selling to expats, tourists, and boutique hotels online",
     "businessCategory": "Product / E-commerce",
@@ -124,7 +124,7 @@
   },
   {
     "test": "Verify selecting Other routes benchmark comparisons using global benchmark",
-    "email": "realitycheck@gmail.com",
+    "email": "automation-youstena@drmail.in",
     "password":"12345678",
     "businessIdea": "A premium Egyptian cotton bedding brand selling to expats, tourists, and boutique hotels online",
     "businessCategory": "Product / E-commerce",
@@ -141,7 +141,7 @@
   },
   {
     "test": "Verify the price field is disabled before currency selection and enabled after selection",
-    "email": "realitycheck@gmail.com",
+    "email": "automation-youstena@drmail.in",
     "password":"12345678",
     "businessIdea": "A premium Egyptian cotton bedding brand selling to expats, tourists, and boutique hotels online",
     "businessCategory": "Product / E-commerce",
@@ -157,7 +157,7 @@
   },
   {
     "test": "Verify customer-count realism scoring for all benchmark scoring ranges",
-    "email": "realitycheck@gmail.com",
+    "email": "automation-youstena@drmail.in",
     "password":"12345678",
     "businessIdea": "A premium Egyptian cotton bedding brand selling to expats, tourists, and boutique hotels online",
     "businessCategory": "Product / E-commerce",
@@ -174,7 +174,7 @@
   },
   {
     "test": "Verify customer count 0 or 1, or price 0, triggers the Some inputs look like placeholders warning",
-    "email": "realitycheck@gmail.com",
+    "email": "automation-youstena@drmail.in",
     "password":"12345678",
     "businessIdea": "A premium Egyptian cotton bedding brand selling to expats, tourists, and boutique hotels online",
     "businessCategory": "Product / E-commerce",
@@ -190,7 +190,7 @@
   },
   {
     "test": " Verify customer count above 5× the benchmark ceiling triggers Volume above typical range with the entered count and category",
-    "email": "realitycheck@gmail.com",
+    "email": "automation-youstena@drmail.in",
     "password":"12345678",
     "businessIdea": "A premium Egyptian cotton bedding brand selling to expats, tourists, and boutique hotels online",
     "businessCategory": "Product / E-commerce",
@@ -207,7 +207,7 @@
   },
   {
     "test": "Verify B2B customer-count thresholds trigger the aggressive-target and high-dependency warnings with the correct dynamic count",
-    "email": "realitycheck@gmail.com",
+    "email": "automation-youstena@drmail.in",
     "password":"12345678",
     "businessIdea": "A premium Egyptian cotton bedding brand selling to expats, tourists, and boutique hotels online",
     "businessCategory": "Product / E-commerce",
@@ -224,7 +224,7 @@
   },
   {
     "test": "Verify customer count below the benchmark floor triggers Conservative customer projection with the selected category",
-    "email": "realitycheck@gmail.com",
+    "email": "automation-youstena@drmail.in",
     "password":"12345678",
     "businessIdea": "A premium Egyptian cotton bedding brand selling to expats, tourists, and boutique hotels online",
     "businessCategory": "Product / E-commerce",
@@ -238,7 +238,7 @@
   },
   {
     "test": "Verify Clear revenue assumption appears when no warnings apply and displays the calculated revenue and currency",
-    "email": "realitycheck@gmail.com",
+    "email": "automation-youstena@drmail.in",
     "password":"12345678",
     "businessIdea": "A premium Egyptian cotton bedding brand selling to expats, tourists, and boutique hotels online",
     "businessCategory": "Product / E-commerce",
@@ -253,7 +253,7 @@
   },
   {
     "test": "Verify that when multiple non-placeholder warnings match simultaneously, only the highest-priority warning is displayed",
-    "email": "realitycheck@gmail.com",
+    "email": "automation-youstena@drmail.in",
     "password":"12345678",
     "businessIdea": "A premium Egyptian cotton bedding brand selling to expats, tourists, and boutique hotels online",
     "businessCategory": "Product / E-commerce",

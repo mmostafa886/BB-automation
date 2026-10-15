@@ -2,31 +2,8 @@ import { test } from '../../fixtures/self-healing-fixture';
 import createCompanyInputs from '../../../test-data/CreateCompanyInputs.json';
 
 /**
- * @testcase     TC-BB-Create-Company-012
- * @title        Generate Suggestions is disabled while the type of business is empty and enabled once it is filled
- * @module       CreateCompany
- * @priority     P2
- * @tags         @createcompany @automation
- *
- * @preconditions
- *   - App reachable at BASE_URL; the auth landing page is shown.
- *   - The account in `test-data/CreateCompanyInputs.json` can sign in and has at least one company.
- *   - No company is created — the flow stops on step 3.
- *
- * @steps
- *   1. Navigate to the BznsBuilder auth page, sign in, and wait for the dashboard.
- *   2. Click the "+" icon next to the company name, then "Create New Company".
- *   3. Choose a describe card → Next, choose a company stage → Next.
- *   4. On step 3 with "What type of business is this" empty, assert "Generate Suggestions" is disabled.
- *   5. Fill the type of business; assert "Generate Suggestions" becomes enabled.
- *   6. Clear the field again; assert "Generate Suggestions" is disabled again.
- *
- * Notes:
- *   - The button sits in the industry column of the step, but its state is driven by the
- *     "What type of business is this" field, not by the industry dropdown.
- *   - The button is never clicked: it calls the AI suggestion service.
- *   - Whitespace is NOT trimmed by the app — typing only spaces enables the button (seen on UAT).
- *     That is left out of the assertions here; it is worth its own test case if it is a real bug.
+ * @jira   BZNS-3829
+ * @title  Automation-Company Creation: Verify that the Generate Suggestion button is disabled when the "What type of business is this?" field is empty and becomes enabled when data is entered.
  */
 const input = createCompanyInputs.generateSuggestionsGatedByTypeOfBusiness;
 

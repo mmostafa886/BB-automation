@@ -2,35 +2,8 @@ import { test } from '../../fixtures/self-healing-fixture';
 import createCompanyInputs from '../../../test-data/CreateCompanyInputs.json';
 
 /**
- * @testcase     TC-BB-Create-Company-017
- * @title        A new account gets a 6-step wizard ending on Funding with a Start Free Trial button
- * @module       CreateCompany
- * @priority     P1
- * @tags         @createcompany @automation
- *
- * @preconditions
- *   - App reachable at BASE_URL; the auth landing page is shown.
- *   - The account in `test-data/CreateCompanyInputs.json` (`newAccountSixStepWizard`) has NO company
- *     yet, so it is creating its first one. That is what makes the wizard 6 steps instead of 8 —
- *     an account that already has a company gets the 8-step version (see TC-BB-Create-Company-005).
- *   - The account keeps that state only while nobody finishes the flow: the test stops on the last
- *     step and never clicks "Start Free Trial", so no company and no trial are created.
- *
- * @steps
- *   1. Navigate to the BznsBuilder auth page and sign in with the new account.
- *   2. Assert the app lands on the create company wizard by itself — no side-bar companies menu is used.
- *   3. Assert step 1 shows the 9 describe cards; choose one and click Next.
- *   4. Assert the stepper has exactly 6 steps, numbered 1 to 6, on step 2 and on every step after it.
- *   5. Pass steps 2–5: company stage → Next, industry → Next, company name → Next, then the four
- *      required Financial fields → Next.
- *   6. Assert the wizard is on step 6, "Funding" — the last step.
- *   7. Assert the primary button reads "Start Free Trial" and is enabled. It is NOT clicked.
- *
- * Notes:
- *   - A new account signs in straight into /create-company, so there is no dashboard to wait for and
- *     no "+" icon to click; `waitForWizardLoaded()` covers the slow post-login redirect.
- *   - The stepper is not rendered on step 1, so the 6-step count is first checked on step 2.
- *   - "Start Free Trial" is the same element as Next on earlier steps, relabelled on the last step.
+ * @jira   BZNS-3781
+ * @title  Automation-Company Creation: Verify that a new account displays 6 steps with "Start Free Trial" as the primary CTA in the last step
  */
 const input = createCompanyInputs.newAccountSixStepWizard;
 
