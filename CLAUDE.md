@@ -127,6 +127,7 @@ Invoke with `/<skill-name>`. Full pipeline diagrams: `docs/skills-index.md`.
 | `/merge-tc-sets` | Merge + deduplicate two TC sets |
 | `/execute-and-fix-tests` | Run → inspect failures via MCP browser → fix → re-run |
 | `/analyze-trace` | Parse `trace.zip`, classify failure, apply fix |
+| `/resolve-merge-conflicts` | Merge/rebase/cherry-pick stopped on conflicts (or a merge left things broken) → classify, resolve, run affected tests from both sides |
 | `/tcs-to-jira` | Push local TCs to Jira as Epic + Task issues |
 | `/patch-jira-tc-labels` | Update TC issue labels in Jira |
 

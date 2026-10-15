@@ -223,6 +223,7 @@ Jira User Stories
 | **analyze-trace** | `/analyze-trace [trace path or TC-ID]` | A test is failing and you have a `trace.zip` in `test-results/`. Parses the binary `.trace` event stream, reconstructs the step timeline, classifies the root cause into one of 9 failure categories, and applies the minimal fix. | Failure report + targeted fix applied to `src/locators/` or `src/pages/` file |
 | **execute-and-fix-tests** | `/execute-and-fix-tests [path or pattern]` | A test (or set of tests) is failing and you want to run, inspect, fix, and re-run in one command. | Fixed `src/locators/`, `src/pages/`, and/or `tests/generated/` files + final pass/fail report |
 | **merge-tc-sets** | `/merge-tc-sets <FeatureName> [FileA] [FileB] [--keep-both]` | Two TC markdown files exist for the same feature (e.g. one from Claude, one from OpenAI). Deduplicates by TC ID and title similarity (≥ 0.80 Levenshtein). | Merged `test_cases/<FeatureName>_TestCases.md` + updated `test_cases/<FeatureName>_Jira_TCs.json` |
+| **resolve-merge-conflicts** | `/resolve-merge-conflicts [--audit <sha>] [--strategy=union\|ours\|theirs] [--no-run]` | A merge, rebase, cherry-pick, revert or stash pop stopped on conflicts — or a completed merge left the build/tests broken. Classifies each file by conflict type (incl. silent auto-merge breaks), proposes a strategy per file for confirmation, resolves, verifies statically, then lists and runs the tests affected by **each side**. Generic core; BB-specific layer rules live in its `PROJECT-RULES.md`. | Resolved files + per-side affected-test results + summary with next steps |
 | **describe-and-flatten-json-data** | `/describe-and-flatten-json-data [file, glob, or module]` | A data-driven spec is missing a `test.describe` wrapper, or loops over a `test-data/*.json` file that turns out to hold only one row. Adds the wrapper unconditionally; flattens the loop to direct indexed access only when the JSON provably represents a single case — multi-row JSON that drives multiple distinct test cases is left untouched so coverage never shrinks. | Restructured spec file(s) + per-file summary of what changed vs. what was skipped and why |
 
 ---
@@ -265,6 +266,8 @@ Jira User Stories
 | Shrink verbose comments/JSDoc to Clean Code style (comments only) | `/clean-code-comments [file] [method]` |
 | Run failing tests, live-fix them, and re-run until green | `/execute-and-fix-tests` |
 | Debug a failing test from its trace file | `/analyze-trace` |
+| Resolve merge/rebase conflicts and re-run the tests from both sides | `/resolve-merge-conflicts` |
+| Audit a merge that completed but left the build/tests broken | `/resolve-merge-conflicts --audit <merge-sha>` |
 | Push User Stories to Jira | `/jira-uss-to-tcs <FeatureName>` |
 | Push User Stories to Jira and save TCs locally | `/jira-uss-to-tcs <FeatureName> --save-local` |
 | Fetch Jira Stories → generate TCs → save locally (no Jira write) | `/jira-uss-to-tcs <FeatureName> --local-only` |
