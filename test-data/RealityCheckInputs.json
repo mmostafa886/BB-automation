@@ -1,0 +1,272 @@
+[
+  {
+    "test": "Verify step 2 monthly revenue = customers x price and recalculates immediately",
+    "email": "realitycheck@gmail.com",
+    "password":"12345678",
+    "businessIdea": "A premium Egyptian cotton bedding brand selling to expats, tourists, and boutique hotels online",
+    "businessCategory": "Product / E-commerce",
+    "country": "Egypt",
+    "stage": "Testing an idea",
+
+    "currency": ["EGP"],
+    "customerType": ["Individuals (B2C)","Businesses (B2B)"],
+
+    "revenueMultiplier": 1.0,
+    "emptyRevenueDisplay": "-",
+
+    
+        "step": 1,
+        "action": "setCustomersAndPrice",
+        "description": "Enter customers = 100, price = 1500 and verify the preview shows EGP 150,000",
+        "customers": ["100","200"],
+        "price": ["1500","2000",""],
+        "expectedRevenue": [150000,300000, 400000],
+        "expectedRevenueDisplay": ["EGP 150000", "EGP 300000", "EGP 400000","-"],
+        "ExpectedPrice": []
+
+  },
+  {
+    "test": "Verify monthly revenue calculations support decimal prices correctly",
+    "email": "realitycheck@gmail.com",
+    "password":"12345678",
+    "businessIdea": "A premium Egyptian cotton bedding brand selling to expats, tourists, and boutique hotels online",
+    "businessCategory": "Product / E-commerce",
+    "country": "Egypt",
+    "stage": "Testing an idea",
+
+    "currency": ["USD","EGP"],
+    "customerType": ["Individuals (B2C)"],
+    "customers": ["3","100", "7"],
+    "price": ["19.99","1499.99", "0.99"],
+    "expectedRevenue": 59.97,
+    "expectedRevenueDisplay": ["USD 59.97","EGP 149999", "EGP 6.93"],
+    "ExpectedPrice": []
+  },
+  {
+    "test": "Verify the price field is required and rejects negative values, letters, and unsupported characters",
+    "email": "realitycheck@gmail.com",
+    "password":"12345678",
+    "businessIdea": "A premium Egyptian cotton bedding brand selling to expats, tourists, and boutique hotels online",
+    "businessCategory": "Product / E-commerce",
+    "country": "Egypt",
+    "stage": "Testing an idea",
+
+    "currency": ["EGP"],
+    "customerType": ["Individuals (B2C)"],
+    "customers": ["100"],
+    "price": ["100","", "-100", "abc", "10.5.5", " 1500","1,500","1'500", "99999999"],
+    "ExpectedPrice": ["10.55","1500"],
+    "expectedRevenueDisplay": []
+  },
+  {
+    "test": "Step 2 Continue button: disabled per missing, enabled when all valid",
+    "email": "realitycheck@gmail.com",
+    "password":"12345678",
+    "businessIdea": "A premium Egyptian cotton bedding brand selling to expats, tourists, and boutique hotels online",
+    "businessCategory": "Product / E-commerce",
+    "country": "Egypt",
+    "stage": "Testing an idea",
+
+    "currency": ["EGP"],
+    "customerType": ["Individuals (B2C)"],
+    "customers": ["100"],
+    "price": ["100"],
+    "ExpectedPrice": [],
+    "expectedRevenueDisplay": []
+  },
+  {
+    "test": "Verify customer-type selection is required",
+    "email": "realitycheck@gmail.com",
+    "password":"12345678",
+    "businessIdea": "A premium Egyptian cotton bedding brand selling to expats, tourists, and boutique hotels online",
+    "businessCategory": "Product / E-commerce",
+    "country": "Egypt",
+    "stage": "Testing an idea",
+
+    "currency": ["EGP"],
+    "customerType": ["Individuals (B2C)"],
+    "customers": ["100"],
+    "price": ["1500"],
+    "ExpectedPrice": [],
+    "expectedRevenueDisplay": []
+  },
+  {
+    "test": "Verify the user can select a currency and the selected value is displayed in the field",
+    "email": "realitycheck@gmail.com",
+    "password":"12345678",
+    "businessIdea": "A premium Egyptian cotton bedding brand selling to expats, tourists, and boutique hotels online",
+    "businessCategory": "Product / E-commerce",
+    "country": "Egypt",
+    "stage": "Testing an idea",
+
+    "currency": ["EGP", "USD"],
+    "customerType": ["Individuals (B2C)"],
+    "customers": ["100"],
+    "price": ["1500"],
+    "ExpectedPrice": [],
+    "expectedRevenueDisplay": []
+  },
+  {
+    "test": "Verify the customer-count field is required and accepts only positive integers",
+    "email": "realitycheck@gmail.com",
+    "password":"12345678",
+    "businessIdea": "A premium Egyptian cotton bedding brand selling to expats, tourists, and boutique hotels online",
+    "businessCategory": "Product / E-commerce",
+    "country": "Egypt",
+    "stage": "Testing an idea",
+
+    "currency": ["EGP"],
+    "customerType": ["Individuals (B2C)"],
+    "customers": ["100", "-5", "10.5", "abc", "!@#", " 100 ", "12a4", "10000000", ""],
+    "price": ["1500"],
+    "ExpectedPrice": [],
+    "expectedRevenueDisplay": []
+  },
+  {
+    "test": "Verify selecting Other routes benchmark comparisons using global benchmark",
+    "email": "realitycheck@gmail.com",
+    "password":"12345678",
+    "businessIdea": "A premium Egyptian cotton bedding brand selling to expats, tourists, and boutique hotels online",
+    "businessCategory": "Product / E-commerce",
+    "country": "Other",
+    "stage": "Testing an idea",
+
+    "currency": ["USD"],
+    "customerType": ["Individuals (B2C)"],
+    "customers": ["100"],
+    "price": [],
+    "ExpectedPrice": [],
+    "expectedRevenueDisplay": [],
+    "expectedScoreIncrease":[20]
+  },
+  {
+    "test": "Verify the price field is disabled before currency selection and enabled after selection",
+    "email": "realitycheck@gmail.com",
+    "password":"12345678",
+    "businessIdea": "A premium Egyptian cotton bedding brand selling to expats, tourists, and boutique hotels online",
+    "businessCategory": "Product / E-commerce",
+    "country": "Egypt",
+    "stage": "Testing an idea",
+
+    "currency": ["EGP"],
+    "customerType": [],
+    "customers": [],
+    "price": [],
+    "ExpectedPrice": [],
+    "expectedRevenueDisplay": []
+  },
+  {
+    "test": "Verify customer-count realism scoring for all benchmark scoring ranges",
+    "email": "realitycheck@gmail.com",
+    "password":"12345678",
+    "businessIdea": "A premium Egyptian cotton bedding brand selling to expats, tourists, and boutique hotels online",
+    "businessCategory": "Product / E-commerce",
+    "country": "Egypt",
+    "stage": "Testing an idea",
+
+    "currency": [],
+    "customerType": ["Individuals (B2C)"],
+    "customers": ["150", "25", "400", "700", "19","1500"],
+    "price": [],
+    "ExpectedPrice": [],
+    "expectedRevenueDisplay": [],
+    "expectedScoreIncrease":[20, 15, 15, 10, 5, 0]
+  },
+  {
+    "test": "Verify customer count 0 or 1, or price 0, triggers the Some inputs look like placeholders warning",
+    "email": "realitycheck@gmail.com",
+    "password":"12345678",
+    "businessIdea": "A premium Egyptian cotton bedding brand selling to expats, tourists, and boutique hotels online",
+    "businessCategory": "Product / E-commerce",
+    "country": "Egypt",
+    "stage": "Testing an idea",
+
+    "currency": ["EGP"],
+    "customerType": ["Individuals (B2C)"],
+    "customers": ["0", "1", "100","100"],
+    "price": ["0","1500"],
+    "ExpectedPrice": [],
+    "expectedRevenueDisplay": []
+  },
+  {
+    "test": " Verify customer count above 5× the benchmark ceiling triggers Volume above typical range with the entered count and category",
+    "email": "realitycheck@gmail.com",
+    "password":"12345678",
+    "businessIdea": "A premium Egyptian cotton bedding brand selling to expats, tourists, and boutique hotels online",
+    "businessCategory": "Product / E-commerce",
+    "country": "Egypt",
+    "stage": "Testing an idea",
+
+    "currency": [],
+    "customerType": ["Individuals (B2C)"],
+    "customers": ["1500", "1400", "1250"],
+    "price": [],
+    "ExpectedPrice": [],
+    "expectedRevenueDisplay": [],
+    "benchmarkCeiling":"250"
+  },
+  {
+    "test": "Verify B2B customer-count thresholds trigger the aggressive-target and high-dependency warnings with the correct dynamic count",
+    "email": "realitycheck@gmail.com",
+    "password":"12345678",
+    "businessIdea": "A premium Egyptian cotton bedding brand selling to expats, tourists, and boutique hotels online",
+    "businessCategory": "Product / E-commerce",
+    "country": "Egypt",
+    "stage": "Testing an idea",
+
+    "currency": [],
+    "customerType": ["Businesses (B2B)"],
+    "customers": ["26", "25", "2"],
+    "price": [],
+    "ExpectedPrice": [],
+    "expectedRevenueDisplay": [],
+    "expectedWarningText": ["Aggressive B2B target"]
+  },
+  {
+    "test": "Verify customer count below the benchmark floor triggers Conservative customer projection with the selected category",
+    "email": "realitycheck@gmail.com",
+    "password":"12345678",
+    "businessIdea": "A premium Egyptian cotton bedding brand selling to expats, tourists, and boutique hotels online",
+    "businessCategory": "Product / E-commerce",
+    "country": "Egypt",
+    "stage": "Testing an idea",
+
+    "currency": [],
+    "customerType": ["Individuals (B2C)"],
+    "customers": ["35", "40", "39"],
+    "expectedRevenueDisplay": []
+  },
+  {
+    "test": "Verify Clear revenue assumption appears when no warnings apply and displays the calculated revenue and currency",
+    "email": "realitycheck@gmail.com",
+    "password":"12345678",
+    "businessIdea": "A premium Egyptian cotton bedding brand selling to expats, tourists, and boutique hotels online",
+    "businessCategory": "Product / E-commerce",
+    "country": "Egypt",
+    "stage": "Testing an idea",
+
+    "currency": ["EGP"],
+    "customerType": ["Individuals (B2C)"],
+    "customers": ["100"],
+    "price": ["150", "100"],
+    "expectedRevenueDisplay": ["15000", "10000"]
+  },
+  {
+    "test": "Verify that when multiple non-placeholder warnings match simultaneously, only the highest-priority warning is displayed",
+    "email": "realitycheck@gmail.com",
+    "password":"12345678",
+    "businessIdea": "A premium Egyptian cotton bedding brand selling to expats, tourists, and boutique hotels online",
+    "businessCategory": "Product / E-commerce",
+    "country": "Egypt",
+    "stage": "Testing an idea",
+
+    "currency": [],
+    "customerType": ["Businesses (B2B)"],
+    "customers": ["76", "30"],
+    "price": [],
+    "expectedWarningText": ["Aggressive B2B target"],
+    "benchmarkCeiling": "12"
+  }
+
+]
+
