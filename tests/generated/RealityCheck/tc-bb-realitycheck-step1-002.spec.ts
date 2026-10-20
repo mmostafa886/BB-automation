@@ -1,5 +1,5 @@
 import { test } from '../../fixtures/self-healing-fixture';
-import realityCheckInputs from '../../../test-data/RealityCheckStep1Inputs.json';
+import realityCheckInputs from '../../../test-data/RealityCheckInputs.json';
 
 /**
  * @jira   BZNS-3855
