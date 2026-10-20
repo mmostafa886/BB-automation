@@ -5,15 +5,15 @@
 */
 
 import { test } from '../../fixtures/self-healing-fixture';
-import RealityCheckInputs  from '../../../test-data/RealityCheckInputs.json';
+import realityCheckInputs from '../../../test-data/RealityCheckInputs.json';
 
-const data = RealityCheckInputs[6];
+const data = realityCheckInputs.customerCountValidation;
 
 test('TC-BB-007: Verify the customer-count field is required and accepts only positive integers @RealityCheck @automation', async ({ selfHealingFixture: { pomSelfHealing } }) => {
     // Login
     await pomSelfHealing.loginPage.navigateToLogin();
     await pomSelfHealing.loginPage.openSignInModal();
-    await pomSelfHealing.loginPage.fillAndSubmitSignInForm(data.email, data.password);
+    await pomSelfHealing.loginPage.fillAndSubmitSignInForm(data.mail, data.password);
     await pomSelfHealing.homePage.assertPageLoaded();
     // Navigate to Reality Check Page
     await pomSelfHealing.realityCheckPage.navigateToRealityCheck();
