@@ -512,11 +512,15 @@
     "customerType": [
       "Individuals (B2C)"
     ],
-    "customers": [
+    "customersInput": [
       "1500",
       "1400",
       "1250"
     ],
+    "customers":[ 
+      "1,500",
+      "1,400",
+      "1,250"],
     "price": [],
     "ExpectedPrice": [],
     "expectedRevenueDisplay": [],
