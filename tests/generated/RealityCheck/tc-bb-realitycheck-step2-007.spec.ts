@@ -9,7 +9,7 @@ import realityCheckInputs from '../../../test-data/RealityCheckInputs.json';
 
 const data = realityCheckInputs.customerCountValidation;
 
-test('TC-BB-007: Verify the customer-count field is required and accepts only positive integers @RealityCheck @automation', async ({ selfHealingFixture: { pomSelfHealing } }) => {
+test(`${data.jira}: ${data.test} @RealityCheck @automation`, async ({ selfHealingFixture: { pomSelfHealing } }) => {
     // Login
     await pomSelfHealing.loginPage.navigateToLogin();
     await pomSelfHealing.loginPage.openSignInModal();

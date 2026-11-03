@@ -6,7 +6,7 @@
 import { test } from '../../fixtures/self-healing-fixture';
 import realityCheckInputs from '../../../test-data/RealityCheckInputs.json';
 
-test('TC-BB-009: Verify the price field is disabled before currency selection and enabled after selection @RealityCheck @automation', async ({ selfHealingFixture: { pomSelfHealing } }) => {
+test(`${realityCheckInputs.priceDisabledBeforeCurrency.jira}: ${realityCheckInputs.priceDisabledBeforeCurrency.test} @RealityCheck @automation`, async ({ selfHealingFixture: { pomSelfHealing } }) => {
         // Login
         await pomSelfHealing.loginPage.navigateToLogin();
         await pomSelfHealing.loginPage.openSignInModal();

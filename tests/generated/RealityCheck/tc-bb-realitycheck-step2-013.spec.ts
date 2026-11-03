@@ -6,7 +6,7 @@
 import { test } from '../../fixtures/self-healing-fixture';
 import realityCheckInputs from '../../../test-data/RealityCheckInputs.json';
 
-test('TC-BB-013: Verify B2B customer-count thresholds trigger the aggressive-target and high-dependency warnings with the correct dynamic count @RealityCheck @automation', async ({ selfHealingFixture: { pomSelfHealing } }) => {
+test(`${realityCheckInputs.b2bCustomerCountThresholds.jira}: ${realityCheckInputs.b2bCustomerCountThresholds.test} @RealityCheck @automation`, async ({ selfHealingFixture: { pomSelfHealing } }) => {
     // Login
     await pomSelfHealing.loginPage.navigateToLogin();
     await pomSelfHealing.loginPage.openSignInModal();

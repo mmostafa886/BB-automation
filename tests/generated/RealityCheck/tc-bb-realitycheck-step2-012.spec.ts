@@ -6,7 +6,7 @@
 import { test } from '../../fixtures/self-healing-fixture';
 import realityCheckInputs from '../../../test-data/RealityCheckInputs.json';
 
-test('TC-BB-012: Verify customer count 0 or 1, or price 0, triggers the "Some inputs look like placeholders" warning @RealityCheck @automation', async ({ selfHealingFixture: { pomSelfHealing } }) => {
+test(`${realityCheckInputs.volumeAboveTypicalRange.jira}: ${realityCheckInputs.volumeAboveTypicalRange.test} @RealityCheck @automation`, async ({ selfHealingFixture: { pomSelfHealing } }) => {
     // Login
     await pomSelfHealing.loginPage.navigateToLogin();
     await pomSelfHealing.loginPage.openSignInModal();

@@ -203,9 +203,9 @@
       400000
     ],
     "expectedRevenueDisplay": [
-      "EGP 150000",
-      "EGP 300000",
-      "EGP 400000",
+      "EGP 150,000",
+      "EGP 300,000",
+      "EGP 400,000",
       "-"
     ],
     "ExpectedPrice": []
@@ -240,7 +240,7 @@
     "expectedRevenue": 59.97,
     "expectedRevenueDisplay": [
       "USD 59.97",
-      "EGP 149999",
+      "EGP 149,999",
       "EGP 6.93"
     ],
     "ExpectedPrice": []
@@ -593,8 +593,8 @@
       "100"
     ],
     "expectedRevenueDisplay": [
-      "15000",
-      "10000"
+      "15,000",
+      "10,000"
     ]
   },
   "highestPriorityWarning": {
