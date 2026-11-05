@@ -39,7 +39,7 @@ test.describe('CreateCompany - Financial step', () => {
         await wizard.assertNextDisabled();
 
         // ── 1 of 4: 1st year of forecast ─────────────────────────────────────
-        await wizard.pickFirstYearOfForecast(input.forecastStartDay);
+        await wizard.pickFirstYearOfForecast(input.forecastStartMonth);
         await wizard.assertFirstYearOfForecastSet();
         await wizard.assertNextDisabled();
 

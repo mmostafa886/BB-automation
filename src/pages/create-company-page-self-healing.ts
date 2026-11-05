@@ -62,8 +62,7 @@ export class CreateCompanyPageSelfHealing extends SelfHealingPageBase {
 
     // ─── Step 5: Financial ──────────────────────────────────────────────────
     readonly firstYearOfForecastInput: SelfHealingLocator;
-    readonly datePickerDays:           SelfHealingLocator;
-    readonly datePickerOkButton:       SelfHealingLocator;
+    readonly monthYearPickerMonths:    SelfHealingLocator;
     /** Matches all 6 duration labels — read it through `.locator`, since `get()` probes a single element. */
     readonly durationOptions:          SelfHealingLocator;
     readonly monthlyDetailSelect:        SelfHealingLocator;
@@ -131,8 +130,7 @@ export class CreateCompanyPageSelfHealing extends SelfHealingPageBase {
         this.taglineInput     = make(L.taglineInput);
 
         this.firstYearOfForecastInput = make(L.firstYearOfForecastInput);
-        this.datePickerDays           = make(L.datePickerDays);
-        this.datePickerOkButton       = make(L.datePickerOkButton);
+        this.monthYearPickerMonths    = make(L.monthYearPickerMonths);
         this.durationOptions          = make(L.durationOptions);
         this.monthlyDetailSelect        = make(L.monthlyDetailSelect);
         this.monthlyDetailSelectedValue = make(L.monthlyDetailSelectedValue);
@@ -255,17 +253,16 @@ export class CreateCompanyPageSelfHealing extends SelfHealingPageBase {
     }
 
     /**
-     * Set "1st year of forecast" on step 5: open the date picker, click `day` in the month it opens
-     * on, and confirm with Ok. The field then reads dd/mm/yyyy.
+     * Set "1st year of forecast" on step 5: open the month/year picker and click `month` ("Jan" .. "Dec")
+     * in the year it opens on. Picking a month closes the picker; the field then reads e.g. "January 2026".
      *
-     * The picker opens on today's month, which is not clicked through here — the step only needs a
-     * valid date, and navigating months would tie the test to the day it runs.
+     * The picker opens on the current year, which is not clicked through here — the step only needs a
+     * valid month, and navigating years would tie the test to the day it runs.
      */
-    async pickFirstYearOfForecast(day: string): Promise<void> {
-        await test.step(`Pick day ${day} as the 1st year of forecast`, async () => {
-            await this.actions.click(await this.firstYearOfForecastInput.get(), 'Open the 1st year of forecast date picker');
-            await this.actions.click(this.datePickerDay(day), `Click day ${day} in the date picker`);
-            await this.actions.click(await this.datePickerOkButton.get(), 'Confirm the date with Ok');
+    async pickFirstYearOfForecast(month: string): Promise<void> {
+        await test.step(`Pick ${month} as the 1st year of forecast`, async () => {
+            await this.actions.click(await this.firstYearOfForecastInput.get(), 'Open the 1st year of forecast month picker');
+            await this.actions.click(this.monthYearPickerMonth(month), `Click month ${month} in the month picker`);
         });
     }
 
@@ -652,17 +649,17 @@ export class CreateCompanyPageSelfHealing extends SelfHealingPageBase {
         });
     }
 
-    /** Assert the "1st year of forecast" field is still empty. */
+    /** Assert the "1st year of forecast" field is still empty (shows its "Select month and year" placeholder). */
     async assertFirstYearOfForecastEmpty(): Promise<void> {
         await test.step('Assert the 1st year of forecast is empty', async () => {
-            await this.assert.toHaveValue(await this.firstYearOfForecastInput.get(), '', '1st year of forecast is empty');
+            await this.assert.toHaveText(await this.firstYearOfForecastInput.get(), /^\s*Select month and year\s*$/, '1st year of forecast is empty');
         });
     }
 
-    /** Assert the "1st year of forecast" field holds a dd/mm/yyyy date. */
+    /** Assert the "1st year of forecast" field holds a month and year, e.g. "January 2026". */
     async assertFirstYearOfForecastSet(): Promise<void> {
-        await test.step('Assert the 1st year of forecast holds a date', async () => {
-            await this.assert.toHaveValue(await this.firstYearOfForecastInput.get(), /^\d{2}\/\d{2}\/\d{4}$/, '1st year of forecast holds a dd/mm/yyyy date');
+        await test.step('Assert the 1st year of forecast holds a month and year', async () => {
+            await this.assert.toHaveText(await this.firstYearOfForecastInput.get(), /^\s*[A-Z][a-z]+ \d{4}\s*$/, '1st year of forecast holds a "<Month> yyyy" value');
         });
     }
 
@@ -771,9 +768,9 @@ export class CreateCompanyPageSelfHealing extends SelfHealingPageBase {
         return this.dropdownOptions.locator.filter({ hasText: new RegExp(`^\\s*${escaped}\\s*$`) });
     }
 
-    /** The day cell for `day` in the open date picker (each day sits in <td data-date="<day>">). */
-    private datePickerDay(day: string) {
-        return this.datePickerDays.locator.and(this.page.locator(`td[data-date="${day}"] a`));
+    /** The month cell whose label is exactly `month` ("Jan" .. "Dec") in the open month/year picker. */
+    private monthYearPickerMonth(month: string) {
+        return this.monthYearPickerMonths.locator.filter({ hasText: new RegExp(`^\\s*${month}\\s*$`) });
     }
 
     /** The duration label whose text is exactly `years`. */

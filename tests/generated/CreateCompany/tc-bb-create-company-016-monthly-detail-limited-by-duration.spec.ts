@@ -32,7 +32,7 @@ test.describe('CreateCompany - Financial step', () => {
         await wizard.fillCompanyName(input.companyName);
         await wizard.clickNext();
         await wizard.assertCurrentStep(input.financialStepNumber, input.financialStepTitle);
-        await wizard.pickFirstYearOfForecast(input.forecastStartDay);
+        await wizard.pickFirstYearOfForecast(input.forecastStartMonth);
 
         // ── Each duration offers only periods up to itself ───────────────────
         for (const durationCase of input.durationCases) {

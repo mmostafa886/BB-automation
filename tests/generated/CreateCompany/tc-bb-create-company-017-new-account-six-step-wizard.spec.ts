@@ -44,7 +44,7 @@ test.describe('CreateCompany - New account wizard', () => {
         // ── Step 5 ───────────────────────────────────────────────────────────
         await wizard.assertCurrentStep(input.financialStepNumber, input.financialStepTitle);
         await wizard.assertStepCount(input.expectedStepCount);
-        await wizard.pickFirstYearOfForecast(input.forecastStartDay);
+        await wizard.pickFirstYearOfForecast(input.forecastStartMonth);
         await wizard.selectDuration(input.durationYears);
         await wizard.selectMonthlyDetail(input.monthlyDetail);
         await wizard.selectNumberFormat(input.numberFormat);
