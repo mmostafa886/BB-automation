@@ -111,7 +111,7 @@ export const createCompanyLocators = {
 
     prevButton: {
         // Not rendered on step 1. Goes back exactly one step and keeps what was entered on every step
-        // (verified steps 1–4; going back to step 5 hits the date-field quirk noted on firstYearOfForecastInput).
+        // (verified steps 1–4; going back to step 5 not re-verified since the month/year picker replaced the date picker).
         selector: '[data-automation-test="auto-btn-prev"]',
         metadata: {
             role:        'button',
@@ -329,93 +329,53 @@ export const createCompanyLocators = {
     // format — in any order. Currency ("Dollar($)") and intent ("before") arrive pre-filled.
 
     firstYearOfForecastInput: {
-        // Opens the material datetime picker below; value format is dd/mm/yyyy.
-        // App quirk (seen on UAT): after Prev back to this step the value re-renders as a raw JS
-        // Date string and the picker opens on "Invalid date" with no day cells.
-        selector: 'app-create-company input[id^="date_picker"]',
+        // Custom month/year picker (app-bzns-calendar), not an <input>: the field is a div whose text
+        // reads "Select month and year" until a month is picked, then "<Month> <yyyy>", e.g. "January 2026".
+        // Clicking it opens the month grid below; there are no days.
+        selector: 'app-bzns-calendar[dataautomationtest="auto-date-firstYearForecast"] .value-wrapper',
         metadata: {
-            role:        'textbox',
             label:       '1st year of forecast',
-            description: '1st year of forecast date input on the Financial step',
+            text:        'Select month and year',
+            description: '1st year of forecast month and year field on the Financial step',
         },
     },
 
-    datePicker: {
-        // The picker is appended to <body>, outside app-create-company; only the open one is visible.
-        selector: '.dtp:visible',
+    monthYearPicker: {
+        // Rendered inside app-bzns-calendar only while open; picking a month closes it (no Ok button).
+        selector: 'app-bzns-calendar[dataautomationtest="auto-date-firstYearForecast"] .calendar-wrapper',
         metadata: {
-            description: 'Open date picker popup for the 1st year of forecast field',
+            description: 'Open month and year picker popup for the 1st year of forecast field',
         },
     },
 
-    datePickerMonth: {
-        // Three-letter upper-case month, e.g. "SEP".
-        selector: '.dtp:visible .dtp-actual-month',
+    monthYearPickerYear: {
+        // Opens on the current year, e.g. "2026".
+        selector: 'app-bzns-calendar[dataautomationtest="auto-date-firstYearForecast"] .year-label',
         metadata: {
-            description: 'Currently shown month in the open date picker',
+            description: 'Currently shown year in the open month and year picker',
         },
     },
 
-    datePickerYear: {
-        selector: '.dtp:visible .dtp-actual-year',
+    monthYearPickerPrevYearButton: {
+        // Two arrow <img>s flank the year label; the first (rotated 180deg) goes back a year.
+        selector: 'app-bzns-calendar[dataautomationtest="auto-date-firstYearForecast"] .calendar-head img >> nth=0',
         metadata: {
-            description: 'Currently shown year in the open date picker',
+            description: 'Previous year arrow in the open month and year picker',
         },
     },
 
-    datePickerPrevMonthButton: {
-        selector: '.dtp:visible a.dtp-select-month-before',
+    monthYearPickerNextYearButton: {
+        selector: 'app-bzns-calendar[dataautomationtest="auto-date-firstYearForecast"] .calendar-head img >> nth=1',
         metadata: {
-            description: 'Previous month arrow in the open date picker',
+            description: 'Next year arrow in the open month and year picker',
         },
     },
 
-    datePickerNextMonthButton: {
-        selector: '.dtp:visible a.dtp-select-month-after',
+    monthYearPickerMonths: {
+        // 12 cells with three-letter month labels "Jan" .. "Dec"; filter by exact text in the page object.
+        selector: 'app-bzns-calendar[dataautomationtest="auto-date-firstYearForecast"] .months-list > div',
         metadata: {
-            description: 'Next month arrow in the open date picker',
-        },
-    },
-
-    datePickerPrevYearButton: {
-        selector: '.dtp:visible a.dtp-select-year-before',
-        metadata: {
-            description: 'Previous year arrow in the open date picker',
-        },
-    },
-
-    datePickerNextYearButton: {
-        selector: '.dtp:visible a.dtp-select-year-after',
-        metadata: {
-            description: 'Next year arrow in the open date picker',
-        },
-    },
-
-    datePickerDays: {
-        // Each day link sits in <td data-date="<day>">; filter by data-date in the page object.
-        selector: '.dtp:visible td[data-date] a.dtp-select-day',
-        metadata: {
-            description: 'Day cells of the month shown in the open date picker',
-        },
-    },
-
-    datePickerOkButton: {
-        selector: '.dtp:visible .dtp-btn-ok',
-        metadata: {
-            role:        'button',
-            name:        'Ok',
-            text:        'Ok',
-            description: 'Ok button that confirms the chosen date in the open date picker',
-        },
-    },
-
-    datePickerCancelButton: {
-        selector: '.dtp:visible .dtp-btn-cancel',
-        metadata: {
-            role:        'button',
-            name:        'Cancel',
-            text:        'Cancel',
-            description: 'Cancel button that closes the open date picker without choosing a date',
+            description: 'Month cells (Jan to Dec) of the open month and year picker',
         },
     },
 

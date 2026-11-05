@@ -44,7 +44,7 @@ test.describe('CreateCompany - Paid flow', () => {
 
         // ── Step 5: the four required Financial fields ───────────────────────
         await wizard.assertCurrentStep(input.financialStepNumber, input.financialStepTitle);
-        await wizard.pickFirstYearOfForecast(input.forecastStartDay);
+        await wizard.pickFirstYearOfForecast(input.forecastStartMonth);
         await wizard.selectDuration(input.durationYears);
         await wizard.selectMonthlyDetail(input.monthlyDetail);
         await wizard.selectNumberFormat(input.numberFormat);
