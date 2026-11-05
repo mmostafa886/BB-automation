@@ -7,7 +7,7 @@ import realityCheckInputs from '../../../test-data/RealityCheckInputs.json';
  */
 const input = realityCheckInputs.minimumLengthMessage;
 
-test(`${input.jira}: ${input.test} @RealityCheck @automation`, async ({ selfHealingFixture: { pomSelfHealing } }) => {
+test(`Step 1 - TC 001: Verify the minimum-length message appears for an idea under 20 characters @RealityCheck @automation`, async ({ selfHealingFixture: { pomSelfHealing } }) => {
     const realityCheck = pomSelfHealing.realityCheckPage;
 
     await pomSelfHealing.loginPage.navigateToLogin();

@@ -7,7 +7,7 @@ import realityCheckInputs from '../../../test-data/RealityCheckInputs.json';
  */
 const input = realityCheckInputs.countryDropdownOptions;
 
-test(`${input.jira}: ${input.test} @RealityCheck @automation`, async ({ selfHealingFixture: { pomSelfHealing } }) => {
+test(`Step 1 - TC 010: Verify the country drop-down lists 42 countries with "Other" last and "Select Country" as its placeholder @RealityCheck @automation`, async ({ selfHealingFixture: { pomSelfHealing } }) => {
     const realityCheck = pomSelfHealing.realityCheckPage;
 
     await pomSelfHealing.loginPage.navigateToLogin();

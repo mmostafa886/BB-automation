@@ -4,7 +4,6 @@
     "title": "Automation - Reality Check - Step1: Verify Minimum Length Validation Message Appears When Business Idea Contains Fewer Than 20 Characters",
     "mail": "automation-youstena@drmail.in",
     "password": "12345678",
-    "test": "Verify the minimum-length message appears for an idea under 20 characters",
     "idea": "Coffee shop",
     "score": "0",
     "hint": "Start with the business idea",
@@ -15,7 +14,6 @@
     "title": "Automation - Reality Check - Step1: Verify Maximum Length Validation Message Appears When Business Idea Exceeds 300 Characters",
     "mail": "automation-youstena@drmail.in",
     "password": "12345678",
-    "test": "Verify the maximum-length message appears for an idea over 300 characters",
     "idea": "A premium Egyptian specialty coffee roastery that sources single-origin arabica beans directly from smallholder farms, roasts them in small batches in Cairo, and sells them through an online subscription service as well as a flagship retail store with an in-house tasting bar and barista training academy for enthusiasts. A premium Egyptian specialty coffee roastery that sources single-origin arabica beans directly from smallholder farms, roasts them in small batches in Cairo, and sells them through an online subscription service as well as a flagship retail store with an in-house tasting bar and barista training academy for enthusiasts.",
     "score": "0",
     "hint": "Start with the business idea",
@@ -26,7 +24,6 @@
     "title": "Automation - Reality Check - Step1: Verify Live Preview Viability Ring Updates Based on the Idea Specificity Score 8,6,4",
     "mail": "automation-youstena@drmail.in",
     "password": "12345678",
-    "test": "Verify the Live Preview scores the handmade organic skincare idea as 8",
     "idea": "I will sell handmade organic skincare products through an online store for women in Cairo.",
     "score": "8",
     "failedMessage": "The Live Financial Preview did not score this business idea as 8"
@@ -36,7 +33,6 @@
     "title": "Automation - Reality Check - Step1: Verify Live Preview Viability Ring Updates Based on the Idea Specificity Score 8,6,4",
     "mail": "automation-youstena@drmail.in",
     "password": "12345678",
-    "test": "Verify the Live Preview scores the AI tutoring app idea as 6",
     "idea": "AI tutoring app for students in Cairo.",
     "score": "6",
     "failedMessage": "The Live Financial Preview did not score this business idea as 6"
@@ -46,7 +42,6 @@
     "title": "Automation - Reality Check - Step1: Verify Live Preview Viability Ring Updates Based on the Idea Specificity Score 8,6,4",
     "mail": "automation-youstena@drmail.in",
     "password": "12345678",
-    "test": "Verify the Live Preview scores the handmade soap idea as 4",
     "idea": "We sell handmade soap through our online store.",
     "score": "4",
     "failedMessage": "The Live Financial Preview did not score this business idea as 4"
@@ -56,7 +51,6 @@
     "title": "Automation - Reality Check - Step1: Verify Live Preview Viability Ring Updates Based on the Idea Specificity Score 2,0",
     "mail": "automation-youstena@drmail.in",
     "password": "12345678",
-    "test": "Verify the Live Preview scores the coffee shop idea as 2",
     "idea": "I want to open a coffee shop.",
     "score": "2",
     "failedMessage": "The Live Financial Preview did not score this business idea as 2"
@@ -66,7 +60,6 @@
     "title": "Automation - Reality Check - Step1: Verify Live Preview Viability Ring Updates Based on the Idea Specificity Score 2,0",
     "mail": "automation-youstena@drmail.in",
     "password": "12345678",
-    "test": "Verify the Live Preview scores the lorem ipsum idea as 0",
     "idea": "Lorem ipsum dolor sit amet cons.",
     "score": "0",
     "failedMessage": "The Live Financial Preview did not score this business idea as 0"
@@ -76,7 +69,6 @@
     "title": "Automation - Reality Check - Step1: Verify Live Preview Displays \"Not Enough Information Yet\" for a Valid Idea Between 20 and 300 Characters",
     "mail": "automation-youstena@drmail.in",
     "password": "12345678",
-    "test": "Verify the Live Preview shows \"Not enough information yet\" for an idea between 20 and 300 characters",
     "idea": "A subscription box delivering locally roasted coffee beans to homes in Cairo every month.",
     "hint": "Not enough information yet",
     "failedMessage": "The Live Financial Preview did not show \"Not enough information yet\" for a valid idea"
@@ -86,7 +78,6 @@
     "title": "Automation - Reality Check - Step1: Verify Selected Business Category Is Reflected in the Live Preview Industry Lens",
     "mail": "automation-youstena@drmail.in",
     "password": "12345678",
-    "test": "Verify the Industry Lens reflects the selected business category and follows a change of category",
     "idea": "A subscription box delivering locally roasted coffee beans to homes in Cairo every month.",
     "lensPlaceholder": "Pick a category to see industry context",
     "category": "Food & Beverage",
@@ -100,7 +91,6 @@
     "title": "Automation - Reality Check - Step1: Verify Country Dropdown Displays All 42 Countries, \"Other\" as the Last Option, and \"Select Country\" as the Default Placeholder",
     "mail": "automation-youstena@drmail.in",
     "password": "12345678",
-    "test": "Verify the country drop-down lists 42 countries with \"Other\" last and \"Select Country\" as its placeholder",
     "idea": "A subscription box delivering locally roasted coffee beans to homes in Cairo every month.",
     "countryPlaceholder": "Select Country",
     "countryCount": 42,
@@ -112,7 +102,6 @@
     "title": "Automation - Reality Check - Step 1: Verify the Continue Button Is Enabled When Idea, Business Category, Country, and Founder Situation Are Validly Selected, and Disabled When Any Required Field Is Not Selected",
     "mail": "automation-youstena@drmail.in",
     "password": "12345678",
-    "test": "Verify step 1 can be completed with a valid idea and Continue opens the Customer step",
     "idea": "A premium Egyptian coffee roastery selling single-origin beans online and through a flagship store in Cairo",
     "hint": "Not enough information yet",
     "category": "Food & Beverage",
@@ -126,7 +115,6 @@
     "title": "Automation - Reality Check - Step 1: Verify the Continue Button Is Enabled When Idea, Business Category, Country, and Founder Situation Are Validly Selected, and Disabled When Any Required Field Is Not Selected",
     "mail": "automation-youstena@drmail.in",
     "password": "12345678",
-    "test": "Verify Continue is enabled once the idea, category, country and founder situation are all selected",
     "idea": "A subscription box delivering locally roasted coffee beans to homes in Cairo every month.",
     "category": "Food & Beverage",
     "country": "Egypt",
@@ -138,7 +126,6 @@
     "title": "Automation - Reality Check - Step 1: Verify the Continue Button Is Enabled When Idea, Business Category, Country, and Founder Situation Are Validly Selected, and Disabled When Any Required Field Is Not Selected",
     "mail": "automation-youstena@drmail.in",
     "password": "12345678",
-    "test": "Verify Continue stays disabled when the business category is not selected",
     "idea": "A subscription box delivering locally roasted coffee beans to homes in Cairo every month.",
     "country": "Egypt",
     "stage": "Testing an idea",
@@ -149,7 +136,6 @@
     "title": "Automation - Reality Check - Step 1: Verify the Continue Button Is Enabled When Idea, Business Category, Country, and Founder Situation Are Validly Selected, and Disabled When Any Required Field Is Not Selected",
     "mail": "automation-youstena@drmail.in",
     "password": "12345678",
-    "test": "Verify Continue stays disabled when the country is not selected",
     "idea": "A subscription box delivering locally roasted coffee beans to homes in Cairo every month.",
     "category": "Food & Beverage",
     "stage": "Testing an idea",
@@ -160,7 +146,6 @@
     "title": "Automation - Reality Check - Step 1: Verify the Continue Button Is Enabled When Idea, Business Category, Country, and Founder Situation Are Validly Selected, and Disabled When Any Required Field Is Not Selected",
     "mail": "automation-youstena@drmail.in",
     "password": "12345678",
-    "test": "Verify Continue stays disabled when the founder situation is not selected",
     "idea": "A subscription box delivering locally roasted coffee beans to homes in Cairo every month.",
     "category": "Food & Beverage",
     "country": "Egypt",
@@ -171,7 +156,6 @@
     "title": "Verify step 2 monthly revenue = customers x price and recalculates immediately",
     "mail": "automation-youstena@drmail.in",
     "password": "12345678",
-    "test": "Verify step 2 monthly revenue = customers x price and recalculates immediately",
     "businessIdea": "A premium Egyptian cotton bedding brand selling to expats, tourists, and boutique hotels online",
     "businessCategory": "Product / E-commerce",
     "country": "Egypt",
@@ -203,9 +187,9 @@
       400000
     ],
     "expectedRevenueDisplay": [
-      "EGP 150000",
-      "EGP 300000",
-      "EGP 400000",
+      "EGP 150,000",
+      "EGP 300,000",
+      "EGP 400,000",
       "-"
     ],
     "ExpectedPrice": []
@@ -215,7 +199,6 @@
     "title": "Verify monthly revenue calculations support decimal prices correctly",
     "mail": "automation-youstena@drmail.in",
     "password": "12345678",
-    "test": "Verify monthly revenue calculations support decimal prices correctly",
     "businessIdea": "A premium Egyptian cotton bedding brand selling to expats, tourists, and boutique hotels online",
     "businessCategory": "Product / E-commerce",
     "country": "Egypt",
@@ -240,7 +223,7 @@
     "expectedRevenue": 59.97,
     "expectedRevenueDisplay": [
       "USD 59.97",
-      "EGP 149999",
+      "EGP 149,999",
       "EGP 6.93"
     ],
     "ExpectedPrice": []
@@ -250,7 +233,6 @@
     "title": "Verify the price field is required and rejects negative values, letters, and unsupported characters",
     "mail": "automation-youstena@drmail.in",
     "password": "12345678",
-    "test": "Verify the price field is required and rejects negative values, letters, and unsupported characters",
     "businessIdea": "A premium Egyptian cotton bedding brand selling to expats, tourists, and boutique hotels online",
     "businessCategory": "Product / E-commerce",
     "country": "Egypt",
@@ -286,7 +268,6 @@
     "title": "Step 2 Continue button: disabled per missing input, enabled when all valid",
     "mail": "automation-youstena@drmail.in",
     "password": "12345678",
-    "test": "Step 2 Continue button: disabled per missing, enabled when all valid",
     "businessIdea": "A premium Egyptian cotton bedding brand selling to expats, tourists, and boutique hotels online",
     "businessCategory": "Product / E-commerce",
     "country": "Egypt",
@@ -311,7 +292,6 @@
     "title": "Verify customer-type selection is required",
     "mail": "automation-youstena@drmail.in",
     "password": "12345678",
-    "test": "Verify customer-type selection is required",
     "businessIdea": "A premium Egyptian cotton bedding brand selling to expats, tourists, and boutique hotels online",
     "businessCategory": "Product / E-commerce",
     "country": "Egypt",
@@ -336,7 +316,6 @@
     "title": "Verify the user can select a currency and the selected value is displayed in the field and as price prefix",
     "mail": "automation-youstena@drmail.in",
     "password": "12345678",
-    "test": "Verify the user can select a currency and the selected value is displayed in the field",
     "businessIdea": "A premium Egyptian cotton bedding brand selling to expats, tourists, and boutique hotels online",
     "businessCategory": "Product / E-commerce",
     "country": "Egypt",
@@ -362,7 +341,6 @@
     "title": "Verify the customer-count field is required and accepts only positive integers",
     "mail": "automation-youstena@drmail.in",
     "password": "12345678",
-    "test": "Verify the customer-count field is required and accepts only positive integers",
     "businessIdea": "A premium Egyptian cotton bedding brand selling to expats, tourists, and boutique hotels online",
     "businessCategory": "Product / E-commerce",
     "country": "Egypt",
@@ -395,7 +373,6 @@
     "title": "Verify selecting Other routes benchmark comparisons using global benchmark",
     "mail": "automation-youstena@drmail.in",
     "password": "12345678",
-    "test": "Verify selecting Other routes benchmark comparisons using global benchmark",
     "businessIdea": "A premium Egyptian cotton bedding brand selling to expats, tourists, and boutique hotels online",
     "businessCategory": "Product / E-commerce",
     "country": "Other",
@@ -421,7 +398,6 @@
     "title": "Verify the price field is disabled before currency selection and enabled after selection",
     "mail": "automation-youstena@drmail.in",
     "password": "12345678",
-    "test": "Verify the price field is disabled before currency selection and enabled after selection",
     "businessIdea": "A premium Egyptian cotton bedding brand selling to expats, tourists, and boutique hotels online",
     "businessCategory": "Product / E-commerce",
     "country": "Egypt",
@@ -440,7 +416,6 @@
     "title": "Verify customer-count realism scoring for all benchmark scoring ranges",
     "mail": "automation-youstena@drmail.in",
     "password": "12345678",
-    "test": "Verify customer-count realism scoring for all benchmark scoring ranges",
     "businessIdea": "A premium Egyptian cotton bedding brand selling to expats, tourists, and boutique hotels online",
     "businessCategory": "Product / E-commerce",
     "country": "Egypt",
@@ -474,7 +449,6 @@
     "title": "Verify customer count 0 or 1, or price 0, triggers the \"Some inputs look like placeholders\" warning",
     "mail": "automation-youstena@drmail.in",
     "password": "12345678",
-    "test": "Verify customer count 0 or 1, or price 0, triggers the Some inputs look like placeholders warning",
     "businessIdea": "A premium Egyptian cotton bedding brand selling to expats, tourists, and boutique hotels online",
     "businessCategory": "Product / E-commerce",
     "country": "Egypt",
@@ -503,7 +477,6 @@
     "title": "Verify customer count above 5× the benchmark ceiling triggers \"Volume above typical range\" with the entered count and category",
     "mail": "automation-youstena@drmail.in",
     "password": "12345678",
-    "test": " Verify customer count above 5× the benchmark ceiling triggers Volume above typical range with the entered count and category",
     "businessIdea": "A premium Egyptian cotton bedding brand selling to expats, tourists, and boutique hotels online",
     "businessCategory": "Product / E-commerce",
     "country": "Egypt",
@@ -512,11 +485,15 @@
     "customerType": [
       "Individuals (B2C)"
     ],
-    "customers": [
+    "customersInput": [
       "1500",
       "1400",
       "1250"
     ],
+    "customers":[ 
+      "1,500",
+      "1,400",
+      "1,250"],
     "price": [],
     "ExpectedPrice": [],
     "expectedRevenueDisplay": [],
@@ -527,7 +504,6 @@
     "title": "Verify B2B customer-count thresholds trigger the aggressive-target and high-dependency warnings with the correct dynamic count",
     "mail": "automation-youstena@drmail.in",
     "password": "12345678",
-    "test": "Verify B2B customer-count thresholds trigger the aggressive-target and high-dependency warnings with the correct dynamic count",
     "businessIdea": "A premium Egyptian cotton bedding brand selling to expats, tourists, and boutique hotels online",
     "businessCategory": "Product / E-commerce",
     "country": "Egypt",
@@ -553,7 +529,6 @@
     "title": "Verify customer count below the benchmark floor triggers \"Conservative customer projection\" with the selected category",
     "mail": "automation-youstena@drmail.in",
     "password": "12345678",
-    "test": "Verify customer count below the benchmark floor triggers Conservative customer projection with the selected category",
     "businessIdea": "A premium Egyptian cotton bedding brand selling to expats, tourists, and boutique hotels online",
     "businessCategory": "Product / E-commerce",
     "country": "Egypt",
@@ -574,7 +549,6 @@
     "title": "Verify \"Clear revenue assumption\" appears when no warnings apply and displays the calculated revenue and currency",
     "mail": "automation-youstena@drmail.in",
     "password": "12345678",
-    "test": "Verify Clear revenue assumption appears when no warnings apply and displays the calculated revenue and currency",
     "businessIdea": "A premium Egyptian cotton bedding brand selling to expats, tourists, and boutique hotels online",
     "businessCategory": "Product / E-commerce",
     "country": "Egypt",
@@ -593,8 +567,8 @@
       "100"
     ],
     "expectedRevenueDisplay": [
-      "15000",
-      "10000"
+      "15,000",
+      "10,000"
     ]
   },
   "highestPriorityWarning": {
@@ -602,7 +576,6 @@
     "title": "Verify that when multiple non-placeholder warnings match simultaneously, only the highest-priority warning is displayed",
     "mail": "automation-youstena@drmail.in",
     "password": "12345678",
-    "test": "Verify that when multiple non-placeholder warnings match simultaneously, only the highest-priority warning is displayed",
     "businessIdea": "A premium Egyptian cotton bedding brand selling to expats, tourists, and boutique hotels online",
     "businessCategory": "Product / E-commerce",
     "country": "Egypt",

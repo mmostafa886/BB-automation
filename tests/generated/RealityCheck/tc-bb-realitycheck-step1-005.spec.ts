@@ -7,7 +7,7 @@ import realityCheckInputs from '../../../test-data/RealityCheckInputs.json';
  */
 const input = realityCheckInputs.viabilityScore4;
 
-test(`${input.jira}: ${input.test} @RealityCheck @automation`, async ({ selfHealingFixture: { pomSelfHealing } }) => {
+test(`Step 1 - TC 005: Verify the Live Preview scores the handmade soap idea as 4 @RealityCheck @automation`, async ({ selfHealingFixture: { pomSelfHealing } }) => {
     const realityCheck = pomSelfHealing.realityCheckPage;
 
     await pomSelfHealing.loginPage.navigateToLogin();

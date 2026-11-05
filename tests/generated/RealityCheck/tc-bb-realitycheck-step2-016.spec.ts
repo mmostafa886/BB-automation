@@ -6,7 +6,7 @@
 import { test } from '../../fixtures/self-healing-fixture';
 import realityCheckInputs from '../../../test-data/RealityCheckInputs.json';
 
-test('TC-BB-016: Verify that when multiple non-placeholder warnings match simultaneously, only the highest-priority warning is displayed @RealityCheck @automation', async ({ selfHealingFixture: { pomSelfHealing } }) => {
+test(`Step 2 - TC 016: Verify that when multiple non-placeholder warnings match simultaneously, only the highest-priority warning is displayed @RealityCheck @automation`, async ({ selfHealingFixture: { pomSelfHealing } }) => {
     // Login
     await pomSelfHealing.loginPage.navigateToLogin();
     await pomSelfHealing.loginPage.openSignInModal();

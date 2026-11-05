@@ -7,7 +7,7 @@ import realityCheckInputs from '../../../test-data/RealityCheckInputs.json';
  */
 const input = realityCheckInputs.maximumLengthMessage;
 
-test(`${input.jira}: ${input.test} @RealityCheck @automation`, async ({ selfHealingFixture: { pomSelfHealing } }) => {
+test(`Step 1 - TC 002: Verify the maximum-length message appears for an idea over 300 characters @RealityCheck @automation`, async ({ selfHealingFixture: { pomSelfHealing } }) => {
     const realityCheck = pomSelfHealing.realityCheckPage;
 
     await pomSelfHealing.loginPage.navigateToLogin();

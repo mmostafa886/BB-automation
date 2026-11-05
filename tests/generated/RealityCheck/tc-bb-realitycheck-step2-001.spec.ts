@@ -7,7 +7,7 @@ import { test } from '../../fixtures/self-healing-fixture';
 import realityCheckInputs from '../../../test-data/RealityCheckInputs.json';
 import LoginInputs from '../../../test-data/login.json';
 
-test('TC-BB-001: Verify provisional monthly revenue is calculated as customers × price × 1.0 and recalculates when either input changes @RealityCheck @automation', async ({ selfHealingFixture: { pomSelfHealing } }) => {
+test(`Step 2 - TC 001: Verify step 2 monthly revenue = customers x price and recalculates immediately @RealityCheck @automation`, async ({ selfHealingFixture: { pomSelfHealing } }) => {
     // Login
         await pomSelfHealing.loginPage.navigateToLogin();
         await pomSelfHealing.loginPage.openSignInModal();
