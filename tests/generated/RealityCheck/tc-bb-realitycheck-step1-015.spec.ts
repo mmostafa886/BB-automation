@@ -7,7 +7,7 @@ import realityCheckInputs from '../../../test-data/RealityCheckInputs.json';
  */
 const input = realityCheckInputs.continueDisabledWithoutStage;
 
-test(`${input.jira}: ${input.test} @RealityCheck @automation`, async ({ selfHealingFixture: { pomSelfHealing } }) => {
+test(`Step 1 - TC 015: Verify Continue stays disabled when the founder situation is not selected @RealityCheck @automation`, async ({ selfHealingFixture: { pomSelfHealing } }) => {
     const realityCheck = pomSelfHealing.realityCheckPage;
 
     await pomSelfHealing.loginPage.navigateToLogin();

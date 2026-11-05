@@ -6,7 +6,7 @@
 import { test } from '../../fixtures/self-healing-fixture';
 import realityCheckInputs from '../../../test-data/RealityCheckInputs.json';
 
-test('TC-BB-012: Verify customer count 0 or 1, or price 0, triggers the "Some inputs look like placeholders" warning @RealityCheck @automation', async ({ selfHealingFixture: { pomSelfHealing } }) => {
+test(`Step 2 - TC 012: Verify customer count above 5× the benchmark ceiling triggers Volume above typical range with the entered count and category @RealityCheck @automation`, async ({ selfHealingFixture: { pomSelfHealing } }) => {
     // Login
     await pomSelfHealing.loginPage.navigateToLogin();
     await pomSelfHealing.loginPage.openSignInModal();
@@ -29,7 +29,7 @@ test('TC-BB-012: Verify customer count 0 or 1, or price 0, triggers the "Some in
     await pomSelfHealing.realityCheckPage.selectCustomerType(realityCheckInputs.volumeAboveTypicalRange.customerType[0]);
 
     //Enter customers = 1500.
-    await pomSelfHealing.realityCheckPage.fillCustomerCount(realityCheckInputs.volumeAboveTypicalRange.customers[0]);
+    await pomSelfHealing.realityCheckPage.fillCustomerCount(realityCheckInputs.volumeAboveTypicalRange.customersInput[0]);
 
     // Verify amber insight is displayed and contains customer count the user entered and the benchmark ceiling.
     await pomSelfHealing.realityCheckPage.assertInsightWarning();
@@ -37,12 +37,12 @@ test('TC-BB-012: Verify customer count 0 or 1, or price 0, triggers the "Some in
     await pomSelfHealing.realityCheckPage.assertInsightWarningContains(realityCheckInputs.volumeAboveTypicalRange.benchmarkCeiling!);
 
     // Change the count to another >5× value (1400)→ verify the dynamic {customers} value updates in the subtitle.
-    await pomSelfHealing.realityCheckPage.fillCustomerCount(realityCheckInputs.volumeAboveTypicalRange.customers[1]);
+    await pomSelfHealing.realityCheckPage.fillCustomerCount(realityCheckInputs.volumeAboveTypicalRange.customersInput[1]);
     await pomSelfHealing.realityCheckPage.assertInsightWarning();
     await pomSelfHealing.realityCheckPage.assertInsightWarningContains(realityCheckInputs.volumeAboveTypicalRange.customers[1]);
 
     // Reduce the count to exactly 5 × {ceiling}(1250) → verify the warning stops firing per boundary definition (record inclusive/exclusive behavior).
-    await pomSelfHealing.realityCheckPage.fillCustomerCount(realityCheckInputs.volumeAboveTypicalRange.customers[2]);
+    await pomSelfHealing.realityCheckPage.fillCustomerCount(realityCheckInputs.volumeAboveTypicalRange.customersInput[2]);
     await pomSelfHealing.realityCheckPage.assertInsightSuccess();
 
 

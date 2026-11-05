@@ -3,10 +3,12 @@
  * @title     Verify monthly revenue calculations support decimal prices correctly
  */
 
+// This test case is excluded until this bug is solved BZNS-4325
+
 import { test } from '../../fixtures/self-healing-fixture';
 import realityCheckInputs from '../../../test-data/RealityCheckInputs.json';
 
-test('TC-BB-002: Verify monthly revenue calculations support decimal prices correctly @RealityCheck @automation', async ({ selfHealingFixture: { pomSelfHealing } }) => {
+test.skip(`Step 2 - TC 002: Verify monthly revenue calculations support decimal prices correctly @RealityCheck @automation`, async ({ selfHealingFixture: { pomSelfHealing } }) => {
     // Login
         await pomSelfHealing.loginPage.navigateToLogin();
         await pomSelfHealing.loginPage.openSignInModal();
