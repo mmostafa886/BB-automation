@@ -1,0 +1,197 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: generated/Dividends/tc-bb-dividends-001-constant-amount-quarter-year.spec.ts >> Dividends >> TC0-BB-Dividends-Constant-Amount-Quarter-Year: add a constant-amount dividend charged per quarter year @dividends @automation
+- Location: tests/generated/Dividends/tc-bb-dividends-001-constant-amount-quarter-year.spec.ts:11:9
+
+# Error details
+
+```
+Test timeout of 80000ms exceeded.
+```
+
+# Page snapshot
+
+```yaml
+- generic [ref=e1]:
+  - generic [ref=e4]:
+    - generic [ref=e6]:
+      - generic [ref=e7]:
+        - link [ref=e8] [cursor=pointer]:
+          - /url: /
+        - button [ref=e9] [cursor=pointer]
+      - generic [ref=e12]: test
+      - generic [ref=e20]: Original forecast
+      - generic [ref=e28]:
+        - link [ref=e29] [cursor=pointer]:
+          - /url: /
+          - generic [ref=e30]: Home
+        - link [ref=e31] [cursor=pointer]:
+          - /url: /reality-check-dashboard/reality-check
+          - generic [ref=e32]: Reality Check
+          - generic [ref=e33]: NEW
+        - link [ref=e34] [cursor=pointer]:
+          - /url: /plan/overview
+          - generic [ref=e35]: BznsPlan
+        - link [ref=e36] [cursor=pointer]:
+          - /url: /financial/overview
+          - generic [ref=e37]: Forecast
+        - link [ref=e38] [cursor=pointer]:
+          - /url: /dashboard/overview
+          - generic [ref=e39]: Dashboard
+        - link [ref=e40] [cursor=pointer]:
+          - /url: /connections
+          - generic [ref=e41]: Connections
+        - link [ref=e43] [cursor=pointer]:
+          - /url: /subscription-dashboard/subscriptions
+          - generic [ref=e44]: Billing & Subscriptions
+        - link [ref=e45] [cursor=pointer]:
+          - /url: /company-settings
+          - generic [ref=e46]: Options
+      - list [ref=e48]:
+        - listitem [ref=e49]
+        - listitem [ref=e51]:
+          - generic [ref=e52] [cursor=pointer]: en
+        - listitem [ref=e53]:
+          - generic [ref=e54] [cursor=pointer]: "1"
+    - generic [ref=e60]:
+      - generic [ref=e61]:
+        - generic [ref=e62]:
+          - generic [ref=e63]:
+            - link [ref=e64] [cursor=pointer]:
+              - /url: /financial/overview
+              - text: Overview
+            - link [ref=e65] [cursor=pointer]:
+              - /url: /financial/revenues
+              - text: Financial Tables
+            - link [ref=e66] [cursor=pointer]:
+              - /url: /financial/profit-and-loss
+              - text: Profit & Loss
+            - link [ref=e67] [cursor=pointer]:
+              - /url: /financial/balance-sheet
+              - text: Balance Sheet
+            - link [ref=e68] [cursor=pointer]:
+              - /url: /financial/cash-flow
+              - text: Cash Flow
+          - generic [ref=e69]: Download & Print
+        - generic [ref=e74]:
+          - link [ref=e75] [cursor=pointer]:
+            - /url: /financial/revenues
+            - text: Revenue
+          - link [ref=e76] [cursor=pointer]:
+            - /url: /financial/expenses/direct-cost
+            - text: Direct Costs
+          - link [ref=e77] [cursor=pointer]:
+            - /url: /financial/expenses/personnel
+            - text: Personnel
+          - link [ref=e78] [cursor=pointer]:
+            - /url: /financial/expenses/indirect-cost
+            - text: Expenses
+          - link [ref=e79] [cursor=pointer]:
+            - /url: /financial/working-capital/assets
+            - text: Assets
+          - link [ref=e80] [cursor=pointer]:
+            - /url: /financial/taxes
+            - text: Taxes
+          - link [ref=e81] [cursor=pointer]:
+            - /url: /financial/working-capital/dividends
+            - text: Dividends
+          - link [ref=e82] [cursor=pointer]:
+            - /url: /financial/financial-setting
+            - text: Cash Assumptions
+          - link [ref=e83] [cursor=pointer]:
+            - /url: /financial/financial-setting/initial-balances
+            - text: Initial Balances
+          - link [ref=e84] [cursor=pointer]:
+            - /url: /financial/working-capital/funding
+            - text: Financing
+      - generic [ref=e89]:
+        - generic [ref=e90]:
+          - generic [ref=e93]:
+            - generic [ref=e94]:
+              - heading [level=2] [ref=e96]: Revenue
+              - generic [ref=e101]:
+                - generic [ref=e102]:
+                  - button [ref=e103] [cursor=pointer]: Yearly
+                  - button [ref=e104] [cursor=pointer]: Monthly
+                - button [ref=e106] [cursor=pointer]
+                - button [ref=e110] [cursor=pointer]
+                - button [ref=e113] [cursor=pointer]
+                - button [ref=e119] [cursor=pointer]:
+                  - generic [ref=e120]: Add Revenue Stream
+            - generic [ref=e125]:
+              - generic [ref=e126]:
+                - heading [level=6] [ref=e127]: Revenue Totals
+                - generic [ref=e128]:
+                  - heading [level=6] [ref=e129]: "Compare to:"
+                  - generic [ref=e136]:
+                    - generic [ref=e137]: Select Scenario
+                    - combobox [ref=e138]
+              - generic [ref=e141]:
+                - img [ref=e146]:
+                  - generic [ref=e149]:
+                    - generic [ref=e150]: $ 2
+                    - generic [ref=e151]: $ 1
+                    - generic [ref=e152]: $ 0
+                - img [ref=e158]:
+                  - generic [ref=e177]:
+                    - generic [ref=e178]: "2026"
+                    - generic [ref=e179]: "2027"
+                    - generic [ref=e180]: "2028"
+                    - generic [ref=e181]: "2029"
+                    - generic [ref=e182]: "2030"
+          - generic [ref=e186]:
+            - generic [ref=e188]:
+              - generic [ref=e189]:
+                - text: Revenue
+                - generic [ref=e194] [cursor=pointer]: Organize
+              - generic [ref=e198]: "2026"
+              - generic [ref=e199]: "2027"
+              - generic [ref=e200]: "2028"
+              - generic [ref=e201]: "2029"
+              - generic [ref=e202]: "2030"
+            - generic [ref=e203]: Add new revenue
+            - generic [ref=e220]:
+              - generic [ref=e221]: Total
+              - generic [ref=e222]: $ 0
+              - generic [ref=e224]: $ 0
+              - generic [ref=e226]: $ 0
+              - generic [ref=e228]: $ 0
+              - generic [ref=e230]: $ 0
+        - generic [ref=e232]:
+          - generic [ref=e236]:
+            - heading [level=6] [ref=e237]: Authorized users
+            - generic [ref=e241]:
+              - button [ref=e242] [cursor=pointer]
+              - button [ref=e248] [cursor=pointer]
+          - generic [ref=e259]:
+            - heading [level=6] [ref=e260]: Comments
+            - generic [ref=e261]:
+              - textbox [ref=e262]:
+                - /placeholder: Enter your comment
+              - button [ref=e264] [cursor=pointer]:
+                - generic [ref=e265]: Publish
+  - generic:
+    - generic:
+      - generic:
+        - dialog:
+          - generic [ref=e268]:
+            - generic [ref=e270]:
+              - heading "How can we help?" [level=5] [ref=e273]
+              - button "×" [active] [ref=e274] [cursor=pointer]
+            - generic [ref=e276]:
+              - heading "Instructions" [level=6] [ref=e279]
+              - generic [ref=e280]:
+                - paragraph
+                - heading "Revenue" [level=2] [ref=e281]
+                - generic [ref=e284]:
+                  - paragraph [ref=e285]: Add your major products, services, or other sources of revenue here. Try to organize them into sensible higher-level groups. With a fitness center, for example, you might have group memberships, individuals, personal training, and counter sales. A shoe store might organize its revenue into sneakers, casual shoes, children's shoes, and accessories.
+                  - paragraph [ref=e286]: Keep your list relatively short. Trying to manage dozens of individual revenue streams can make your forecast hard to prepare and maintain. Also, remember you can compare your forecasted values with your actual results on the Dashboard, so think about what categories of revenue will make the most sense for you there.
+                  - paragraph [ref=e287]: Note that grants, crowdfunding, donations, and other money that doesn't involve equity or payback should go here too.
+                - paragraph
+```
